@@ -119,7 +119,7 @@ flutter build apk --debug
 flutter build apk --release
 ```
 
-本地 Debug 构建不需要签名 keystore 或 Google Play 凭证。
+本地 Debug 构建未配置 keystore 时使用 Android 默认 Debug key。GitHub push 构建会从受保护的 `google-play-internal` Environment Secrets 恢复统一的 Android keystore，并生成签名 Debug APK；公开 PR 只执行静态检查和测试，不读取任何 Secret。
 
 ## 发布前：版本号调整（Google Play）
 
@@ -148,7 +148,7 @@ cd android
 ./gradlew :app:publishReleaseBundle
 ```
 
-发布命令需要通过环境变量提供签名 keystore 和 Google Play 服务账号凭证；这些文件不会提交到 Git。GitHub Actions 使用受保护的 `google-play-internal` Environment Secrets 自动完成发布，本地 Debug 构建不需要这些凭证。
+发布命令需要通过 `ANDROID_KEYSTORE_FILE`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD` 和 `PLAY_SERVICE_ACCOUNT_FILE` 提供签名与 Google Play 凭证；这些文件不会提交到 Git。GitHub 的签名 Debug 和 Release 发布共用受保护的 `google-play-internal` Environment Secrets。
 
 ## 开发
 

@@ -66,11 +66,11 @@ jobs:
           test -s "$play_credentials_file"
 
           {
-            echo "WW_KEYSTORE_FILE=$keystore_file"
-            echo "WW_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD"
-            echo "WW_KEY_ALIAS=$ANDROID_KEY_ALIAS"
-            echo "WW_KEY_PASSWORD=$ANDROID_KEY_PASSWORD"
-            echo "WW_PLAY_CREDENTIALS_FILE=$play_credentials_file"
+            echo "ANDROID_KEYSTORE_FILE=$keystore_file"
+            echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD"
+            echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS"
+            echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD"
+            echo "PLAY_SERVICE_ACCOUNT_FILE=$play_credentials_file"
           } >> "$GITHUB_ENV"
 
       - name: Publish App Bundle to Internal Testing as Draft
