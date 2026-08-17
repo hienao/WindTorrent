@@ -107,22 +107,33 @@ android {
 
     buildTypes {
         debug {
-            signingConfig keystorePropertiesFile.exists() ? signingConfigs.projectKeystore : signingConfigs.debug
+            signingConfig hasReleaseSigning ? signingConfigs.projectKeystore : signingConfigs.debug
             minifyEnabled false
             shrinkResources false
         }
         profile {
-            signingConfig keystorePropertiesFile.exists() ? signingConfigs.projectKeystore : signingConfigs.debug
+            signingConfig hasReleaseSigning ? signingConfigs.projectKeystore : signingConfigs.debug
         }
         release {
-            if (!hasReleaseSigning) {
-                throw new GradleException("Release signing is not fully configured. Please set WW_KEYSTORE_FILE, WW_KEYSTORE_PASSWORD, WW_KEY_ALIAS, and WW_KEY_PASSWORD.")
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.projectKeystore
             }
-            signingConfig signingConfigs.projectKeystore
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+// Gradle configures every build type even when only assembleDebug is requested.
+// Validate signing after task selection so public CI can build Debug without
+// release credentials while every Release task still fails fast when unsigned.
+gradle.taskGraph.whenReady { taskGraph ->
+    def releaseTaskRequested = taskGraph.allTasks.any { task ->
+        task.name.toLowerCase().contains('release')
+    }
+    if (releaseTaskRequested && !hasReleaseSigning) {
+        throw new GradleException("Release signing is not fully configured. Please set WW_KEYSTORE_FILE, WW_KEYSTORE_PASSWORD, WW_KEY_ALIAS, and WW_KEY_PASSWORD.")
     }
 }
 
