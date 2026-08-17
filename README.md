@@ -119,7 +119,7 @@ flutter build apk --debug
 flutter build apk --release
 ```
 
-本地 Debug 构建不需要签名 keystore 或 Google Play 凭证。
+本地 Debug 构建未配置 keystore 时使用 Android 默认 Debug key。公开 PR 只执行静态检查和测试，不读取任何 Secret。只有 PR 合并到 `beta` 或 `main` 后，GitHub 才会从 `google-play-internal` Environment Secrets 恢复统一的 Android keystore，并生成签名 Release APK。
 
 ## 发布前：版本号调整（Google Play）
 
@@ -142,18 +142,26 @@ Android 版本号现在由 Flutter 默认机制注入，直接来自 `pubspec.ya
 - `versionCode` = `buildNumber`
 - Android 构建脚本（`android/app/build.gradle`）会直接解析 `pubspec.yaml` 的 `version`，不会再依赖 `android/local.properties` 中的版本字段
 
-发布命令（Internal Testing 草稿）：
+本地发布命令（Internal Testing 草稿）：
 ```bash
 cd android
 ./gradlew :app:publishReleaseBundle
 ```
 
-发布命令需要通过环境变量提供签名 keystore 和 Google Play 服务账号凭证；这些文件不会提交到 Git。GitHub Actions 使用受保护的 `google-play-internal` Environment Secrets 自动完成发布，本地 Debug 构建不需要这些凭证。
+发布命令需要通过 `ANDROID_KEYSTORE_FILE`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD` 和 `PLAY_SERVICE_ACCOUNT_FILE` 提供签名与 Google Play 凭证；这些文件不会提交到 Git。
+
+GitHub 发布规则：
+
+- PR 合并到 `beta`：要求 `versionCode` 相比合并前的 `beta` 严格递增，生成签名 Release APK artifact，并将 AAB 上传到 Google Play `beta` 轨道为 Draft。
+- PR 合并到 `main`：要求 `versionCode` 相比合并前的 `main` 严格递增，生成签名 Release APK artifact，并将 AAB 上传到 Google Play `production` 轨道为 Draft。
+- 普通 push、tag、手动运行以及仅关闭但未合并的 PR 都不会构建 Beta/Release。
+- `versionCode` 未增加或发生回退时，工作流会在读取任何签名或 Google Play Secret 前失败终止。
 
 ## 开发
 
-- main 分支：稳定版
-- dev 分支：开发版
+- `main` 分支：正式版，只接受 Release PR 合并
+- `beta` 分支：Beta 版，只接受 Beta PR 合并
+- `dev` 分支：日常开发版
 
 ---
 
