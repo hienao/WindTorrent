@@ -1,0 +1,210 @@
+name: Build Android Beta or Release
+
+on:
+  push:
+    branches:
+      - beta
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-merged-pr-and-version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      channel: ${{ steps.version.outputs.channel }}
+      play_track: ${{ steps.version.outputs.play_track }}
+      version_code: ${{ steps.version.outputs.version_code }}
+      version_name: ${{ steps.version.outputs.version_name }}
+      artifact_name: ${{ steps.version.outputs.artifact_name }}
+    steps:
+      - name: Require a merged pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          AFTER_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pull_requests="$(gh api \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/$REPOSITORY/commits/$AFTER_SHA/pulls")"
+          matching_count="$(jq \
+            --arg branch "$BRANCH" \
+            --arg sha "$AFTER_SHA" \
+            '[.[] | select(
+              .merged_at != null and
+              .base.ref == $branch and
+              .merge_commit_sha == $sha
+            )] | length' <<< "$pull_requests")"
+
+          if [[ "$matching_count" -eq 0 ]]; then
+            echo "Build rejected: $AFTER_SHA was not created by merging a pull request into $BRANCH." >&2
+            exit 1
+          fi
+
+      - name: Check out merged source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Require an increased versionCode
+        id: version
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version_value() {
+            git show "$1:pubspec.yaml" |
+              sed -nE 's/^version:[[:space:]]*([^[:space:]#]+).*$/\1/p' |
+              head -n 1
+          }
+
+          previous_version="$(version_value "$BEFORE_SHA")"
+          current_version="$(version_value "$AFTER_SHA")"
+          previous_code="${previous_version##*+}"
+          current_code="${current_version##*+}"
+          current_name="${current_version%%+*}"
+
+          if [[ ! "$previous_code" =~ ^[0-9]+$ || ! "$current_code" =~ ^[0-9]+$ ]]; then
+            echo "Invalid version in pubspec.yaml. Expected version: x.y.z+versionCode." >&2
+            exit 1
+          fi
+
+          if (( current_code <= previous_code )); then
+            echo "Build rejected: versionCode must increase on $BRANCH ($previous_code -> $current_code)." >&2
+            exit 1
+          fi
+
+          if [[ "$BRANCH" == "beta" ]]; then
+            channel="beta"
+            play_track="beta"
+          elif [[ "$BRANCH" == "main" ]]; then
+            channel="release"
+            play_track="production"
+          else
+            echo "Unsupported target branch: $BRANCH" >&2
+            exit 1
+          fi
+
+          artifact_name="WindTorrent-${channel}-${current_name}-${current_code}"
+          {
+            echo "channel=$channel"
+            echo "play_track=$play_track"
+            echo "version_code=$current_code"
+            echo "version_name=$current_name"
+            echo "artifact_name=$artifact_name"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Accepted $channel build: versionCode $previous_code -> $current_code"
+
+  build-and-publish:
+    needs: verify-merged-pr-and-version
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment:
+      name: google-play-internal
+    steps:
+      - name: Check out merged source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Java
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
+        with:
+          flutter-version: '3.44.2'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Restore signing and Google Play credentials
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          PLAY_SERVICE_ACCOUNT_JSON_B64: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON_B64 }}
+        run: |
+          set -euo pipefail
+
+          test -n "$ANDROID_KEYSTORE_B64"
+          test -n "$ANDROID_KEYSTORE_PASSWORD"
+          test -n "$ANDROID_KEY_ALIAS"
+          test -n "$ANDROID_KEY_PASSWORD"
+          test -n "$PLAY_SERVICE_ACCOUNT_JSON_B64"
+
+          keystore_file="$RUNNER_TEMP/windtorrent-upload-key.jks"
+          play_credentials_file="$RUNNER_TEMP/windtorrent-play-credentials.json"
+
+          printf '%s' "$ANDROID_KEYSTORE_B64" | base64 --decode > "$keystore_file"
+          printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON_B64" | base64 --decode > "$play_credentials_file"
+          test -s "$keystore_file"
+          test -s "$play_credentials_file"
+
+          {
+            echo "ANDROID_KEYSTORE_FILE=$keystore_file"
+            echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD"
+            echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS"
+            echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD"
+            echo "PLAY_SERVICE_ACCOUNT_FILE=$play_credentials_file"
+          } >> "$GITHUB_ENV"
+
+      - name: Build signed Release APK
+        run: flutter build apk --release
+
+      - name: Prepare APK artifact
+        env:
+          ARTIFACT_NAME: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/apk-artifact"
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            "$RUNNER_TEMP/apk-artifact/$ARTIFACT_NAME.apk"
+
+      - name: Upload Release APK artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
+          path: ${{ runner.temp }}/apk-artifact/*.apk
+          if-no-files-found: error
+          retention-days: ${{ github.ref_name == 'main' && 90 || 30 }}
+
+      - name: Publish App Bundle to Google Play as Draft
+        working-directory: android
+        env:
+          PLAY_TRACK: ${{ needs.verify-merged-pr-and-version.outputs.play_track }}
+        run: >-
+          ./gradlew --no-daemon --stacktrace :app:publishReleaseBundle
+          --track "$PLAY_TRACK"
+          --release-status draft
+
+      - name: Remove credentials
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/windtorrent-upload-key.jks"
+          rm -f "$RUNNER_TEMP/windtorrent-play-credentials.json"
