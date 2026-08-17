@@ -54,12 +54,12 @@ def envOrProp = { String envKey, String propKey = null ->
     return null
 }
 
-def signingStoreFile = envOrProp('WW_KEYSTORE_FILE', 'storeFile')
-def signingStorePassword = envOrProp('WW_KEYSTORE_PASSWORD', 'storePassword')
-def signingKeyAlias = envOrProp('WW_KEY_ALIAS', 'keyAlias')
-def signingKeyPassword = envOrProp('WW_KEY_PASSWORD', 'keyPassword')
+def signingStoreFile = envOrProp('ANDROID_KEYSTORE_FILE', 'storeFile')
+def signingStorePassword = envOrProp('ANDROID_KEYSTORE_PASSWORD', 'storePassword')
+def signingKeyAlias = envOrProp('ANDROID_KEY_ALIAS', 'keyAlias')
+def signingKeyPassword = envOrProp('ANDROID_KEY_PASSWORD', 'keyPassword')
 def hasReleaseSigning = signingStoreFile && signingStorePassword && signingKeyAlias && signingKeyPassword
-def playCredentialsPath = System.getenv('WW_PLAY_CREDENTIALS_FILE')
+def playCredentialsPath = System.getenv('PLAY_SERVICE_ACCOUNT_FILE')
 def playCredentialsFile = (playCredentialsPath != null && playCredentialsPath.trim())
         ? file(playCredentialsPath)
         : rootProject.file("play-credentials.json")
@@ -133,7 +133,7 @@ gradle.taskGraph.whenReady { taskGraph ->
         task.name.toLowerCase().contains('release')
     }
     if (releaseTaskRequested && !hasReleaseSigning) {
-        throw new GradleException("Release signing is not fully configured. Please set WW_KEYSTORE_FILE, WW_KEYSTORE_PASSWORD, WW_KEY_ALIAS, and WW_KEY_PASSWORD.")
+        throw new GradleException("Release signing is not fully configured. Please set ANDROID_KEYSTORE_FILE, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, and ANDROID_KEY_PASSWORD.")
     }
 }
 
@@ -158,7 +158,7 @@ play {
 tasks.matching { it.name == "publishReleaseBundle" }.configureEach {
     doFirst {
         if (!playCredentialsFile.exists()) {
-            throw new GradleException("Google Play credentials file not found. Set WW_PLAY_CREDENTIALS_FILE for publishing.")
+            throw new GradleException("Google Play credentials file not found. Set PLAY_SERVICE_ACCOUNT_FILE for publishing.")
         }
     }
 }
