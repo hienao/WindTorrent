@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Downloader Config - Basic Only</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --primary: #2563eb;
+      --chip: #eef2ff;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "SF Pro Text", "Noto Sans SC", sans-serif;
+      background: radial-gradient(1200px 500px at 50% -200px, #dbeafe 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+    .phone {
+      width: 390px;
+      height: 844px;
+      border-radius: 36px;
+      background: var(--bg);
+      border: 10px solid #0b1220;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(2, 6, 23, 0.28);
+      position: relative;
+    }
+    .status {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-size: 12px;
+      color: #334155;
+      background: linear-gradient(180deg, #edf3ff 0%, #f8fbff 100%);
+    }
+    .appbar {
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-weight: 700;
+      font-size: 18px;
+      background: #f8fbff;
+      border-bottom: 1px solid var(--line);
+    }
+    .back {
+      position: absolute;
+      left: 16px;
+      color: #334155;
+      font-size: 20px;
+    }
+    .content {
+      padding: 16px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--primary);
+      box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.14);
+    }
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0 12px;
+      font-size: 14px;
+      color: #0f172a;
+      background: #fff;
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .seg {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .chip {
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #334155;
+      background: #fff;
+      font-weight: 600;
+    }
+    .chip.active {
+      border-color: #bfdbfe;
+      background: var(--chip);
+      color: #1d4ed8;
+    }
+    .actions {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 14px 16px 20px;
+      background: linear-gradient(180deg, rgba(244,247,251,0.2) 0%, rgba(244,247,251,0.98) 30%);
+      backdrop-filter: blur(2px);
+    }
+    .btn {
+      width: 100%;
+      height: 48px;
+      border: 0;
+      border-radius: 14px;
+      background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>5G ▰▰▰ 88%</span></div>
+    <div class="appbar"><span class="back">‹</span>下载器配置</div>
+
+    <div class="content">
+      <section class="card">
+        <div class="title"><span class="dot"></span><span>基础信息</span></div>
+
+        <div class="field">
+          <label class="label">下载器名称</label>
+          <input class="input" value="家庭 NAS - qBittorrent" />
+        </div>
+
+        <div class="field">
+          <label class="label">下载器类型</label>
+          <div class="seg">
+            <div class="chip">Aria2</div>
+            <div class="chip active">qBittorrent</div>
+            <div class="chip">Transmission</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">服务器地址</label>
+          <input class="input" value="192.168.1.88" />
+        </div>
+
+        <div class="field row">
+          <div>
+            <label class="label">端口</label>
+            <input class="input" value="8080" />
+          </div>
+          <div>
+            <label class="label">协议</label>
+            <div class="seg" style="grid-template-columns: 1fr 1fr;">
+              <div class="chip active">HTTP</div>
+              <div class="chip">HTTPS</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">用户名</label>
+          <input class="input" value="admin" />
+        </div>
+
+        <div class="field">
+          <label class="label">密码</label>
+          <input class="input" value="••••••••" />
+        </div>
+
+      </section>
+    </div>
+
+    <div class="actions">
+      <button class="btn">保存配置</button>
+    </div>
+  </div>
+</body>
+</html>

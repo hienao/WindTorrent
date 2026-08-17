@@ -1,0 +1,1233 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WindWalker 总览页 Neumorphism UI 稿</title>
+  <style>
+    :root {
+      --page: #dde5f0;
+      --light-bg: #e9eef5;
+      --light-surface: #f1f4f8;
+      --light-surface-2: #e2e8f1;
+      --light-text: #142033;
+      --light-muted: #68768a;
+      --light-highlight: rgba(255, 255, 255, 0.92);
+      --light-shadow: rgba(146, 161, 181, 0.42);
+      --blue: #2a7fff;
+      --blue-2: #68a7ff;
+      --teal: #20b99f;
+      --amber: #eea73b;
+      --red: #ee5a67;
+      --slate: #8b98ab;
+      --dark-bg: #111827;
+      --dark-surface: #1a2332;
+      --dark-surface-2: #0d1522;
+      --dark-text: #eef4fb;
+      --dark-muted: #91a1b8;
+      --dark-highlight: rgba(255, 255, 255, 0.065);
+      --dark-shadow: rgba(0, 0, 0, 0.42);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 22% 12%, rgba(255, 255, 255, 0.72), transparent 28%),
+        linear-gradient(135deg, #d9e2ee 0%, #eef2f7 48%, #cad6e5 100%);
+      color: #162033;
+      font-family: var(--font);
+      letter-spacing: 0;
+    }
+
+    .stage {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 42px 22px 56px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 26px;
+    }
+
+    .title-row h1 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 44px);
+      line-height: 1.08;
+      font-weight: 830;
+      color: #132136;
+    }
+
+    .title-row p {
+      max-width: 470px;
+      margin: 0;
+      color: #58687c;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .mockups {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px;
+      align-items: start;
+    }
+
+    .mockup-card {
+      display: grid;
+      justify-items: center;
+      gap: 18px;
+    }
+
+    .theme-label {
+      width: min(390px, 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+      color: #3d4a5e;
+      font-weight: 760;
+    }
+
+    .theme-label span:last-child {
+      color: #718096;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .phone {
+      position: relative;
+      width: min(390px, 100%);
+      aspect-ratio: 390 / 844;
+      overflow: hidden;
+      border-radius: 42px;
+      background: var(--light-bg);
+      box-shadow:
+        -18px -18px 36px rgba(255, 255, 255, 0.72),
+        22px 26px 48px rgba(107, 124, 148, 0.36);
+    }
+
+    .phone.dark {
+      background: var(--dark-bg);
+      box-shadow:
+        -16px -16px 34px rgba(255, 255, 255, 0.045),
+        26px 30px 54px rgba(0, 0, 0, 0.55);
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 18px 14px;
+    }
+
+    .status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: 760;
+      color: var(--light-text);
+    }
+
+    .dark .status {
+      color: var(--dark-text);
+    }
+
+    .signal {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.7;
+    }
+
+    .content {
+      flex: 1;
+      overflow: hidden;
+      padding-bottom: 12px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      margin-bottom: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-mark {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      border-radius: 17px;
+      overflow: hidden;
+      background: var(--light-surface);
+      box-shadow:
+        -6px -6px 14px rgba(255, 255, 255, 0.72),
+        8px 8px 16px rgba(42, 127, 255, 0.24);
+    }
+
+    .app-mark img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .dark .app-mark {
+      background: var(--dark-surface);
+      box-shadow:
+        -5px -5px 14px rgba(255, 255, 255, 0.055),
+        8px 8px 18px rgba(0, 0, 0, 0.42);
+    }
+
+    .brand-text small,
+    .section-kicker,
+    .subtle,
+    .tab-label,
+    .metric-label {
+      color: var(--light-muted);
+    }
+
+    .dark .brand-text small,
+    .dark .section-kicker,
+    .dark .subtle,
+    .dark .tab-label,
+    .dark .metric-label {
+      color: var(--dark-muted);
+    }
+
+    .brand-text strong {
+      display: block;
+      color: var(--light-text);
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    .dark .brand-text strong {
+      color: var(--dark-text);
+    }
+
+    .brand-text small {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .hero-panel,
+    .card,
+    .bottom-tabs,
+    .fab {
+      background: var(--light-surface);
+      box-shadow:
+        -8px -8px 18px var(--light-highlight),
+        10px 12px 22px var(--light-shadow);
+    }
+
+    .dark .hero-panel,
+    .dark .card,
+    .dark .bottom-tabs,
+    .dark .fab {
+      background: var(--dark-surface);
+      box-shadow:
+        -7px -7px 18px var(--dark-highlight),
+        10px 12px 24px var(--dark-shadow);
+    }
+
+    .hero-panel {
+      border-radius: var(--radius-xl);
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .hero-title {
+      margin: 0;
+      color: var(--light-text);
+      font-size: 17px;
+      line-height: 1.28;
+      font-weight: 790;
+    }
+
+    .dark .hero-title {
+      color: var(--dark-text);
+    }
+
+    .health-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: #0b7b6b;
+      background: rgba(32, 185, 159, 0.14);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .dark .health-pill {
+      color: #7ce2cf;
+      background: rgba(32, 185, 159, 0.16);
+    }
+
+    .speed-row {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .speed-main,
+    .speed-sub {
+      border-radius: 20px;
+      padding: 14px;
+      background: var(--light-surface-2);
+      box-shadow:
+        inset 5px 5px 12px rgba(151, 166, 188, 0.22),
+        inset -5px -5px 12px rgba(255, 255, 255, 0.82);
+    }
+
+    .dark .speed-main,
+    .dark .speed-sub {
+      background: var(--dark-surface-2);
+      box-shadow:
+        inset 6px 6px 13px rgba(0, 0, 0, 0.36),
+        inset -5px -5px 12px rgba(255, 255, 255, 0.035);
+    }
+
+    .speed-value {
+      margin-top: 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      color: var(--light-text);
+    }
+
+    .dark .speed-value {
+      color: var(--dark-text);
+    }
+
+    .speed-value strong {
+      font-size: 29px;
+      line-height: 1;
+      font-weight: 850;
+    }
+
+    .speed-value span {
+      font-size: 12px;
+      font-weight: 740;
+      color: var(--light-muted);
+    }
+
+    .dark .speed-value span {
+      color: var(--dark-muted);
+    }
+
+    .spark {
+      height: 44px;
+      margin-top: 12px;
+      border-radius: 14px;
+      background:
+        linear-gradient(90deg, transparent 0 9%, rgba(42, 127, 255, 0.18) 9% 10%, transparent 10% 24%, rgba(32, 185, 159, 0.22) 24% 25%, transparent 25%),
+        linear-gradient(135deg, rgba(42, 127, 255, 0.18), rgba(32, 185, 159, 0.10));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .spark::after {
+      content: "";
+      position: absolute;
+      inset: 12px 8px 10px;
+      border-radius: 999px;
+      border-top: 3px solid rgba(42, 127, 255, 0.78);
+      transform: skewX(-18deg);
+    }
+
+    .mini-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-metric {
+      border-radius: 15px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    .dark .mini-metric {
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .mini-metric strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--light-text);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .dark .mini-metric strong {
+      color: var(--dark-text);
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .quick-action {
+      min-height: 58px;
+      border-radius: 18px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 5px;
+      color: var(--light-text);
+      background: var(--light-surface);
+      box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.82),
+        6px 7px 12px rgba(146, 161, 181, 0.26);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .dark .quick-action {
+      color: var(--dark-text);
+      background: var(--dark-surface);
+      box-shadow:
+        -5px -5px 12px rgba(255, 255, 255, 0.04),
+        7px 8px 14px rgba(0, 0, 0, 0.34);
+    }
+
+    .quick-action b {
+      color: var(--blue);
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 2px 10px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      color: var(--light-text);
+      font-size: 16px;
+      font-weight: 810;
+    }
+
+    .dark .section-head h2 {
+      color: var(--dark-text);
+    }
+
+    .section-kicker {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .status-card {
+      min-height: 92px;
+      border-radius: 20px;
+      padding: 12px 10px;
+      display: grid;
+      gap: 8px;
+      align-content: center;
+      justify-items: center;
+      background: var(--light-surface);
+      box-shadow:
+        -6px -6px 13px rgba(255, 255, 255, 0.88),
+        7px 8px 15px rgba(146, 161, 181, 0.27);
+    }
+
+    .dark .status-card {
+      background: var(--dark-surface);
+      box-shadow:
+        -5px -5px 12px rgba(255, 255, 255, 0.04),
+        8px 9px 16px rgba(0, 0, 0, 0.34);
+    }
+
+    .status-icon {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 860;
+    }
+
+    .status-card strong {
+      color: var(--light-text);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .dark .status-card strong {
+      color: var(--dark-text);
+    }
+
+    .status-card span {
+      color: var(--light-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .dark .status-card span {
+      color: var(--dark-muted);
+    }
+
+    .distribution {
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+
+    .dist-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .ring {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background:
+        conic-gradient(var(--blue) 0 48%, var(--teal) 48% 74%, var(--amber) 74% 92%, var(--slate) 92% 100%);
+      padding: 12px;
+      box-shadow:
+        -5px -5px 12px rgba(255, 255, 255, 0.78),
+        6px 8px 15px rgba(146, 161, 181, 0.25);
+    }
+
+    .dark .ring {
+      box-shadow:
+        -4px -4px 10px rgba(255, 255, 255, 0.045),
+        7px 9px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .ring-core {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--light-surface);
+      color: var(--light-text);
+      font-size: 20px;
+      font-weight: 850;
+    }
+
+    .dark .ring-core {
+      background: var(--dark-surface);
+      color: var(--dark-text);
+    }
+
+    .dist-copy strong {
+      display: block;
+      color: var(--light-text);
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+
+    .dark .dist-copy strong {
+      color: var(--dark-text);
+    }
+
+    .dist-copy p {
+      margin: 0;
+      color: var(--light-muted);
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .dark .dist-copy p {
+      color: var(--dark-muted);
+    }
+
+    .downloader-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .downloader-row {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 8px 10px;
+      border-radius: 17px;
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .dark .downloader-row {
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .logo-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 820;
+    }
+
+    .row-title {
+      color: var(--light-text);
+      font-size: 13px;
+      font-weight: 780;
+    }
+
+    .distribution-showcase {
+      margin-top: 42px;
+    }
+
+    .showcase-title {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .showcase-title h2 {
+      margin: 0;
+      color: #172235;
+      font-size: 24px;
+      line-height: 1.15;
+    }
+
+    .showcase-title p {
+      max-width: 520px;
+      margin: 0;
+      color: #5f6e82;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 26px;
+    }
+
+    .showcase-panel {
+      border-radius: 34px;
+      padding: 24px;
+      background: var(--light-bg);
+      box-shadow:
+        -14px -14px 30px rgba(255, 255, 255, 0.72),
+        18px 20px 40px rgba(107, 124, 148, 0.30);
+    }
+
+    .showcase-panel.dark {
+      background: var(--dark-bg);
+      box-shadow:
+        -12px -12px 28px rgba(255, 255, 255, 0.04),
+        18px 22px 44px rgba(0, 0, 0, 0.50);
+    }
+
+    .showcase-panel .distribution {
+      min-height: 360px;
+    }
+
+    .showcase-panel .dist-top {
+      align-items: flex-start;
+    }
+
+    .showcase-panel .ring {
+      width: 116px;
+      height: 116px;
+      flex: 0 0 auto;
+      padding: 15px;
+    }
+
+    .showcase-panel .ring-core {
+      font-size: 28px;
+    }
+
+    .showcase-panel .dist-copy strong {
+      font-size: 21px;
+    }
+
+    .showcase-panel .dist-copy p {
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .showcase-panel .downloader-list {
+      gap: 12px;
+    }
+
+    .showcase-panel .downloader-row {
+      min-height: 64px;
+      grid-template-columns: 44px 1fr auto;
+      padding: 10px 12px;
+      border-radius: 20px;
+    }
+
+    .showcase-panel .logo-dot {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      font-size: 13px;
+    }
+
+    .showcase-panel .row-title {
+      font-size: 15px;
+    }
+
+    .showcase-panel .row-sub {
+      font-size: 12px;
+    }
+
+    .dist-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .dist-summary-item {
+      min-height: 62px;
+      border-radius: 18px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.30);
+    }
+
+    .dark .dist-summary-item,
+    .showcase-panel.dark .dist-summary-item {
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .dist-summary-item span {
+      display: block;
+      color: var(--light-muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .dark .dist-summary-item span,
+    .showcase-panel.dark .dist-summary-item span {
+      color: var(--dark-muted);
+    }
+
+    .dist-summary-item strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--light-text);
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .dark .dist-summary-item strong,
+    .showcase-panel.dark .dist-summary-item strong {
+      color: var(--dark-text);
+    }
+
+    .dark .row-title {
+      color: var(--dark-text);
+    }
+
+    .row-sub {
+      margin-top: 2px;
+      color: var(--light-muted);
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .dark .row-sub {
+      color: var(--dark-muted);
+    }
+
+    .row-status {
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: #0c8b77;
+      background: rgba(32, 185, 159, 0.13);
+      font-size: 11px;
+      font-weight: 780;
+    }
+
+    .dark .row-status {
+      color: #7ce2cf;
+      background: rgba(32, 185, 159, 0.14);
+    }
+
+    .bottom-tabs {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      height: 72px;
+      padding: 8px;
+      border-radius: 26px;
+      flex: 0 0 auto;
+    }
+
+    .tab {
+      border-radius: 20px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 4px;
+      min-width: 0;
+      color: var(--light-muted);
+    }
+
+    .dark .tab {
+      color: var(--dark-muted);
+    }
+
+    .tab.active {
+      color: var(--blue);
+      background: var(--light-surface-2);
+      box-shadow:
+        inset 4px 4px 9px rgba(151, 166, 188, 0.24),
+        inset -4px -4px 9px rgba(255, 255, 255, 0.78);
+    }
+
+    .dark .tab.active {
+      color: #74adff;
+      background: var(--dark-surface-2);
+      box-shadow:
+        inset 5px 5px 10px rgba(0, 0, 0, 0.34),
+        inset -4px -4px 10px rgba(255, 255, 255, 0.035);
+    }
+
+    .tab-icon {
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 820;
+    }
+
+    .tab-label {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 10px;
+      font-weight: 760;
+    }
+
+    .fab {
+      position: absolute;
+      right: 22px;
+      bottom: 100px;
+      width: 58px;
+      height: 58px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 33px;
+      font-weight: 620;
+      background: linear-gradient(145deg, #3b8fff, #1769e9);
+      box-shadow:
+        -6px -6px 14px rgba(255, 255, 255, 0.52),
+        10px 12px 20px rgba(42, 127, 255, 0.32);
+    }
+
+    .dark .fab {
+      box-shadow:
+        -5px -5px 12px rgba(255, 255, 255, 0.045),
+        10px 12px 22px rgba(0, 0, 0, 0.45);
+    }
+
+    .blue { background: var(--blue); }
+    .teal { background: var(--teal); }
+    .amber { background: var(--amber); }
+    .red { background: var(--red); }
+    .slate { background: var(--slate); }
+
+    @media (max-width: 880px) {
+      .title-row {
+        display: block;
+      }
+
+      .title-row p {
+        margin-top: 12px;
+      }
+
+      .mockups {
+        grid-template-columns: 1fr;
+      }
+
+      .showcase-title {
+        display: block;
+      }
+
+      .showcase-title p {
+        margin-top: 10px;
+      }
+
+      .showcase-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .stage {
+        padding: 24px 12px 34px;
+      }
+
+      .phone {
+        border-radius: 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <div class="title-row">
+      <div>
+        <h1>总览页 UI 设计稿</h1>
+        <p>基于 WindWalker 新拟物化规范重绘。功能含义保持不变，header、内容布局、快捷入口、下载器分布和底部 tab 都按统一软表面语言重新设计。</p>
+      </div>
+      <p>左侧为浅色主题，右侧为深色主题。两套主题共用信息层级与组件语言，方便后续直接转 Flutter 组件。</p>
+    </div>
+
+    <section class="mockups">
+      <div class="mockup-card">
+        <div class="theme-label">
+          <span>浅色主题</span>
+          <span>雾灰蓝软表面</span>
+        </div>
+        <article class="phone">
+          <div class="screen">
+            <div class="status">
+              <span>9:41</span>
+              <span class="signal"><span class="dot"></span><span class="dot"></span><span class="dot"></span> 82%</span>
+            </div>
+            <div class="content">
+              <header class="topbar">
+                <div class="brand">
+                  <div class="app-mark" aria-label="WindWalker 应用图标">
+                    <img src="../../assets/branding/app_icon_master.png" alt="">
+                  </div>
+                  <div class="brand-text">
+                    <strong>总览</strong>
+                    <small>WindWalker 控制台</small>
+                  </div>
+                </div>
+              </header>
+
+              <section class="hero-panel">
+                <div class="hero-top">
+                  <h2 class="hero-title">当前下载运行平稳<br>4 个下载器保持在线</h2>
+                  <div class="health-pill"><span class="dot"></span>健康</div>
+                </div>
+                <div class="speed-row">
+                  <div class="speed-main">
+                    <div class="metric-label">总下载速度</div>
+                    <div class="speed-value"><strong>12.8</strong><span>MB/s</span></div>
+                    <div class="spark"></div>
+                  </div>
+                  <div class="mini-stack">
+                    <div class="mini-metric">
+                      <div class="metric-label">活跃任务</div>
+                      <strong>18</strong>
+                    </div>
+                    <div class="mini-metric">
+                      <div class="metric-label">上传</div>
+                      <strong>860K</strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="quick-actions">
+                  <div class="quick-action"><b>＋</b><span>添加任务</span></div>
+                  <div class="quick-action"><b>▣</b><span>下载器</span></div>
+                  <div class="quick-action"><b>▦</b><span>查看任务</span></div>
+                </div>
+              </section>
+
+              <div class="section-head">
+                <h2>任务状态</h2>
+                <span class="section-kicker">共 126 个任务</span>
+              </div>
+              <section class="status-grid">
+                <div class="status-card"><div class="status-icon blue">↓</div><strong>8</strong><span>下载中</span></div>
+                <div class="status-card"><div class="status-icon amber">…</div><strong>5</strong><span>等待中</span></div>
+                <div class="status-card"><div class="status-icon slate">Ⅱ</div><strong>3</strong><span>已暂停</span></div>
+                <div class="status-card"><div class="status-icon teal">↑</div><strong>6</strong><span>做种中</span></div>
+                <div class="status-card"><div class="status-icon teal">✓</div><strong>101</strong><span>已完成</span></div>
+                <div class="status-card"><div class="status-icon red">!</div><strong>3</strong><span>错误</span></div>
+              </section>
+
+              <div class="section-head">
+                <h2>下载器分布</h2>
+                <span class="section-kicker">4 个在线</span>
+              </div>
+              <section class="card distribution">
+                <div class="dist-top">
+                  <div class="ring"><div class="ring-core">6</div></div>
+                  <div class="dist-copy">
+                    <strong>多协议下载器</strong>
+                    <p>Aria2、qBittorrent、Transmission 统一汇总，点击条目进入管理。</p>
+                  </div>
+                </div>
+                <div class="downloader-list">
+                  <div class="downloader-row"><div class="logo-dot blue">A2</div><div><div class="row-title">Home Aria2</div><div class="row-sub">8 任务 · 6.4 MB/s</div></div><div class="row-status">在线</div></div>
+                  <div class="downloader-row"><div class="logo-dot teal">QB</div><div><div class="row-title">NAS qBit</div><div class="row-sub">14 任务 · 4.1 MB/s</div></div><div class="row-status">在线</div></div>
+                </div>
+              </section>
+            </div>
+
+            <div class="fab">＋</div>
+            <nav class="bottom-tabs" aria-label="主导航">
+              <div class="tab active"><div class="tab-icon">▦</div><div class="tab-label">总览</div></div>
+              <div class="tab"><div class="tab-icon">▣</div><div class="tab-label">下载器</div></div>
+              <div class="tab"><div class="tab-icon">✓</div><div class="tab-label">任务</div></div>
+              <div class="tab"><div class="tab-icon">○</div><div class="tab-label">我的</div></div>
+            </nav>
+          </div>
+        </article>
+      </div>
+
+      <div class="mockup-card">
+        <div class="theme-label">
+          <span>深色主题</span>
+          <span>深石墨软表面</span>
+        </div>
+        <article class="phone dark">
+          <div class="screen">
+            <div class="status">
+              <span>9:41</span>
+              <span class="signal"><span class="dot"></span><span class="dot"></span><span class="dot"></span> 82%</span>
+            </div>
+            <div class="content">
+              <header class="topbar">
+                <div class="brand">
+                  <div class="app-mark" aria-label="WindWalker 应用图标">
+                    <img src="../../assets/branding/app_icon_master.png" alt="">
+                  </div>
+                  <div class="brand-text">
+                    <strong>总览</strong>
+                    <small>WindWalker 控制台</small>
+                  </div>
+                </div>
+              </header>
+
+              <section class="hero-panel">
+                <div class="hero-top">
+                  <h2 class="hero-title">当前下载运行平稳<br>4 个下载器保持在线</h2>
+                  <div class="health-pill"><span class="dot"></span>健康</div>
+                </div>
+                <div class="speed-row">
+                  <div class="speed-main">
+                    <div class="metric-label">总下载速度</div>
+                    <div class="speed-value"><strong>12.8</strong><span>MB/s</span></div>
+                    <div class="spark"></div>
+                  </div>
+                  <div class="mini-stack">
+                    <div class="mini-metric">
+                      <div class="metric-label">活跃任务</div>
+                      <strong>18</strong>
+                    </div>
+                    <div class="mini-metric">
+                      <div class="metric-label">上传</div>
+                      <strong>860K</strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="quick-actions">
+                  <div class="quick-action"><b>＋</b><span>添加任务</span></div>
+                  <div class="quick-action"><b>▣</b><span>下载器</span></div>
+                  <div class="quick-action"><b>▦</b><span>查看任务</span></div>
+                </div>
+              </section>
+
+              <div class="section-head">
+                <h2>任务状态</h2>
+                <span class="section-kicker">共 126 个任务</span>
+              </div>
+              <section class="status-grid">
+                <div class="status-card"><div class="status-icon blue">↓</div><strong>8</strong><span>下载中</span></div>
+                <div class="status-card"><div class="status-icon amber">…</div><strong>5</strong><span>等待中</span></div>
+                <div class="status-card"><div class="status-icon slate">Ⅱ</div><strong>3</strong><span>已暂停</span></div>
+                <div class="status-card"><div class="status-icon teal">↑</div><strong>6</strong><span>做种中</span></div>
+                <div class="status-card"><div class="status-icon teal">✓</div><strong>101</strong><span>已完成</span></div>
+                <div class="status-card"><div class="status-icon red">!</div><strong>3</strong><span>错误</span></div>
+              </section>
+
+              <div class="section-head">
+                <h2>下载器分布</h2>
+                <span class="section-kicker">4 个在线</span>
+              </div>
+              <section class="card distribution">
+                <div class="dist-top">
+                  <div class="ring"><div class="ring-core">6</div></div>
+                  <div class="dist-copy">
+                    <strong>多协议下载器</strong>
+                    <p>Aria2、qBittorrent、Transmission 统一汇总，点击条目进入管理。</p>
+                  </div>
+                </div>
+                <div class="downloader-list">
+                  <div class="downloader-row"><div class="logo-dot blue">A2</div><div><div class="row-title">Home Aria2</div><div class="row-sub">8 任务 · 6.4 MB/s</div></div><div class="row-status">在线</div></div>
+                  <div class="downloader-row"><div class="logo-dot teal">QB</div><div><div class="row-title">NAS qBit</div><div class="row-sub">14 任务 · 4.1 MB/s</div></div><div class="row-status">在线</div></div>
+                </div>
+              </section>
+            </div>
+
+            <div class="fab">＋</div>
+            <nav class="bottom-tabs" aria-label="主导航">
+              <div class="tab active"><div class="tab-icon">▦</div><div class="tab-label">总览</div></div>
+              <div class="tab"><div class="tab-icon">▣</div><div class="tab-label">下载器</div></div>
+              <div class="tab"><div class="tab-icon">✓</div><div class="tab-label">任务</div></div>
+              <div class="tab"><div class="tab-icon">○</div><div class="tab-label">我的</div></div>
+            </nav>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="distribution-showcase">
+      <div class="showcase-title">
+        <h2>下载器分布 UI 细节</h2>
+        <p>补充展示总览页下半部分。这里用于承载下载器类型占比、在线状态、任务数量和实时速度，点击任一下载器条目仍进入对应下载器的任务管理。</p>
+      </div>
+
+      <div class="showcase-grid">
+        <div class="showcase-panel">
+          <section class="card distribution">
+            <div class="dist-top">
+              <div class="ring"><div class="ring-core">6</div></div>
+              <div class="dist-copy">
+                <strong>下载器分布</strong>
+                <p>按协议类型聚合展示，环图负责快速判断组成比例，列表负责进入具体下载器管理。</p>
+              </div>
+            </div>
+            <div class="dist-summary">
+              <div class="dist-summary-item"><span>Aria2</span><strong>3</strong></div>
+              <div class="dist-summary-item"><span>qBittorrent</span><strong>2</strong></div>
+              <div class="dist-summary-item"><span>Transmission</span><strong>1</strong></div>
+            </div>
+            <div class="downloader-list">
+              <div class="downloader-row">
+                <div class="logo-dot blue">A2</div>
+                <div>
+                  <div class="row-title">Home Aria2</div>
+                  <div class="row-sub">8 任务 · 6.4 MB/s · 6800</div>
+                </div>
+                <div class="row-status">在线</div>
+              </div>
+              <div class="downloader-row">
+                <div class="logo-dot teal">QB</div>
+                <div>
+                  <div class="row-title">NAS qBittorrent</div>
+                  <div class="row-sub">14 任务 · 4.1 MB/s · 8080</div>
+                </div>
+                <div class="row-status">在线</div>
+              </div>
+              <div class="downloader-row">
+                <div class="logo-dot amber">TR</div>
+                <div>
+                  <div class="row-title">Media Transmission</div>
+                  <div class="row-sub">5 任务 · 1.9 MB/s · 9091</div>
+                </div>
+                <div class="row-status">在线</div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="showcase-panel dark">
+          <section class="card distribution">
+            <div class="dist-top">
+              <div class="ring"><div class="ring-core">6</div></div>
+              <div class="dist-copy">
+                <strong>下载器分布</strong>
+                <p>深色版本保持同样信息密度，用更克制的高光和内层暗面维持层级，不让列表糊成一片。</p>
+              </div>
+            </div>
+            <div class="dist-summary">
+              <div class="dist-summary-item"><span>Aria2</span><strong>3</strong></div>
+              <div class="dist-summary-item"><span>qBittorrent</span><strong>2</strong></div>
+              <div class="dist-summary-item"><span>Transmission</span><strong>1</strong></div>
+            </div>
+            <div class="downloader-list">
+              <div class="downloader-row">
+                <div class="logo-dot blue">A2</div>
+                <div>
+                  <div class="row-title">Home Aria2</div>
+                  <div class="row-sub">8 任务 · 6.4 MB/s · 6800</div>
+                </div>
+                <div class="row-status">在线</div>
+              </div>
+              <div class="downloader-row">
+                <div class="logo-dot teal">QB</div>
+                <div>
+                  <div class="row-title">NAS qBittorrent</div>
+                  <div class="row-sub">14 任务 · 4.1 MB/s · 8080</div>
+                </div>
+                <div class="row-status">在线</div>
+              </div>
+              <div class="downloader-row">
+                <div class="logo-dot amber">TR</div>
+                <div>
+                  <div class="row-title">Media Transmission</div>
+                  <div class="row-sub">5 任务 · 1.9 MB/s · 9091</div>
+                </div>
+                <div class="row-status">在线</div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

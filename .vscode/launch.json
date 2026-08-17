@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter (Android)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [],
+            "flutterMode": "debug",
+            "deviceId": "7fe14f82"
+        },
+        {
+            "name": "Flutter (Android Profile)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [],
+            "flutterMode": "profile",
+            "deviceId": "7fe14f82"
+        },
+        {
+            "name": "Flutter (Android Release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [],
+            "flutterMode": "release",
+            "deviceId": "7fe14f82"
+        }
+    ]
+} 

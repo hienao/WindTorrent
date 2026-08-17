@@ -1,0 +1,36 @@
+{
+  "peers": {
+    "203.0.113.11:1057": {
+      "dl_speed": 8256,
+      "downloaded": 11023360,
+      "files": ""
+    },
+    "198.51.100.21:7682": {
+      "relevance": 0.7725189795499624
+    },
+    "198.51.100.22:31876": {
+      "client": "",
+      "connection": "μTP",
+      "dl_speed": 0,
+      "downloaded": 0,
+      "files": "",
+      "flags": "H P",
+      "flags_desc": "H = 来自 DHT 的下载者\nP = μTP",
+      "ip": "198.51.100.22",
+      "peer_id_client": "",
+      "port": 31876,
+      "progress": 0,
+      "relevance": 0,
+      "up_speed": 0,
+      "uploaded": 0
+    },
+    "192.0.2.31:38095": {
+      "dl_speed": 14869,
+      "downloaded": 2259783
+    }
+  },
+  "peers_removed": [
+    "192.0.2.32:20014"
+  ],
+  "rid": 7
+}

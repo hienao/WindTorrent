@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WindWalker 启动页 Neumorphism UI 稿</title>
+  <style>
+    :root{--bg:#e9eef5;--surface:#f1f4f8;--inset:#e2e8f1;--text:#142033;--muted:#68768a;--hi:rgba(255,255,255,.92);--sh:rgba(146,161,181,.42);--dbg:#111827;--ds:#1a2332;--di:#0d1522;--dt:#eef4fb;--dm:#91a1b8;--dhi:rgba(255,255,255,.065);--dsh:rgba(0,0,0,.46);--blue:#2a7fff;--blue2:#68a7ff;--green:#20b99f;--font:ui-sans-serif,-apple-system,BlinkMacSystemFont,"SF Pro Text","Noto Sans SC","Microsoft YaHei",sans-serif}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:var(--font);color:var(--text);letter-spacing:0;background:radial-gradient(circle at 20% 10%,rgba(255,255,255,.72),transparent 27%),linear-gradient(135deg,#d9e2ee,#eef2f7 52%,#cbd7e6)}
+    .stage{width:min(1120px,100%);margin:0 auto;padding:40px 22px 64px}.title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}h1{margin:0;color:#132136;font-size:clamp(28px,4vw,44px);line-height:1.08}.title-row p{max-width:520px;margin:0;color:#58687c;line-height:1.65}
+    .mockups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px}.mockup-card{display:grid;justify-items:center;gap:14px}.theme-label{width:min(390px,100%);display:flex;justify-content:space-between;color:#44546b;font-size:14px;font-weight:820}.theme-label span:last-child{color:#718096;font-size:12px;font-weight:720}
+    .phone{position:relative;width:min(390px,100%);aspect-ratio:390/844;overflow:hidden;border-radius:42px;background:var(--bg);box-shadow:-18px -18px 36px rgba(255,255,255,.72),22px 26px 48px rgba(107,124,148,.36)}.phone.dark{background:var(--dbg);box-shadow:-16px -16px 34px rgba(255,255,255,.045),26px 30px 54px rgba(0,0,0,.55)}
+    .screen{position:absolute;inset:0;display:flex;flex-direction:column;padding:20px 18px 18px}.status{display:flex;justify-content:space-between;height:22px;padding:0 8px;font-size:12px;font-weight:780;color:var(--text)}.dark .status{color:var(--dt)}
+    .splash{position:relative;flex:1;display:grid;grid-template-rows:1fr auto auto auto 1.25fr;justify-items:center;align-items:center;padding:28px 18px;overflow:hidden}.splash:before{content:"";position:absolute;left:24px;right:24px;bottom:118px;height:84px;border-radius:50%;border-top:3px solid rgba(42,127,255,.58);filter:drop-shadow(0 0 12px rgba(42,127,255,.22));transform:skewX(-15deg)}.dark .splash:before{border-color:rgba(104,167,255,.72)}
+    .brand-mark{position:relative;display:grid;place-items:center;width:142px;height:142px;border-radius:38px;background:var(--surface);box-shadow:-10px -10px 22px var(--hi),12px 14px 28px var(--sh);grid-row:2;padding:24px}.dark .brand-mark{background:var(--ds);box-shadow:-8px -8px 20px var(--dhi),13px 15px 30px var(--dsh)}.brand-mark:before{content:"";position:absolute;inset:21px;border-radius:28px;background:linear-gradient(145deg,var(--blue),var(--blue2));box-shadow:8px 10px 20px rgba(42,127,255,.28)}.brand-mark b{position:relative;color:#fff;font-size:56px;line-height:1;font-weight:950}
+    .app-name{grid-row:3;margin-top:30px;text-align:center}.app-name strong{display:block;color:var(--text);font-size:30px;line-height:1;font-weight:850}.app-name span{display:block;margin-top:10px;color:var(--muted);font-size:16px;font-weight:720}.dark .app-name strong{color:var(--dt)}.dark .app-name span{color:var(--dm)}
+    .loading{grid-row:4;width:154px;margin-top:28px}.track{height:6px;border-radius:999px;background:var(--inset);box-shadow:inset 4px 4px 9px rgba(146,161,181,.24),inset -4px -4px 9px rgba(255,255,255,.78);overflow:hidden}.track span{display:block;width:68%;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--green))}.dark .track{background:var(--di);box-shadow:inset 4px 4px 10px rgba(0,0,0,.42),inset -4px -4px 10px rgba(255,255,255,.032)}
+    .status-card{grid-row:5;align-self:start;margin-top:42px;width:100%;border-radius:26px;padding:16px;text-align:center;background:var(--surface);box-shadow:-7px -7px 16px var(--hi),9px 10px 20px var(--sh)}.dark .status-card{background:var(--ds);box-shadow:-7px -7px 16px var(--dhi),9px 10px 22px var(--dsh)}.status-card b{display:block;color:var(--text);font-size:15px}.status-card span{display:block;margin-top:7px;color:var(--muted);font-size:12px;font-weight:720}.dark .status-card b{color:var(--dt)}.dark .status-card span{color:var(--dm)}
+    .notes{margin-top:28px;padding:20px;border-radius:28px;color:#44546b;background:rgba(241,244,248,.72);box-shadow:-8px -8px 18px rgba(255,255,255,.72),10px 12px 22px rgba(146,161,181,.28);line-height:1.72}.notes h2{margin-top:0}.notes ul{margin:0;padding-left:20px}
+    @media(max-width:900px){.title-row{display:block}.title-row p{margin-top:12px}.mockups{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <div class="title-row"><div><h1>启动页<br>Neumorphism UI 稿</h1></div><p>启动页保持轻量首帧：品牌标识、御风副标题、柔和进度条和初始化状态卡。重效果在视觉上只作为底部风线点缀。</p></div>
+    <section class="mockups">
+      <article class="mockup-card"><div class="theme-label"><span>浅色主题</span><span>初始化中</span></div><div class="phone"><div class="screen"><div class="status"><span>9:41</span><span>● ● ●</span></div><div class="splash"><div class="brand-mark"><b>W</b></div><div class="app-name"><strong>WindWalker</strong><span>御风</span></div><div class="loading"><div class="track"><span></span></div></div><div class="status-card"><b>正在准备下载器环境</b><span>读取配置与本地缓存</span></div></div></div></div></article>
+      <article class="mockup-card"><div class="theme-label"><span>深色主题</span><span>即将进入首页</span></div><div class="phone dark"><div class="screen"><div class="status"><span>9:41</span><span>● ● ●</span></div><div class="splash"><div class="brand-mark"><b>W</b></div><div class="app-name"><strong>WindWalker</strong><span>御风</span></div><div class="loading"><div class="track"><span style="width:86%"></span></div></div><div class="status-card"><b>正在进入首页</b><span>连接状态将在后台刷新</span></div></div></div></div></article>
+    </section>
+    <section class="notes"><h2>设计说明</h2><ul><li>保留现有启动页的品牌、御风副标题和短时自动跳转语义。</li><li>App 标识使用外凸软卡，进度条使用内凹轨道。</li><li>深色主题独立调整高光，避免大面积蓝光过亮。</li></ul></section>
+  </main>
+</body>
+</html>

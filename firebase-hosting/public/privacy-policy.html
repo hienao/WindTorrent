@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>隐私政策 - WindTorrent</title>
+  <meta name="description" content="WindTorrent 隐私政策" data-i18n="meta_desc">
+  <style>
+    :root {
+      --color-primary: #6366f1;
+      --color-primary-dark: #312e81;
+      --color-bg: #f5f3ff;
+      --color-card: #ffffff;
+      --color-text: #1e1b4b;
+      --color-secondary: #5f6472;
+      --color-muted: #8b90a0;
+      --color-border: #e0e7ff;
+      --shadow: 0 16px 48px rgba(49, 46, 129, 0.10);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+
+    .top-bar {
+      align-items: center;
+      backdrop-filter: blur(16px);
+      background: rgba(245, 243, 255, 0.9);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .brand {
+      color: var(--color-primary-dark);
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .lang-toggle {
+      background: #ede9fe;
+      border: 0;
+      border-radius: 10px;
+      color: var(--color-secondary);
+      cursor: pointer;
+      display: flex;
+      font-size: 13px;
+      gap: 4px;
+      padding: 4px;
+    }
+
+    .lang-toggle span {
+      border-radius: 7px;
+      padding: 4px 10px;
+    }
+
+    .lang-toggle .active {
+      background: #fff;
+      color: var(--color-primary);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .container {
+      margin: 40px auto;
+      max-width: 860px;
+      padding: 0 24px;
+    }
+
+    .privacy-content {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 48px 44px;
+    }
+
+    h1 {
+      color: var(--color-primary-dark);
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      color: var(--color-text);
+      font-size: 1.25rem;
+      margin: 32px 0 10px;
+    }
+
+    p,
+    li {
+      color: var(--color-secondary);
+      font-size: 0.96rem;
+    }
+
+    p {
+      margin-bottom: 12px;
+    }
+
+    ul {
+      margin: 0 0 14px 24px;
+    }
+
+    li {
+      margin-bottom: 7px;
+    }
+
+    a {
+      color: var(--color-primary);
+    }
+
+    .updated {
+      color: var(--color-muted);
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    .notice {
+      background: #f5f3ff;
+      border-left: 4px solid var(--color-primary);
+      border-radius: 8px;
+      margin: 20px 0;
+      padding: 14px 16px;
+    }
+
+    footer {
+      color: var(--color-muted);
+      font-size: 0.85rem;
+      padding: 0 24px 36px;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 24px auto;
+        padding: 0 14px;
+      }
+
+      .privacy-content {
+        padding: 32px 22px;
+      }
+
+      h1 {
+        font-size: 1.65rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-bar">
+    <span class="brand">WindTorrent</span>
+    <button class="lang-toggle" type="button" onclick="toggleLang()" aria-label="Switch language">
+      <span id="langZh" class="active">中</span>
+      <span id="langEn">EN</span>
+    </button>
+  </header>
+
+  <main class="container">
+    <article class="privacy-content">
+      <h1 data-i18n="title">隐私政策</h1>
+      <p class="updated" data-i18n="updated">最后更新：2026年7月24日</p>
+
+      <p data-i18n="intro">WindTorrent（包名：com.hienao.windtorrent）是一款用于管理用户自行配置的 Aria2、qBittorrent 和 Transmission 服务的远程下载管理工具。本政策说明 WindTorrent 如何处理与本地配置、下载器连接、WebDAV 备份和使用分析有关的数据。</p>
+
+      <div class="notice">
+        <p data-i18n="no_account"><strong>无需账号：</strong>WindTorrent 不提供登录或注册功能，不会收集您的姓名、邮箱、手机号或社交账号资料。</p>
+      </div>
+
+      <h2 data-i18n="local_title">1. 保存在设备本地的数据</h2>
+      <p data-i18n="local_desc">为了提供核心功能，WindTorrent 会在您的设备上保存：</p>
+      <ul>
+        <li data-i18n="local_downloader"><strong>下载器配置：</strong>下载器类型、名称、服务器地址、端口及其他连接设置。</li>
+        <li data-i18n="local_credentials"><strong>下载器凭据：</strong>用户名、密码、RPC 密钥或访问令牌，用于连接您指定的下载器服务。</li>
+        <li data-i18n="local_webdav"><strong>WebDAV 配置：</strong>服务器地址、远程目录、用户名、密码或应用专用令牌。</li>
+        <li data-i18n="local_preferences"><strong>应用设置：</strong>语言、主题、更新提示和应用内评价提示记录等偏好。</li>
+      </ul>
+      <p data-i18n="local_control">这些数据用于在您的设备上提供相应功能。我们不会将下载器地址、下载器凭据或 WebDAV 凭据上传到我们的服务器。</p>
+
+      <h2 data-i18n="connection_title">2. 下载器连接</h2>
+      <p data-i18n="connection_desc">当您添加、连接或管理下载任务时，WindTorrent 会直接向您配置的 Aria2、qBittorrent 或 Transmission 服务发送请求。您输入的下载 URL、磁力链接或选择的种子文件内容会发送给该下载器；应用也会展示下载器返回的任务、文件、速度、Tracker 和 Peer 等信息。请求目的地和传输安全性取决于您配置的服务器地址与协议。</p>
+      <p data-i18n="connection_notice">WindTorrent 本身不提供、不托管且不存储任何下载内容。相关任务和文件保存在您的下载器服务器或设备上。</p>
+
+      <h2 data-i18n="webdav_title">3. WebDAV 备份与恢复</h2>
+      <p data-i18n="webdav_desc">使用 WebDAV 备份功能时，WindTorrent 会把下载器配置备份到您指定的 WebDAV 服务器。备份内容可能包含下载器地址、用户名、密码、RPC 密钥或访问令牌。恢复时，应用会从该 WebDAV 服务器下载备份并写回本地。</p>
+      <p data-i18n="webdav_control">WebDAV 服务由您自行选择和控制，其数据处理、保存期限和安全措施受该服务提供商的条款和隐私政策约束。建议使用 HTTPS 和应用专用密码，并妥善保护 WebDAV 账号。</p>
+
+      <h2 data-i18n="analytics_title">4. Firebase Analytics</h2>
+      <p data-i18n="analytics_desc">WindTorrent 使用 Firebase Analytics 了解应用功能的使用情况和稳定性。可能处理的信息包括：</p>
+      <ul>
+        <li data-i18n="analytics_events"><strong>应用交互事件：</strong>应用启动、页面访问、下载器连接结果、任务操作结果、备份或恢复结果、设置变更和更新提示交互。</li>
+        <li data-i18n="analytics_env"><strong>应用与客户端环境：</strong>应用版本、构建号、平台、操作系统版本、语言地区、网络类型，以及 Android API level 和 Android 版本。</li>
+        <li data-i18n="analytics_sdk"><strong>Firebase 自动收集的信息：</strong>Firebase SDK 可能依据设备和系统设置处理应用实例标识、设备信息、广告 ID、Android Privacy Sandbox 标识、IP 地址及由其推断的大致位置，以及诊断或归因相关信息。</li>
+      </ul>
+      <p data-i18n="analytics_excluded">WindTorrent 自行定义的分析事件不包含服务器地址、端口、路径、下载 URL、磁力链接、种子文件内容、下载任务名、文件名、邮箱、手机号、用户名、密码、密钥或令牌。我们不会使用分析数据识别您的下载内容。</p>
+      <p data-i18n="ads_desc">WindTorrent 不展示广告，也不会使用广告 ID 投放个性化广告。Firebase Analytics 可能将相关标识用于分析、归因、反滥用或服务质量改进。</p>
+
+      <h2 data-i18n="third_title">5. 第三方服务</h2>
+      <p data-i18n="third_desc">WindTorrent 使用以下第三方服务：</p>
+      <ul>
+        <li data-i18n="third_firebase"><strong>Firebase Analytics：</strong>用于应用使用分析和稳定性改进。</li>
+        <li data-i18n="third_review"><strong>Google Play 应用内评价：</strong>用于请求用户在 Google Play 中评价应用。</li>
+        <li data-i18n="third_update"><strong>Google Play 应用内更新：</strong>用于检查并提示可用的应用更新。</li>
+      </ul>
+      <p data-i18n="google_policy">Google 会根据其隐私政策处理相关信息：<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">https://policies.google.com/privacy</a></p>
+
+      <h2 data-i18n="sharing_title">6. 数据共享和出售</h2>
+      <p data-i18n="sharing_desc">除向您指定的下载器、WebDAV 服务以及上述为实现功能所必需的第三方服务传输数据外，我们不会出售、出租或向广告商提供您的个人信息、下载器配置、凭据或下载内容。</p>
+
+      <h2 data-i18n="retention_title">7. 数据保存与删除</h2>
+      <ul>
+        <li data-i18n="delete_local"><strong>本地数据：</strong>您可以在应用中删除下载器配置或覆盖 WebDAV 配置。若要一并删除本地保存的 WebDAV 配置及其他应用数据，可以通过系统设置清除 WindTorrent 的应用数据，或卸载应用。</li>
+        <li data-i18n="delete_webdav"><strong>WebDAV 备份：</strong>您可以在应用中删除备份版本，也可以直接登录自己的 WebDAV 服务进行管理。</li>
+        <li data-i18n="delete_analytics"><strong>分析数据：</strong>Firebase Analytics 数据的保存和删除遵循 Google/Firebase 的政策与配置。</li>
+      </ul>
+
+      <h2 data-i18n="security_title">8. 数据安全</h2>
+      <p data-i18n="security_desc">我们采取合理措施减少敏感信息进入分析系统。由于您连接的下载器和 WebDAV 服务由您自行管理，请使用可信服务器、HTTPS、安全密码和适当的访问控制。任何互联网传输或本地存储方式都无法保证绝对安全。</p>
+
+      <h2 data-i18n="children_title">9. 儿童隐私</h2>
+      <p data-i18n="children_desc">WindTorrent 不面向 13 岁以下儿童，也不会有意收集儿童个人信息。如果您认为我们无意中处理了儿童个人信息，请联系我们。</p>
+
+      <h2 data-i18n="changes_title">10. 政策更新</h2>
+      <p data-i18n="changes_desc">我们可能在功能或数据处理方式发生变化时更新本政策。更新后的版本会在本页面公布，并标明最后更新日期。</p>
+
+      <h2 data-i18n="contact_title">11. 联系我们</h2>
+      <p data-i18n="contact_desc">如果您对本隐私政策有任何疑问，请发送邮件至：<a href="mailto:shiwentao666@gmail.com">shiwentao666@gmail.com</a></p>
+    </article>
+  </main>
+
+  <footer data-i18n="copyright">© 2026 WindTorrent. All rights reserved.</footer>
+
+  <script>
+    const I18N = {
+      zh: {
+        lang: "zh-CN",
+        pageTitle: "隐私政策 - WindTorrent",
+        meta_desc: "WindTorrent 隐私政策",
+        title: "隐私政策",
+        updated: "最后更新：2026年7月24日",
+        intro: "WindTorrent（包名：com.hienao.windtorrent）是一款用于管理用户自行配置的 Aria2、qBittorrent 和 Transmission 服务的远程下载管理工具。本政策说明 WindTorrent 如何处理与本地配置、下载器连接、WebDAV 备份和使用分析有关的数据。",
+        no_account: "<strong>无需账号：</strong>WindTorrent 不提供登录或注册功能，不会收集您的姓名、邮箱、手机号或社交账号资料。",
+        local_title: "1. 保存在设备本地的数据",
+        local_desc: "为了提供核心功能，WindTorrent 会在您的设备上保存：",
+        local_downloader: "<strong>下载器配置：</strong>下载器类型、名称、服务器地址、端口及其他连接设置。",
+        local_credentials: "<strong>下载器凭据：</strong>用户名、密码、RPC 密钥或访问令牌，用于连接您指定的下载器服务。",
+        local_webdav: "<strong>WebDAV 配置：</strong>服务器地址、远程目录、用户名、密码或应用专用令牌。",
+        local_preferences: "<strong>应用设置：</strong>语言、主题、更新提示和应用内评价提示记录等偏好。",
+        local_control: "这些数据用于在您的设备上提供相应功能。我们不会将下载器地址、下载器凭据或 WebDAV 凭据上传到我们的服务器。",
+        connection_title: "2. 下载器连接",
+        connection_desc: "当您添加、连接或管理下载任务时，WindTorrent 会直接向您配置的 Aria2、qBittorrent 或 Transmission 服务发送请求。您输入的下载 URL、磁力链接或选择的种子文件内容会发送给该下载器；应用也会展示下载器返回的任务、文件、速度、Tracker 和 Peer 等信息。请求目的地和传输安全性取决于您配置的服务器地址与协议。",
+        connection_notice: "WindTorrent 本身不提供、不托管且不存储任何下载内容。相关任务和文件保存在您的下载器服务器或设备上。",
+        webdav_title: "3. WebDAV 备份与恢复",
+        webdav_desc: "使用 WebDAV 备份功能时，WindTorrent 会把下载器配置备份到您指定的 WebDAV 服务器。备份内容可能包含下载器地址、用户名、密码、RPC 密钥或访问令牌。恢复时，应用会从该 WebDAV 服务器下载备份并写回本地。",
+        webdav_control: "WebDAV 服务由您自行选择和控制，其数据处理、保存期限和安全措施受该服务提供商的条款和隐私政策约束。建议使用 HTTPS 和应用专用密码，并妥善保护 WebDAV 账号。",
+        analytics_title: "4. Firebase Analytics",
+        analytics_desc: "WindTorrent 使用 Firebase Analytics 了解应用功能的使用情况和稳定性。可能处理的信息包括：",
+        analytics_events: "<strong>应用交互事件：</strong>应用启动、页面访问、下载器连接结果、任务操作结果、备份或恢复结果、设置变更和更新提示交互。",
+        analytics_env: "<strong>应用与客户端环境：</strong>应用版本、构建号、平台、操作系统版本、语言地区、网络类型，以及 Android API level 和 Android 版本。",
+        analytics_sdk: "<strong>Firebase 自动收集的信息：</strong>Firebase SDK 可能依据设备和系统设置处理应用实例标识、设备信息、广告 ID、Android Privacy Sandbox 标识、IP 地址及由其推断的大致位置，以及诊断或归因相关信息。",
+        analytics_excluded: "WindTorrent 自行定义的分析事件不包含服务器地址、端口、路径、下载 URL、磁力链接、种子文件内容、下载任务名、文件名、邮箱、手机号、用户名、密码、密钥或令牌。我们不会使用分析数据识别您的下载内容。",
+        ads_desc: "WindTorrent 不展示广告，也不会使用广告 ID 投放个性化广告。Firebase Analytics 可能将相关标识用于分析、归因、反滥用或服务质量改进。",
+        third_title: "5. 第三方服务",
+        third_desc: "WindTorrent 使用以下第三方服务：",
+        third_firebase: "<strong>Firebase Analytics：</strong>用于应用使用分析和稳定性改进。",
+        third_review: "<strong>Google Play 应用内评价：</strong>用于请求用户在 Google Play 中评价应用。",
+        third_update: "<strong>Google Play 应用内更新：</strong>用于检查并提示可用的应用更新。",
+        google_policy: "Google 会根据其隐私政策处理相关信息：<a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\">https://policies.google.com/privacy</a>",
+        sharing_title: "6. 数据共享和出售",
+        sharing_desc: "除向您指定的下载器、WebDAV 服务以及上述为实现功能所必需的第三方服务传输数据外，我们不会出售、出租或向广告商提供您的个人信息、下载器配置、凭据或下载内容。",
+        retention_title: "7. 数据保存与删除",
+        delete_local: "<strong>本地数据：</strong>您可以在应用中删除下载器配置或覆盖 WebDAV 配置。若要一并删除本地保存的 WebDAV 配置及其他应用数据，可以通过系统设置清除 WindTorrent 的应用数据，或卸载应用。",
+        delete_webdav: "<strong>WebDAV 备份：</strong>您可以在应用中删除备份版本，也可以直接登录自己的 WebDAV 服务进行管理。",
+        delete_analytics: "<strong>分析数据：</strong>Firebase Analytics 数据的保存和删除遵循 Google/Firebase 的政策与配置。",
+        security_title: "8. 数据安全",
+        security_desc: "我们采取合理措施减少敏感信息进入分析系统。由于您连接的下载器和 WebDAV 服务由您自行管理，请使用可信服务器、HTTPS、安全密码和适当的访问控制。任何互联网传输或本地存储方式都无法保证绝对安全。",
+        children_title: "9. 儿童隐私",
+        children_desc: "WindTorrent 不面向 13 岁以下儿童，也不会有意收集儿童个人信息。如果您认为我们无意中处理了儿童个人信息，请联系我们。",
+        changes_title: "10. 政策更新",
+        changes_desc: "我们可能在功能或数据处理方式发生变化时更新本政策。更新后的版本会在本页面公布，并标明最后更新日期。",
+        contact_title: "11. 联系我们",
+        contact_desc: "如果您对本隐私政策有任何疑问，请发送邮件至：<a href=\"mailto:shiwentao666@gmail.com\">shiwentao666@gmail.com</a>",
+        copyright: "© 2026 WindTorrent. All rights reserved."
+      },
+      en: {
+        lang: "en",
+        pageTitle: "Privacy Policy - WindTorrent",
+        meta_desc: "WindTorrent Privacy Policy",
+        title: "Privacy Policy",
+        updated: "Last updated: July 24, 2026",
+        intro: "WindTorrent (package name: com.hienao.windtorrent) is a remote download manager for user-configured Aria2, qBittorrent, and Transmission services. This policy explains how WindTorrent handles data related to local configuration, downloader connections, WebDAV backup, and usage analytics.",
+        no_account: "<strong>No account required:</strong> WindTorrent does not provide sign-in or registration and does not collect your name, email address, phone number, or social account profile.",
+        local_title: "1. Data stored locally on your device",
+        local_desc: "To provide its core features, WindTorrent stores the following on your device:",
+        local_downloader: "<strong>Downloader configuration:</strong> downloader type, name, server address, port, and other connection settings.",
+        local_credentials: "<strong>Downloader credentials:</strong> usernames, passwords, RPC secrets, or access tokens used to connect to services you specify.",
+        local_webdav: "<strong>WebDAV configuration:</strong> server address, remote directory, username, password, or app-specific token.",
+        local_preferences: "<strong>App settings:</strong> language, theme, update prompts, in-app review prompt records, and similar preferences.",
+        local_control: "This data is used to provide the corresponding features on your device. We do not upload downloader addresses, downloader credentials, or WebDAV credentials to our servers.",
+        connection_title: "2. Downloader connections",
+        connection_desc: "When you add, connect to, or manage download tasks, WindTorrent sends requests directly to the Aria2, qBittorrent, or Transmission service you configured. Download URLs, magnet links, or torrent file contents you provide are sent to that downloader. The app also displays task, file, speed, tracker, and peer information returned by the service. The destination and transport security depend on the server address and protocol you configure.",
+        connection_notice: "WindTorrent does not provide, host, or store downloaded content. Related tasks and files remain on your downloader server or device.",
+        webdav_title: "3. WebDAV backup and restore",
+        webdav_desc: "When you use WebDAV backup, WindTorrent uploads downloader configuration to the WebDAV server you specify. A backup may contain downloader addresses, usernames, passwords, RPC secrets, or access tokens. During restore, the app downloads the backup from that WebDAV server and writes it to local storage.",
+        webdav_control: "You choose and control the WebDAV service. Its data handling, retention, and security are governed by that provider's terms and privacy policy. We recommend HTTPS, app-specific passwords, and appropriate protection for your WebDAV account.",
+        analytics_title: "4. Firebase Analytics",
+        analytics_desc: "WindTorrent uses Firebase Analytics to understand feature usage and app stability. Information that may be processed includes:",
+        analytics_events: "<strong>App interaction events:</strong> app launches, screen views, downloader connection results, task operation results, backup or restore results, setting changes, and update prompt interactions.",
+        analytics_env: "<strong>App and client environment:</strong> app version, build number, platform, operating system version, locale, network type, Android API level, and Android release.",
+        analytics_sdk: "<strong>Information collected automatically by Firebase:</strong> depending on device and system settings, the Firebase SDK may process app-instance identifiers, device information, Advertising ID, Android Privacy Sandbox identifiers, IP addresses and approximate location inferred from them, and diagnostic or attribution information.",
+        analytics_excluded: "WindTorrent's app-defined analytics events do not include server addresses, ports, paths, download URLs, magnet links, torrent file contents, task names, file names, email addresses, phone numbers, usernames, passwords, secrets, or tokens. We do not use analytics data to identify your downloaded content.",
+        ads_desc: "WindTorrent does not display ads or use the Advertising ID for personalized advertising. Firebase Analytics may use related identifiers for analytics, attribution, abuse prevention, or service-quality improvements.",
+        third_title: "5. Third-party services",
+        third_desc: "WindTorrent uses the following third-party services:",
+        third_firebase: "<strong>Firebase Analytics:</strong> for usage analytics and stability improvements.",
+        third_review: "<strong>Google Play In-App Review:</strong> to request a review in Google Play.",
+        third_update: "<strong>Google Play In-App Updates:</strong> to check for and notify you about available app updates.",
+        google_policy: "Google processes related information under its privacy policy: <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\">https://policies.google.com/privacy</a>",
+        sharing_title: "6. Data sharing and sale",
+        sharing_desc: "Except for transmissions to the downloader and WebDAV services you specify and the third-party services required for the features described above, we do not sell, rent, or provide advertisers with your personal information, downloader configuration, credentials, or downloaded content.",
+        retention_title: "7. Data retention and deletion",
+        delete_local: "<strong>Local data:</strong> You can delete downloader configuration or overwrite WebDAV configuration in the app. To remove the locally stored WebDAV configuration together with other app data, clear WindTorrent app data in system settings or uninstall the app.",
+        delete_webdav: "<strong>WebDAV backups:</strong> You can delete backup versions in the app or manage them directly through your WebDAV service.",
+        delete_analytics: "<strong>Analytics data:</strong> Firebase Analytics data retention and deletion follow Google/Firebase policies and configuration.",
+        security_title: "8. Data security",
+        security_desc: "We take reasonable measures to reduce sensitive information entering analytics systems. Because you manage the downloader and WebDAV services you connect to, use trusted servers, HTTPS, secure passwords, and appropriate access controls. No internet transmission or local storage method can be guaranteed absolutely secure.",
+        children_title: "9. Children's privacy",
+        children_desc: "WindTorrent is not directed to children under 13 and does not knowingly collect children's personal information. Contact us if you believe we have inadvertently processed such information.",
+        changes_title: "10. Changes to this policy",
+        changes_desc: "We may update this policy when features or data practices change. The updated version will be published on this page with a revised last-updated date.",
+        contact_title: "11. Contact us",
+        contact_desc: "If you have questions about this Privacy Policy, email us at: <a href=\"mailto:shiwentao666@gmail.com\">shiwentao666@gmail.com</a>",
+        copyright: "© 2026 WindTorrent. All rights reserved."
+      }
+    };
+
+    let currentLang = localStorage.getItem("windtorrent_policy_lang") === "en" ? "en" : "zh";
+
+    function applyLang() {
+      const messages = I18N[currentLang];
+      document.documentElement.lang = messages.lang;
+      document.title = messages.pageTitle;
+      document.querySelector('meta[name="description"]').content = messages.meta_desc;
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        const value = messages[element.dataset.i18n];
+        if (value !== undefined) {
+          element.innerHTML = value;
+        }
+      });
+      document.getElementById("langZh").classList.toggle("active", currentLang === "zh");
+      document.getElementById("langEn").classList.toggle("active", currentLang === "en");
+    }
+
+    function toggleLang() {
+      currentLang = currentLang === "zh" ? "en" : "zh";
+      localStorage.setItem("windtorrent_policy_lang", currentLang);
+      applyLang();
+    }
+
+    applyLang();
+  </script>
+</body>
+</html>

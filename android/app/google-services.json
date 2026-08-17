@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "500530883141",
+    "project_id": "windtorrent-hienao",
+    "storage_bucket": "windtorrent-hienao.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:500530883141:android:63bb08b88ddbf80193d12c",
+        "android_client_info": {
+          "package_name": "com.hienao.windtorrent"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNU2AndK-b9zknuURz_O5QPFcw4Uevrw4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

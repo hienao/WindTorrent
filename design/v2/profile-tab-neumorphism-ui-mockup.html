@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WindWalker 我的 Tab Neumorphism UI 稿</title>
+  <style>
+    :root {
+      --light-bg: #e9eef5;
+      --light-surface: #f1f4f8;
+      --light-surface-2: #e2e8f1;
+      --light-text: #142033;
+      --light-muted: #68768a;
+      --light-highlight: rgba(255, 255, 255, 0.92);
+      --light-shadow: rgba(146, 161, 181, 0.42);
+      --dark-bg: #111827;
+      --dark-surface: #1a2332;
+      --dark-surface-2: #0d1522;
+      --dark-text: #eef4fb;
+      --dark-muted: #91a1b8;
+      --dark-highlight: rgba(255, 255, 255, 0.065);
+      --dark-shadow: rgba(0, 0, 0, 0.46);
+      --blue: #2a7fff;
+      --blue-2: #68a7ff;
+      --green: #20b99f;
+      --amber: #eea73b;
+      --red: #ee5a67;
+      --slate: #8b98ab;
+      --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--light-text);
+      font-family: var(--font);
+      letter-spacing: 0;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.72), transparent 27%),
+        linear-gradient(135deg, #d9e2ee, #eef2f7 52%, #cbd7e6);
+    }
+
+    .stage {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 40px 22px 64px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #132136;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.08;
+    }
+
+    .title-row p {
+      max-width: 520px;
+      margin: 0;
+      color: #58687c;
+      line-height: 1.65;
+    }
+
+    .mockups {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 30px;
+      align-items: start;
+    }
+
+    .mockup-card {
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+    }
+
+    .theme-label {
+      width: min(390px, 100%);
+      display: flex;
+      justify-content: space-between;
+      color: #44546b;
+      font-size: 14px;
+      font-weight: 820;
+    }
+
+    .theme-label span:last-child {
+      color: #718096;
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .phone {
+      position: relative;
+      width: min(390px, 100%);
+      aspect-ratio: 390 / 844;
+      overflow: hidden;
+      border-radius: 42px;
+      background: var(--light-bg);
+      box-shadow:
+        -18px -18px 36px rgba(255, 255, 255, 0.72),
+        22px 26px 48px rgba(107, 124, 148, 0.36);
+    }
+
+    .phone.dark {
+      background: var(--dark-bg);
+      box-shadow:
+        -16px -16px 34px rgba(255, 255, 255, 0.045),
+        26px 30px 54px rgba(0, 0, 0, 0.55);
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 18px 14px;
+      gap: 14px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 22px;
+      padding: 0 8px;
+      color: var(--light-text);
+      font-size: 12px;
+      font-weight: 780;
+    }
+
+    .dark .status { color: var(--dark-text); }
+
+    .content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+      padding-bottom: 84px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .page-title {
+      min-width: 0;
+    }
+
+    .page-title strong {
+      display: block;
+      color: var(--light-text);
+      font-size: 24px;
+      line-height: 1.12;
+      white-space: nowrap;
+    }
+
+    .page-title small {
+      display: block;
+      margin-top: 5px;
+      overflow: hidden;
+      color: var(--light-muted);
+      font-size: 13px;
+      font-weight: 720;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dark .page-title strong { color: var(--dark-text); }
+    .dark .page-title small { color: var(--dark-muted); }
+
+    .soft-pill,
+    .card,
+    .profile-card,
+    .bottom-tabs {
+      background: var(--light-surface);
+      box-shadow:
+        -7px -7px 16px var(--light-highlight),
+        9px 10px 20px var(--light-shadow);
+    }
+
+    .dark .soft-pill,
+    .dark .card,
+    .dark .profile-card,
+    .dark .bottom-tabs {
+      background: var(--dark-surface);
+      box-shadow:
+        -7px -7px 16px var(--dark-highlight),
+        9px 10px 22px var(--dark-shadow);
+    }
+
+    .soft-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      border-radius: 999px;
+      padding: 0 13px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 880;
+      white-space: nowrap;
+    }
+
+    .dark .soft-pill { color: var(--blue-2); }
+
+    .profile-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 18px;
+      min-height: 184px;
+    }
+
+    .profile-card::before {
+      content: "";
+      position: absolute;
+      inset: -48px -54px auto auto;
+      width: 150px;
+      height: 150px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(42, 127, 255, 0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    .profile-head {
+      position: relative;
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .avatar {
+      display: grid;
+      place-items: center;
+      width: 68px;
+      height: 68px;
+      border-radius: 24px;
+      color: #fff;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.24), transparent),
+        linear-gradient(145deg, var(--blue), #68a7ff);
+      box-shadow:
+        -5px -5px 12px rgba(255, 255, 255, 0.62),
+        8px 9px 17px rgba(42, 127, 255, 0.30);
+      font-size: 29px;
+      font-weight: 950;
+    }
+
+    .dark .avatar {
+      box-shadow:
+        -5px -5px 12px rgba(255, 255, 255, 0.045),
+        8px 9px 18px rgba(0, 0, 0, 0.38);
+    }
+
+    .profile-copy {
+      min-width: 0;
+    }
+
+    .profile-copy strong {
+      display: block;
+      overflow: hidden;
+      color: var(--light-text);
+      font-size: 19px;
+      line-height: 1.15;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .profile-copy small {
+      display: block;
+      margin-top: 6px;
+      overflow: hidden;
+      color: var(--light-muted);
+      font-size: 12px;
+      font-weight: 730;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dark .profile-copy strong { color: var(--dark-text); }
+    .dark .profile-copy small { color: var(--dark-muted); }
+
+    .profile-meta {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .meta-tile {
+      min-height: 64px;
+      border-radius: 20px;
+      padding: 11px;
+      background: var(--light-surface-2);
+      box-shadow:
+        inset 5px 5px 12px rgba(146, 161, 181, 0.20),
+        inset -5px -5px 12px rgba(255, 255, 255, 0.74);
+    }
+
+    .dark .meta-tile {
+      background: var(--dark-surface-2);
+      box-shadow:
+        inset 5px 5px 12px rgba(0, 0, 0, 0.42),
+        inset -5px -5px 12px rgba(255, 255, 255, 0.032);
+    }
+
+    .meta-tile b {
+      display: block;
+      color: var(--light-text);
+      font-size: 16px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .meta-tile span {
+      color: var(--light-muted);
+      font-size: 10px;
+      font-weight: 760;
+    }
+
+    .dark .meta-tile b { color: var(--dark-text); }
+    .dark .meta-tile span { color: var(--dark-muted); }
+
+    .section-title {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 4px;
+      margin-top: 0;
+    }
+
+    .section-title b {
+      color: var(--light-text);
+      font-size: 14px;
+      font-weight: 820;
+    }
+
+    .section-title span {
+      color: var(--light-muted);
+      font-size: 11px;
+      font-weight: 760;
+    }
+
+    .dark .section-title b { color: var(--dark-text); }
+    .dark .section-title span { color: var(--dark-muted); }
+
+    .row-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .card {
+      border-radius: 24px;
+      padding: 11px;
+    }
+
+    .setting-row {
+      display: grid;
+      grid-template-columns: 38px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .row-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 15px;
+      color: #fff;
+      background: linear-gradient(145deg, var(--blue), #68a7ff);
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    .row-icon.green { background: linear-gradient(145deg, var(--green), #75dccb); }
+    .row-icon.amber { background: linear-gradient(145deg, var(--amber), #ffc66f); }
+    .row-icon.slate { background: linear-gradient(145deg, #74839b, #a8b4c6); }
+    .row-icon.red { background: linear-gradient(145deg, var(--red), #ff8790); }
+
+    .row-copy {
+      min-width: 0;
+    }
+
+    .row-copy strong {
+      display: block;
+      overflow: hidden;
+      color: var(--light-text);
+      font-size: 13px;
+      line-height: 1.18;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .row-copy small {
+      display: block;
+      margin-top: 5px;
+      overflow: hidden;
+      color: var(--light-muted);
+      font-size: 10px;
+      font-weight: 730;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dark .row-copy strong { color: var(--dark-text); }
+    .dark .row-copy small { color: var(--dark-muted); }
+
+    .chevron {
+      color: var(--light-muted);
+      font-size: 19px;
+      font-weight: 760;
+    }
+
+    .dark .chevron { color: var(--dark-muted); }
+
+    .update-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      min-height: 26px;
+      padding: 0 8px;
+      color: var(--amber);
+      background: rgba(238, 167, 59, 0.14);
+      font-size: 10px;
+      font-weight: 880;
+      white-space: nowrap;
+    }
+
+    .bottom-tabs {
+      position: absolute;
+      right: 18px;
+      bottom: 14px;
+      left: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      border-radius: 28px;
+      padding: 8px;
+    }
+
+    .tab {
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      min-width: 0;
+      border-radius: 22px;
+      padding: 9px 4px 8px;
+      color: var(--light-muted);
+      font-size: 11px;
+      font-weight: 760;
+    }
+
+    .dark .tab { color: var(--dark-muted); }
+
+    .tab b {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .tab.active {
+      color: var(--blue);
+      background: var(--light-surface-2);
+      box-shadow:
+        inset 4px 4px 9px rgba(146, 161, 181, 0.20),
+        inset -4px -4px 9px rgba(255, 255, 255, 0.78);
+    }
+
+    .dark .tab.active {
+      color: var(--blue-2);
+      background: var(--dark-surface-2);
+      box-shadow:
+        inset 4px 4px 10px rgba(0, 0, 0, 0.42),
+        inset -4px -4px 10px rgba(255, 255, 255, 0.032);
+    }
+
+    .notes {
+      margin-top: 28px;
+      padding: 20px;
+      border-radius: 28px;
+      color: #44546b;
+      background: rgba(241, 244, 248, 0.72);
+      box-shadow:
+        -8px -8px 18px rgba(255, 255, 255, 0.72),
+        10px 12px 22px rgba(146, 161, 181, 0.28);
+      line-height: 1.72;
+    }
+
+    .notes h2 { margin-top: 0; }
+    .notes ul { margin: 0; padding-left: 20px; }
+
+    @media (max-width: 900px) {
+      .title-row { display: block; }
+      .title-row p { margin-top: 12px; }
+      .mockups { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <div class="title-row">
+      <div>
+        <h1>我的 Tab<br>Neumorphism UI 稿</h1>
+      </div>
+      <p>采用确认后的 C 方案：顶部账号与品牌面板更有展示感，下方入口保持设置页式扫描效率。浅色和深色主题共享同一套 v2 soft UI 语言。</p>
+    </div>
+
+    <section class="mockups">
+      <article class="mockup-card">
+        <div class="theme-label"><span>浅色主题</span><span>已登录 + 可更新</span></div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status"><span>9:41</span><span>● ● ●</span></div>
+            <div class="content">
+              <div class="topbar">
+                <div class="page-title">
+                  <strong>我的</strong>
+                  <small>账户、支持与应用信息</small>
+                </div>
+                <div class="soft-pill">Pro</div>
+              </div>
+
+              <section class="profile-card">
+                <div class="profile-head">
+                  <div class="avatar">W</div>
+                  <div class="profile-copy">
+                    <strong>WindWalker</strong>
+                    <small>hienao@example.com</small>
+                  </div>
+                </div>
+                <div class="profile-meta">
+                  <div class="meta-tile"><b>2.4.1</b><span>当前版本</span></div>
+                  <div class="meta-tile"><b>新版本</b><span>Play Store 可更新</span></div>
+                </div>
+              </section>
+
+              <div class="section-title">
+                <b>支持</b>
+                <span>隐私与联系</span>
+              </div>
+              <div class="row-list">
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon green">盾</div>
+                    <div class="row-copy">
+                      <strong>隐私政策</strong>
+                      <small>查看数据使用与隐私说明</small>
+                    </div>
+                    <div class="chevron">›</div>
+                  </div>
+                </section>
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon amber">@</div>
+                    <div class="row-copy">
+                      <strong>联系开发者</strong>
+                      <small>通过邮件反馈问题或建议</small>
+                    </div>
+                    <div class="chevron">›</div>
+                  </div>
+                </section>
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon">↗</div>
+                    <div class="row-copy">
+                      <strong>分享应用</strong>
+                      <small>把 WindWalker 推荐给朋友</small>
+                    </div>
+                    <div class="chevron">›</div>
+                  </div>
+                </section>
+              </div>
+
+              <div class="section-title">
+                <b>应用</b>
+                <span>偏好与关于</span>
+              </div>
+              <div class="row-list">
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon slate">设</div>
+                    <div class="row-copy">
+                      <strong>设置</strong>
+                      <small>主题、语言与默认行为</small>
+                    </div>
+                    <div class="chevron">›</div>
+                  </div>
+                </section>
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon red">i</div>
+                    <div class="row-copy">
+                      <strong>关于 WindWalker</strong>
+                      <small>版本、许可与更新说明</small>
+                    </div>
+                    <div class="update-badge">有更新</div>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            <nav class="bottom-tabs" aria-label="主导航">
+              <div class="tab"><b>▦</b><span>总览</span></div>
+              <div class="tab"><b>▤</b><span>下载器</span></div>
+              <div class="tab"><b>✓</b><span>任务</span></div>
+              <div class="tab active"><b>◉</b><span>我的</span></div>
+            </nav>
+          </div>
+        </div>
+      </article>
+
+      <article class="mockup-card">
+        <div class="theme-label"><span>深色主题</span><span>未登录 + 普通版本</span></div>
+        <div class="phone dark">
+          <div class="screen">
+            <div class="status"><span>9:41</span><span>● ● ●</span></div>
+            <div class="content">
+              <div class="topbar">
+                <div class="page-title">
+                  <strong>我的</strong>
+                  <small>账户、支持与应用信息</small>
+                </div>
+                <div class="soft-pill">登录</div>
+              </div>
+
+              <section class="profile-card">
+                <div class="profile-head">
+                  <div class="avatar">W</div>
+                  <div class="profile-copy">
+                    <strong>轻触登录</strong>
+                    <small>同步你的应用状态与偏好</small>
+                  </div>
+                </div>
+                <div class="profile-meta">
+                  <div class="meta-tile"><b>2.4.1</b><span>当前版本</span></div>
+                  <div class="meta-tile"><b>已是最新</b><span>无需更新</span></div>
+                </div>
+              </section>
+
+              <div class="section-title">
+                <b>支持</b>
+                <span>隐私与联系</span>
+              </div>
+              <div class="row-list">
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon green">盾</div>
+                    <div class="row-copy">
+                      <strong>隐私政策</strong>
+                      <small>查看数据使用与隐私说明</small>
+                    </div>
+                    <div class="chevron">›</div>
+                  </div>
+                </section>
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon amber">@</div>
+                    <div class="row-copy">
+                      <strong>联系开发者</strong>
+                      <small>通过邮件反馈问题或建议</small>
+                    </div>
+                    <div class="chevron">›</div>
+                  </div>
+                </section>
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon">↗</div>
+                    <div class="row-copy">
+                      <strong>分享应用</strong>
+                      <small>把 WindWalker 推荐给朋友</small>
+                    </div>
+                    <div class="chevron">›</div>
+                  </div>
+                </section>
+              </div>
+
+              <div class="section-title">
+                <b>应用</b>
+                <span>偏好与关于</span>
+              </div>
+              <div class="row-list">
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon slate">设</div>
+                    <div class="row-copy">
+                      <strong>设置</strong>
+                      <small>主题、语言与默认行为</small>
+                    </div>
+                    <div class="chevron">›</div>
+                  </div>
+                </section>
+                <section class="card">
+                  <div class="setting-row">
+                    <div class="row-icon red">i</div>
+                    <div class="row-copy">
+                      <strong>关于 WindWalker</strong>
+                      <small>版本、许可与更新说明</small>
+                    </div>
+                    <div class="chevron">›</div>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            <nav class="bottom-tabs" aria-label="主导航">
+              <div class="tab"><b>▦</b><span>总览</span></div>
+              <div class="tab"><b>▤</b><span>下载器</span></div>
+              <div class="tab"><b>✓</b><span>任务</span></div>
+              <div class="tab active"><b>◉</b><span>我的</span></div>
+            </nav>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="notes">
+      <h2>设计说明</h2>
+      <ul>
+        <li>顶部账号卡作为第一视觉，承载登录状态、邮箱、版本和更新状态。</li>
+        <li>支持与应用入口保持原有信息架构：隐私政策、联系开发者、分享应用、设置、关于。</li>
+        <li>每个入口使用统一的拟物图标块和浮起行卡，避免回到普通 Material ListTile 观感。</li>
+        <li>未登录状态仍保留点击账号卡进入登录的语义，深色稿展示该状态。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

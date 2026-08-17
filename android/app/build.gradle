@@ -1,0 +1,153 @@
+plugins {
+    id "com.android.application"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
+    id "com.github.triplet.play"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+// Parse version from pubspec.yaml to avoid stale local.properties values when
+// building directly with Gradle (e.g. publishReleaseBundle).
+def pubspecVersionLine = rootProject.file('../pubspec.yaml').readLines('UTF-8')
+        .find { it.trim().startsWith('version:') }
+if (pubspecVersionLine == null) {
+    throw new GradleException("Missing 'version' in pubspec.yaml")
+}
+def pubspecVersionRaw = pubspecVersionLine.split(':', 2)[1].trim()
+def pubspecVersionParts = pubspecVersionRaw.split('\\+')
+def appVersionName = pubspecVersionParts[0].trim()
+def appVersionCode = (pubspecVersionParts.length > 1)
+        ? pubspecVersionParts[1].trim()
+        : "1"
+if (!(appVersionCode ==~ /\d+/)) {
+    throw new GradleException("Invalid pubspec build number: '${appVersionCode}'. Use version: x.y.z+number")
+}
+
+// Load signing config from key.properties
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withReader('UTF-8') { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
+def envOrProp = { String envKey, String propKey = null ->
+    def envValue = System.getenv(envKey)
+    if (envValue != null && envValue.trim()) {
+        return envValue
+    }
+    if (propKey != null) {
+        def propValue = keystoreProperties.getProperty(propKey)
+        if (propValue != null && propValue.trim()) {
+            return propValue
+        }
+    }
+    return null
+}
+
+def signingStoreFile = envOrProp('WW_KEYSTORE_FILE', 'storeFile')
+def signingStorePassword = envOrProp('WW_KEYSTORE_PASSWORD', 'storePassword')
+def signingKeyAlias = envOrProp('WW_KEY_ALIAS', 'keyAlias')
+def signingKeyPassword = envOrProp('WW_KEY_PASSWORD', 'keyPassword')
+def hasReleaseSigning = signingStoreFile && signingStorePassword && signingKeyAlias && signingKeyPassword
+def playCredentialsPath = System.getenv('WW_PLAY_CREDENTIALS_FILE')
+def playCredentialsFile = (playCredentialsPath != null && playCredentialsPath.trim())
+        ? file(playCredentialsPath)
+        : rootProject.file("play-credentials.json")
+
+android {
+    namespace "com.hienao.windtorrent"
+    compileSdkVersion flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    signingConfigs {
+        projectKeystore {
+            keyAlias signingKeyAlias
+            keyPassword signingKeyPassword
+            storeFile signingStoreFile ? file(signingStoreFile) : null
+            storePassword signingStorePassword
+        }
+        release {
+            keyAlias signingKeyAlias
+            keyPassword signingKeyPassword
+            storeFile signingStoreFile ? file(signingStoreFile) : null
+            storePassword signingStorePassword
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.hienao.windtorrent"
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode appVersionCode.toInteger()
+        versionName appVersionName
+    }
+
+    buildTypes {
+        debug {
+            signingConfig keystorePropertiesFile.exists() ? signingConfigs.projectKeystore : signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+        }
+        profile {
+            signingConfig keystorePropertiesFile.exists() ? signingConfigs.projectKeystore : signingConfigs.debug
+        }
+        release {
+            if (!hasReleaseSigning) {
+                throw new GradleException("Release signing is not fully configured. Please set WW_KEYSTORE_FILE, WW_KEYSTORE_PASSWORD, WW_KEY_ALIAS, and WW_KEY_PASSWORD.")
+            }
+            signingConfig signingConfigs.projectKeystore
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+}
+
+play {
+    // Play credentials are required only for publishing. Local debug builds and
+    // public CI must remain usable without access to release secrets.
+    if (playCredentialsFile.exists()) {
+        serviceAccountCredentials = playCredentialsFile
+    }
+    track = "internal"
+    releaseStatus = com.github.triplet.gradle.androidpublisher.ReleaseStatus.DRAFT
+    defaultToAppBundles = true
+}
+
+tasks.matching { it.name == "publishReleaseBundle" }.configureEach {
+    doFirst {
+        if (!playCredentialsFile.exists()) {
+            throw new GradleException("Google Play credentials file not found. Set WW_PLAY_CREDENTIALS_FILE for publishing.")
+        }
+    }
+}
