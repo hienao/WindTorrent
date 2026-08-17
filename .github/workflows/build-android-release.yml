@@ -24,6 +24,7 @@ jobs:
       version_code: ${{ steps.version.outputs.version_code }}
       version_name: ${{ steps.version.outputs.version_name }}
       artifact_name: ${{ steps.version.outputs.artifact_name }}
+      release_tag: ${{ steps.version.outputs.release_tag }}
     steps:
       - name: Require a merged pull request
         env:
@@ -53,7 +54,7 @@ jobs:
           fi
 
       - name: Check out merged source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
@@ -102,12 +103,14 @@ jobs:
           fi
 
           artifact_name="WindTorrent-${channel}-${current_name}-${current_code}"
+          release_tag="v${current_name}+${current_code}"
           {
             echo "channel=$channel"
             echo "play_track=$play_track"
             echo "version_code=$current_code"
             echo "version_name=$current_name"
             echo "artifact_name=$artifact_name"
+            echo "release_tag=$release_tag"
           } >> "$GITHUB_OUTPUT"
 
           echo "Accepted $channel build: versionCode $previous_code -> $current_code"
@@ -116,26 +119,35 @@ jobs:
     needs: verify-merged-pr-and-version
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    permissions:
+      contents: write
     environment:
       name: google-play-internal
     steps:
       - name: Check out merged source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ github.sha }}
 
       - name: Set up Java
-        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: '3.44.2'
           channel: stable
           cache: true
+          pub-cache: true
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+        with:
+          cache-provider: basic
+          cache-read-only: false
 
       - name: Install dependencies
         run: flutter pub get
@@ -173,35 +185,94 @@ jobs:
             echo "PLAY_SERVICE_ACCOUNT_FILE=$play_credentials_file"
           } >> "$GITHUB_ENV"
 
-      - name: Build signed Release APK
-        run: flutter build apk --release
+      - name: Build signed Release APK and App Bundle
+        working-directory: android
+        run: >-
+          ./gradlew --no-daemon --stacktrace
+          :app:assembleRelease :app:bundleRelease
 
-      - name: Prepare APK artifact
+      - name: Prepare release artifacts
         env:
           ARTIFACT_NAME: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/apk-artifact"
-          cp build/app/outputs/flutter-apk/app-release.apk \
-            "$RUNNER_TEMP/apk-artifact/$ARTIFACT_NAME.apk"
+          release_dir="$RUNNER_TEMP/release-artifacts"
+          play_dir="$RUNNER_TEMP/play-artifact"
+          mkdir -p "$release_dir" "$play_dir"
+
+          install -m 0644 build/app/outputs/apk/release/app-release.apk \
+            "$release_dir/$ARTIFACT_NAME.apk"
+          install -m 0644 build/app/outputs/bundle/release/app-release.aab \
+            "$play_dir/$ARTIFACT_NAME.aab"
+          sha256sum "$release_dir/$ARTIFACT_NAME.apk" \
+            > "$release_dir/$ARTIFACT_NAME.apk.sha256"
+
+          {
+            echo "RELEASE_APK=$release_dir/$ARTIFACT_NAME.apk"
+            echo "RELEASE_CHECKSUM=$release_dir/$ARTIFACT_NAME.apk.sha256"
+            echo "PLAY_ARTIFACT_DIR=$play_dir"
+          } >> "$GITHUB_ENV"
 
       - name: Upload Release APK artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
-          path: ${{ runner.temp }}/apk-artifact/*.apk
+          path: |
+            ${{ env.RELEASE_APK }}
+            ${{ env.RELEASE_CHECKSUM }}
           if-no-files-found: error
-          retention-days: ${{ github.ref_name == 'main' && 90 || 30 }}
+          retention-days: 7
 
-      - name: Publish App Bundle to Google Play as Draft
+      - name: Publish prebuilt App Bundle to Google Play as Draft
         working-directory: android
         env:
           PLAY_TRACK: ${{ needs.verify-merged-pr-and-version.outputs.play_track }}
         run: >-
-          ./gradlew --no-daemon --stacktrace :app:publishReleaseBundle
+          ./gradlew --no-daemon --stacktrace :app:publishBundle
+          --artifact-dir "$PLAY_ARTIFACT_DIR"
           --track "$PLAY_TRACK"
           --release-status draft
+
+      - name: Publish APK in GitHub Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.verify-merged-pr-and-version.outputs.release_tag }}
+          RELEASE_TITLE: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
+          CHANNEL: ${{ needs.verify-merged-pr-and-version.outputs.channel }}
+          PLAY_TRACK: ${{ needs.verify-merged-pr-and-version.outputs.play_track }}
+          VERSION_NAME: ${{ needs.verify-merged-pr-and-version.outputs.version_name }}
+          VERSION_CODE: ${{ needs.verify-merged-pr-and-version.outputs.version_code }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          notes_file="$RUNNER_TEMP/release-notes.md"
+          cat > "$notes_file" <<EOF
+          Android $CHANNEL build for WindTorrent $VERSION_NAME ($VERSION_CODE).
+
+          - Source commit: $GITHUB_SHA
+          - Google Play track: $PLAY_TRACK (Draft)
+          EOF
+
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" \
+              "$RELEASE_APK" "$RELEASE_CHECKSUM" --clobber
+          else
+            release_args=(
+              release create "$RELEASE_TAG"
+              "$RELEASE_APK" "$RELEASE_CHECKSUM"
+              --target "$GITHUB_SHA"
+              --title "$RELEASE_TITLE"
+              --notes-file "$notes_file"
+            )
+            if [[ "$CHANNEL" == "beta" ]]; then
+              release_args+=(--prerelease)
+            else
+              release_args+=(--latest)
+            fi
+            gh "${release_args[@]}"
+          fi
 
       - name: Remove credentials
         if: always()

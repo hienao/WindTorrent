@@ -152,8 +152,9 @@ cd android
 
 GitHub 发布规则：
 
-- PR 合并到 `beta`：要求 `versionCode` 相比合并前的 `beta` 严格递增，生成签名 Release APK artifact，并将 AAB 上传到 Google Play `beta` 轨道为 Draft。
-- PR 合并到 `main`：要求 `versionCode` 相比合并前的 `main` 严格递增，生成签名 Release APK artifact，并将 AAB 上传到 Google Play `production` 轨道为 Draft。
+- PR 合并到 `beta`：要求 `versionCode` 相比合并前的 `beta` 严格递增，生成签名 Release APK，在 GitHub Releases 中创建 Pre-release，并将 AAB 上传到 Google Play `beta` 轨道为 Draft。
+- PR 合并到 `main`：要求 `versionCode` 相比合并前的 `main` 严格递增，生成签名 Release APK，在 GitHub Releases 中创建正式 Release，并将 AAB 上传到 Google Play `production` 轨道为 Draft。
+- APK 和校验文件在 Actions Artifact 中保留 7 天；长期下载使用 GitHub Releases。Flutter、Pub 与 Gradle 依赖使用 Actions Cache 加速后续构建。
 - 普通 push、tag、手动运行以及仅关闭但未合并的 PR 都不会构建 Beta/Release。
 - `versionCode` 未增加或发生回退时，工作流会在读取任何签名或 Google Play Secret 前失败终止。
 
