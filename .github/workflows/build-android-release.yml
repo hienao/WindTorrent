@@ -25,8 +25,10 @@ jobs:
       version_name: ${{ steps.version.outputs.version_name }}
       artifact_name: ${{ steps.version.outputs.artifact_name }}
       release_tag: ${{ steps.version.outputs.release_tag }}
+      merged_pr_number: ${{ steps.merged_pr.outputs.number }}
     steps:
       - name: Require a merged pull request
+        id: merged_pr
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
@@ -39,19 +41,21 @@ jobs:
           pull_requests="$(gh api \
             -H 'Accept: application/vnd.github+json' \
             "/repos/$REPOSITORY/commits/$AFTER_SHA/pulls")"
-          matching_count="$(jq \
+          matching_pr="$(jq -c \
             --arg branch "$BRANCH" \
             --arg sha "$AFTER_SHA" \
             '[.[] | select(
               .merged_at != null and
               .base.ref == $branch and
               .merge_commit_sha == $sha
-            )] | length' <<< "$pull_requests")"
+            )] | first // empty' <<< "$pull_requests")"
 
-          if [[ "$matching_count" -eq 0 ]]; then
+          if [[ -z "$matching_pr" ]]; then
             echo "Build rejected: $AFTER_SHA was not created by merging a pull request into $BRANCH." >&2
             exit 1
           fi
+
+          jq -r '"number=" + (.number | tostring)' <<< "$matching_pr" >> "$GITHUB_OUTPUT"
 
       - name: Check out merged source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -121,6 +125,7 @@ jobs:
     timeout-minutes: 40
     permissions:
       contents: write
+      pull-requests: read
     environment:
       name: google-play-internal
     steps:
@@ -185,11 +190,15 @@ jobs:
             echo "PLAY_SERVICE_ACCOUNT_FILE=$play_credentials_file"
           } >> "$GITHUB_ENV"
 
-      - name: Build signed Release APK and App Bundle
+      - name: Build signed App Bundle and split Release APKs
         working-directory: android
-        run: >-
-          ./gradlew --no-daemon --stacktrace
-          :app:assembleRelease :app:bundleRelease
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew --stacktrace :app:bundleRelease
+          ./gradlew --stacktrace \
+            -Pwindtorrent.splitApks=true \
+            :app:assembleRelease
 
       - name: Prepare release artifacts
         env:
@@ -201,25 +210,39 @@ jobs:
           play_dir="$RUNNER_TEMP/play-artifact"
           mkdir -p "$release_dir" "$play_dir"
 
-          install -m 0644 build/app/outputs/apk/release/app-release.apk \
-            "$release_dir/$ARTIFACT_NAME.apk"
+          declare -A apk_sources=(
+            [universal]="build/app/outputs/apk/release/app-universal-release.apk"
+            [arm64-v8a]="build/app/outputs/apk/release/app-arm64-v8a-release.apk"
+            [armeabi-v7a]="build/app/outputs/apk/release/app-armeabi-v7a-release.apk"
+            [x86_64]="build/app/outputs/apk/release/app-x86_64-release.apk"
+          )
+          for variant in universal arm64-v8a armeabi-v7a x86_64; do
+            source_apk="${apk_sources[$variant]}"
+            test -s "$source_apk"
+            install -m 0644 "$source_apk" \
+              "$release_dir/$ARTIFACT_NAME-$variant.apk"
+          done
+
           install -m 0644 build/app/outputs/bundle/release/app-release.aab \
             "$play_dir/$ARTIFACT_NAME.aab"
-          sha256sum "$release_dir/$ARTIFACT_NAME.apk" \
-            > "$release_dir/$ARTIFACT_NAME.apk.sha256"
+          (
+            cd "$release_dir"
+            sha256sum ./*.apk > "$ARTIFACT_NAME-SHA256SUMS.txt"
+          )
 
           {
-            echo "RELEASE_APK=$release_dir/$ARTIFACT_NAME.apk"
-            echo "RELEASE_CHECKSUM=$release_dir/$ARTIFACT_NAME.apk.sha256"
+            echo "UNIVERSAL_APK=$release_dir/$ARTIFACT_NAME-universal.apk"
+            echo "RELEASE_CHECKSUM=$release_dir/$ARTIFACT_NAME-SHA256SUMS.txt"
+            echo "RELEASE_ARTIFACT_DIR=$release_dir"
             echo "PLAY_ARTIFACT_DIR=$play_dir"
           } >> "$GITHUB_ENV"
 
-      - name: Upload Release APK artifact
+      - name: Upload temporary universal APK artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
           path: |
-            ${{ env.RELEASE_APK }}
+            ${{ env.UNIVERSAL_APK }}
             ${{ env.RELEASE_CHECKSUM }}
           if-no-files-found: error
           retention-days: 7
@@ -243,25 +266,55 @@ jobs:
           PLAY_TRACK: ${{ needs.verify-merged-pr-and-version.outputs.play_track }}
           VERSION_NAME: ${{ needs.verify-merged-pr-and-version.outputs.version_name }}
           VERSION_CODE: ${{ needs.verify-merged-pr-and-version.outputs.version_code }}
+          MERGED_PR_NUMBER: ${{ needs.verify-merged-pr-and-version.outputs.merged_pr_number }}
+          REPOSITORY: ${{ github.repository }}
         shell: bash
         run: |
           set -euo pipefail
 
-          notes_file="$RUNNER_TEMP/release-notes.md"
-          cat > "$notes_file" <<EOF
-          Android $CHANNEL build for WindTorrent $VERSION_NAME ($VERSION_CODE).
+          pr_data="$(gh api "/repos/$REPOSITORY/pulls/$MERGED_PR_NUMBER")"
+          pr_title="$(jq -r '.title' <<< "$pr_data")"
+          pr_body="$(jq -r '.body // ""' <<< "$pr_data")"
+          pr_url="$(jq -r '.html_url' <<< "$pr_data")"
 
-          - Source commit: $GITHUB_SHA
-          - Google Play track: $PLAY_TRACK (Draft)
-          EOF
+          notes_file="$RUNNER_TEMP/release-notes.md"
+          {
+            printf '## 本次更新\n\n'
+            printf -- '- [#%s %s](%s)\n' "$MERGED_PR_NUMBER" "$pr_title" "$pr_url"
+            if [[ -n "${pr_body//[[:space:]]/}" ]]; then
+              printf '\n%s\n' "$pr_body"
+            fi
+            printf '\n### 提交记录\n\n'
+            gh api --paginate "/repos/$REPOSITORY/pulls/$MERGED_PR_NUMBER/commits" \
+              --jq '.[] | "- " + (.commit.message | split("\n")[0]) + " (`" + (.sha[0:7]) + "`)"'
+            printf '\n## APK 下载说明\n\n'
+            printf '%s\n' \
+              '- `arm64-v8a`：绝大多数现代 Android 手机和平板' \
+              '- `armeabi-v7a`：较旧的 32 位 ARM 设备' \
+              '- `x86_64`：Android 模拟器及 x86_64 设备' \
+              '- `universal`：包含全部架构，不确定设备架构时使用'
+            printf '\n## 构建信息\n\n'
+            printf -- '- Version: `%s` (`%s`)\n' "$VERSION_NAME" "$VERSION_CODE"
+            printf -- '- Source commit: `%s`\n' "$GITHUB_SHA"
+            printf -- '- Google Play track: `%s` (Draft)\n' "$PLAY_TRACK"
+          } > "$notes_file"
+
+          shopt -s nullglob
+          release_files=("$RELEASE_ARTIFACT_DIR"/*)
+          if (( ${#release_files[@]} == 0 )); then
+            echo "No GitHub Release artifacts found." >&2
+            exit 1
+          fi
 
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" \
-              "$RELEASE_APK" "$RELEASE_CHECKSUM" --clobber
+            gh release edit "$RELEASE_TAG" \
+              --title "$RELEASE_TITLE" \
+              --notes-file "$notes_file"
+            gh release upload "$RELEASE_TAG" "${release_files[@]}" --clobber
           else
             release_args=(
               release create "$RELEASE_TAG"
-              "$RELEASE_APK" "$RELEASE_CHECKSUM"
+              "${release_files[@]}"
               --target "$GITHUB_SHA"
               --title "$RELEASE_TITLE"
               --notes-file "$notes_file"

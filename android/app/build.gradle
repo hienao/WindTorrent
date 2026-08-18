@@ -63,6 +63,9 @@ def playCredentialsPath = System.getenv('PLAY_SERVICE_ACCOUNT_FILE')
 def playCredentialsFile = (playCredentialsPath != null && playCredentialsPath.trim())
         ? file(playCredentialsPath)
         : rootProject.file("play-credentials.json")
+def buildSplitApks = providers.gradleProperty("windtorrent.splitApks")
+        .map { it.toBoolean() }
+        .getOrElse(false)
 
 android {
     namespace "com.hienao.windtorrent"
@@ -103,6 +106,17 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode appVersionCode.toInteger()
         versionName appVersionName
+    }
+
+    // GitHub Releases publish smaller ABI-specific APKs plus a universal APK.
+    // This is opt-in so local Debug builds keep the standard single-APK flow.
+    splits {
+        abi {
+            enable buildSplitApks
+            reset()
+            include "armeabi-v7a", "arm64-v8a", "x86_64"
+            universalApk buildSplitApks
+        }
     }
 
     buildTypes {
