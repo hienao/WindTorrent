@@ -139,6 +139,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
 
       - name: Set up Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -147,12 +148,6 @@ jobs:
           channel: stable
           cache: true
           pub-cache: true
-
-      - name: Set up Gradle cache
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
-        with:
-          cache-provider: basic
-          cache-read-only: false
 
       - name: Install dependencies
         run: flutter pub get
