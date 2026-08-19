@@ -1579,8 +1579,14 @@ abstract class AppLocalizations {
   /// No description provided for @contactDeveloperDesc.
   ///
   /// In en, this message translates to:
-  /// **'Send feedback via email'**
+  /// **'Report issues on GitHub Issues'**
   String get contactDeveloperDesc;
+
+  /// No description provided for @githubRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub Repository'**
+  String get githubRepository;
 
   /// No description provided for @shareApp.
   ///
@@ -1593,12 +1599,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share with friends'**
   String get shareAppDesc;
-
-  /// No description provided for @contactEmailSubject.
-  ///
-  /// In en, this message translates to:
-  /// **'WindTorrent Feedback'**
-  String get contactEmailSubject;
 
   /// No description provided for @openLinkFailed.
   ///

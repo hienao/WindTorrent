@@ -18,7 +18,10 @@ class AppConstants {
   // 外部链接与联系信息
   static const String privacyPolicyUrl =
       'https://windtorrent-hienao.web.app/privacy-policy';
-  static const String developerEmail = 'shiwentao666@gmail.com';
+  static const String githubRepositoryUrl =
+      'https://github.com/hienao/WindTorrent';
+  static const String githubIssuesUrl =
+      'https://github.com/hienao/WindTorrent/issues';
   static const String playStoreUrl =
       'https://play.google.com/store/apps/details?id=com.hienao.windtorrent';
 
