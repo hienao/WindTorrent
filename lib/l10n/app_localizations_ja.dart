@@ -781,16 +781,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get contactDeveloper => '開発者に連絡';
 
   @override
-  String get contactDeveloperDesc => 'メールでフィードバック';
+  String get contactDeveloperDesc => 'GitHub Issues で問題を報告';
+
+  @override
+  String get githubRepository => 'GitHub リポジトリ';
 
   @override
   String get shareApp => 'アプリを共有';
 
   @override
   String get shareAppDesc => '友達に共有';
-
-  @override
-  String get contactEmailSubject => 'WindTorrent フィードバック';
 
   @override
   String get openLinkFailed => 'リンクを開けません';

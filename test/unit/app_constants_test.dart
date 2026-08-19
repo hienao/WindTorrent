@@ -10,9 +10,15 @@ void main() {
       expect(uri.path, '/privacy-policy');
     });
 
-    test('developerEmail 是合法邮箱格式', () {
-      expect(AppConstants.developerEmail, contains('@'));
-      expect(AppConstants.developerEmail, 'shiwentao666@gmail.com');
+    test('GitHub 仓库与 Issues 地址指向 WindTorrent', () {
+      expect(
+        AppConstants.githubRepositoryUrl,
+        'https://github.com/hienao/WindTorrent',
+      );
+      expect(
+        AppConstants.githubIssuesUrl,
+        '${AppConstants.githubRepositoryUrl}/issues',
+      );
     });
 
     test('playStoreUrl 指向正确的包名', () {

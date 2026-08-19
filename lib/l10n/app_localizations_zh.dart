@@ -777,16 +777,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get contactDeveloper => '联系开发者';
 
   @override
-  String get contactDeveloperDesc => '通过邮件反馈问题';
+  String get contactDeveloperDesc => '通过 GitHub Issues 反馈问题';
+
+  @override
+  String get githubRepository => 'GitHub 项目';
 
   @override
   String get shareApp => '分享 App';
 
   @override
   String get shareAppDesc => '分享给朋友';
-
-  @override
-  String get contactEmailSubject => 'WindTorrent 反馈';
 
   @override
   String get openLinkFailed => '无法打开链接';
