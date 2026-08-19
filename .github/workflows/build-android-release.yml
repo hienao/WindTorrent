@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      channel: ${{ steps.version.outputs.channel }}
-      play_track: ${{ steps.version.outputs.play_track }}
+      release_track: ${{ steps.version.outputs.release_track }}
+      source_branch: ${{ steps.version.outputs.source_branch }}
       version_code: ${{ steps.version.outputs.version_code }}
       version_name: ${{ steps.version.outputs.version_name }}
       artifact_name: ${{ steps.version.outputs.artifact_name }}
@@ -63,7 +63,7 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
 
-      - name: Require an increased versionCode
+      - name: Require a valid increased versionCode
         id: version
         env:
           BEFORE_SHA: ${{ github.event.before }}
@@ -90,42 +90,324 @@ jobs:
             exit 1
           fi
 
-          if (( current_code <= previous_code )); then
-            echo "Build rejected: versionCode must increase on $BRANCH ($previous_code -> $current_code)." >&2
-            exit 1
-          fi
-
+          required_floor="$previous_code"
           if [[ "$BRANCH" == "beta" ]]; then
-            channel="beta"
-            play_track="beta"
+            release_track="beta"
+            if [[ ! "$current_name" =~ ^[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]; then
+              echo "Beta builds require versionName x.y.z-beta.n, got $current_name." >&2
+              exit 1
+            fi
+
+            git fetch --no-tags origin main:refs/remotes/origin/main
+            main_version="$(version_value refs/remotes/origin/main)"
+            main_code="${main_version##*+}"
+            if [[ ! "$main_code" =~ ^[0-9]+$ ]]; then
+              echo "Invalid versionCode on origin/main: $main_version." >&2
+              exit 1
+            fi
+            if (( main_code > required_floor )); then
+              required_floor="$main_code"
+            fi
           elif [[ "$BRANCH" == "main" ]]; then
-            channel="release"
-            play_track="production"
+            release_track="stable"
+            if [[ ! "$current_name" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Stable builds require versionName x.y.z, got $current_name." >&2
+              exit 1
+            fi
+
+            git fetch --no-tags origin beta:refs/remotes/origin/beta
+            beta_version="$(version_value refs/remotes/origin/beta)"
+            beta_code="${beta_version##*+}"
+            if [[ ! "$beta_code" =~ ^[0-9]+$ ]]; then
+              echo "Invalid versionCode on origin/beta: $beta_version." >&2
+              exit 1
+            fi
+            if (( beta_code > required_floor )); then
+              required_floor="$beta_code"
+            fi
           else
             echo "Unsupported target branch: $BRANCH" >&2
             exit 1
           fi
 
-          artifact_name="WindTorrent-${channel}-${current_name}-${current_code}"
+          if (( current_code <= required_floor )); then
+            echo "Build rejected: versionCode $current_code must be greater than the channel floor $required_floor." >&2
+            exit 1
+          fi
+
+          artifact_name="WindTorrent-github-${release_track}-${current_name}-${current_code}"
           release_tag="v${current_name}+${current_code}"
           {
-            echo "channel=$channel"
-            echo "play_track=$play_track"
+            echo "release_track=$release_track"
+            echo "source_branch=$BRANCH"
             echo "version_code=$current_code"
             echo "version_name=$current_name"
             echo "artifact_name=$artifact_name"
             echo "release_tag=$release_tag"
           } >> "$GITHUB_OUTPUT"
 
-          echo "Accepted $channel build: versionCode $previous_code -> $current_code"
+          echo "Accepted $release_track build: floor $required_floor -> $current_code"
 
-  build-and-publish:
+  build-github:
     needs: verify-merged-pr-and-version
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    environment:
+      name: google-play-internal
     permissions:
       contents: write
       pull-requests: read
+    steps:
+      - name: Check out merged source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: '3.44.2'
+          channel: stable
+          cache: true
+          pub-cache: true
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+        with:
+          cache-provider: basic
+          cache-read-only: false
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Restore app signing key
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          test -n "$ANDROID_KEYSTORE_B64"
+          test -n "$ANDROID_KEYSTORE_PASSWORD"
+          test -n "$ANDROID_KEY_ALIAS"
+          test -n "$ANDROID_KEY_PASSWORD"
+
+          keystore_file="$RUNNER_TEMP/windtorrent-app-signing-key.jks"
+          printf '%s' "$ANDROID_KEYSTORE_B64" | base64 --decode > "$keystore_file"
+          test -s "$keystore_file"
+
+          {
+            echo "ANDROID_KEYSTORE_FILE=$keystore_file"
+            echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD"
+            echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS"
+            echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD"
+          } >> "$GITHUB_ENV"
+
+      - name: Build signed GitHub Release APKs
+        working-directory: android
+        env:
+          RELEASE_TRACK: ${{ needs.verify-merged-pr-and-version.outputs.release_track }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          dart_defines="$(printf 'APP_RELEASE_TRACK=%s' "$RELEASE_TRACK" | base64 -w0)"
+          ./gradlew --stacktrace \
+            -Pdart-defines="$dart_defines" \
+            -Pwindtorrent.splitApks=true \
+            :app:assembleGithubRelease
+
+      - name: Prepare GitHub Release artifacts
+        env:
+          ARTIFACT_NAME: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
+          RELEASE_TRACK: ${{ needs.verify-merged-pr-and-version.outputs.release_track }}
+          SOURCE_BRANCH: ${{ needs.verify-merged-pr-and-version.outputs.source_branch }}
+          VERSION_NAME: ${{ needs.verify-merged-pr-and-version.outputs.version_name }}
+          VERSION_CODE: ${{ needs.verify-merged-pr-and-version.outputs.version_code }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_dir="$RUNNER_TEMP/release-artifacts"
+          mkdir -p "$release_dir"
+
+          declare -A apk_sources=(
+            [universal]="build/app/outputs/apk/github/release/app-github-universal-release.apk"
+            [arm64-v8a]="build/app/outputs/apk/github/release/app-github-arm64-v8a-release.apk"
+            [armeabi-v7a]="build/app/outputs/apk/github/release/app-github-armeabi-v7a-release.apk"
+            [x86_64]="build/app/outputs/apk/github/release/app-github-x86_64-release.apk"
+          )
+          for variant in universal arm64-v8a armeabi-v7a x86_64; do
+            source_apk="${apk_sources[$variant]}"
+            test -s "$source_apk"
+            install -m 0644 "$source_apk" \
+              "$release_dir/$ARTIFACT_NAME-$variant.apk"
+          done
+
+          jq -n \
+            --arg channel github \
+            --arg track "$RELEASE_TRACK" \
+            --arg sourceBranch "$SOURCE_BRANCH" \
+            --arg sourceSha "$GITHUB_SHA" \
+            --arg versionName "$VERSION_NAME" \
+            --argjson versionCode "$VERSION_CODE" \
+            --arg universal "$ARTIFACT_NAME-universal.apk" \
+            --arg arm64 "$ARTIFACT_NAME-arm64-v8a.apk" \
+            --arg armv7 "$ARTIFACT_NAME-armeabi-v7a.apk" \
+            --arg x86 "$ARTIFACT_NAME-x86_64.apk" \
+            '{
+              schemaVersion: 1,
+              channel: $channel,
+              track: $track,
+              sourceBranch: $sourceBranch,
+              sourceSha: $sourceSha,
+              versionName: $versionName,
+              versionCode: $versionCode,
+              assets: {
+                universal: $universal,
+                "arm64-v8a": $arm64,
+                "armeabi-v7a": $armv7,
+                "x86_64": $x86
+              }
+            }' > "$release_dir/channel-manifest.json"
+
+          (
+            cd "$release_dir"
+            sha256sum ./*.apk > "$ARTIFACT_NAME-SHA256SUMS.txt"
+          )
+
+          {
+            echo "UNIVERSAL_APK=$release_dir/$ARTIFACT_NAME-universal.apk"
+            echo "RELEASE_CHECKSUM=$release_dir/$ARTIFACT_NAME-SHA256SUMS.txt"
+            echo "RELEASE_ARTIFACT_DIR=$release_dir"
+          } >> "$GITHUB_ENV"
+
+      - name: Verify APK uses the Play app signing certificate
+        env:
+          EXPECTED_SHA256: ${{ vars.APP_SIGNING_CERT_SHA256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_SHA256"
+
+          apksigner_path="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -x "$apksigner_path"
+          actual_sha256="$(
+            "$apksigner_path" verify --print-certs "$UNIVERSAL_APK" |
+              sed -n 's/^.*certificate SHA-256 digest: //p' |
+              head -n 1 |
+              tr '[:upper:]' '[:lower:]'
+          )"
+          expected_sha256="$(
+            printf '%s' "$EXPECTED_SHA256" |
+              tr -d '[:space:]:' |
+              tr '[:upper:]' '[:lower:]'
+          )"
+          test -n "$actual_sha256"
+          if [[ "$actual_sha256" != "$expected_sha256" ]]; then
+            echo "GitHub APK certificate does not match the Play app signing certificate." >&2
+            exit 1
+          fi
+          echo "Verified GitHub APK signing certificate: $actual_sha256"
+
+      - name: Upload temporary universal APK artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
+          path: |
+            ${{ env.UNIVERSAL_APK }}
+            ${{ env.RELEASE_CHECKSUM }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Publish APKs in GitHub Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.verify-merged-pr-and-version.outputs.release_tag }}
+          RELEASE_TITLE: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
+          RELEASE_TRACK: ${{ needs.verify-merged-pr-and-version.outputs.release_track }}
+          SOURCE_BRANCH: ${{ needs.verify-merged-pr-and-version.outputs.source_branch }}
+          VERSION_NAME: ${{ needs.verify-merged-pr-and-version.outputs.version_name }}
+          VERSION_CODE: ${{ needs.verify-merged-pr-and-version.outputs.version_code }}
+          MERGED_PR_NUMBER: ${{ needs.verify-merged-pr-and-version.outputs.merged_pr_number }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr_data="$(gh api "/repos/$REPOSITORY/pulls/$MERGED_PR_NUMBER")"
+          pr_title="$(jq -r '.title' <<< "$pr_data")"
+          pr_body="$(jq -r '.body // ""' <<< "$pr_data")"
+          pr_url="$(jq -r '.html_url' <<< "$pr_data")"
+
+          notes_file="$RUNNER_TEMP/release-notes.md"
+          {
+            printf '## 本次更新\n\n'
+            printf -- '- [#%s %s](%s)\n' "$MERGED_PR_NUMBER" "$pr_title" "$pr_url"
+            if [[ -n "${pr_body//[[:space:]]/}" ]]; then
+              printf '\n%s\n' "$pr_body"
+            fi
+            printf '\n### 提交记录\n\n'
+            gh api --paginate "/repos/$REPOSITORY/pulls/$MERGED_PR_NUMBER/commits" \
+              --jq '.[] | "- " + (.commit.message | split("\n")[0]) + " (`" + (.sha[0:7]) + "`)"'
+            printf '\n## APK 下载说明\n\n'
+            printf '%s\n' \
+              '- `arm64-v8a`：绝大多数现代 Android 手机和平板' \
+              '- `armeabi-v7a`：较旧的 32 位 ARM 设备' \
+              '- `x86_64`：Android 模拟器及 x86_64 设备' \
+              '- `universal`：包含全部架构，不确定设备架构时使用'
+            printf '\n## 构建信息\n\n'
+            printf -- '- Distribution: `github`\n'
+            printf -- '- Track: `%s`\n' "$RELEASE_TRACK"
+            printf -- '- Source branch: `%s`\n' "$SOURCE_BRANCH"
+            printf -- '- Version: `%s` (`%s`)\n' "$VERSION_NAME" "$VERSION_CODE"
+            printf -- '- Source commit: `%s`\n' "$GITHUB_SHA"
+          } > "$notes_file"
+
+          shopt -s nullglob
+          release_files=("$RELEASE_ARTIFACT_DIR"/*)
+          if (( ${#release_files[@]} == 0 )); then
+            echo "No GitHub Release artifacts found." >&2
+            exit 1
+          fi
+
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" \
+              --title "$RELEASE_TITLE" \
+              --notes-file "$notes_file"
+            gh release upload "$RELEASE_TAG" "${release_files[@]}" --clobber
+          else
+            release_args=(
+              release create "$RELEASE_TAG"
+              "${release_files[@]}"
+              --target "$SOURCE_BRANCH"
+              --title "$RELEASE_TITLE"
+              --notes-file "$notes_file"
+            )
+            if [[ "$RELEASE_TRACK" == "beta" ]]; then
+              release_args+=(--prerelease)
+            else
+              release_args+=(--latest)
+            fi
+            gh "${release_args[@]}"
+          fi
+
+      - name: Remove signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/windtorrent-app-signing-key.jks"
+
+  build-play:
+    if: github.ref_name == 'main'
+    needs: verify-merged-pr-and-version
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
     environment:
       name: google-play-internal
     steps:
@@ -176,7 +458,6 @@ jobs:
 
           keystore_file="$RUNNER_TEMP/windtorrent-upload-key.jks"
           play_credentials_file="$RUNNER_TEMP/windtorrent-play-credentials.json"
-
           printf '%s' "$ANDROID_KEYSTORE_B64" | base64 --decode > "$keystore_file"
           printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON_B64" | base64 --decode > "$play_credentials_file"
           test -s "$keystore_file"
@@ -190,142 +471,34 @@ jobs:
             echo "PLAY_SERVICE_ACCOUNT_FILE=$play_credentials_file"
           } >> "$GITHUB_ENV"
 
-      - name: Build signed App Bundle and split Release APKs
+      - name: Build signed Play App Bundle
         working-directory: android
         shell: bash
         run: |
           set -euo pipefail
-          ./gradlew --stacktrace :app:bundleRelease
+          dart_defines="$(printf 'APP_RELEASE_TRACK=stable' | base64 -w0)"
           ./gradlew --stacktrace \
-            -Pwindtorrent.splitApks=true \
-            :app:assembleRelease
+            -Pdart-defines="$dart_defines" \
+            :app:bundlePlayRelease
 
-      - name: Prepare release artifacts
-        env:
-          ARTIFACT_NAME: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
+      - name: Prepare Play artifact
         shell: bash
         run: |
           set -euo pipefail
-          release_dir="$RUNNER_TEMP/release-artifacts"
           play_dir="$RUNNER_TEMP/play-artifact"
-          mkdir -p "$release_dir" "$play_dir"
+          mkdir -p "$play_dir"
+          source_aab="build/app/outputs/bundle/playRelease/app-play-release.aab"
+          test -s "$source_aab"
+          install -m 0644 "$source_aab" "$play_dir/WindTorrent-play-stable.aab"
+          echo "PLAY_ARTIFACT_DIR=$play_dir" >> "$GITHUB_ENV"
 
-          declare -A apk_sources=(
-            [universal]="build/app/outputs/apk/release/app-universal-release.apk"
-            [arm64-v8a]="build/app/outputs/apk/release/app-arm64-v8a-release.apk"
-            [armeabi-v7a]="build/app/outputs/apk/release/app-armeabi-v7a-release.apk"
-            [x86_64]="build/app/outputs/apk/release/app-x86_64-release.apk"
-          )
-          for variant in universal arm64-v8a armeabi-v7a x86_64; do
-            source_apk="${apk_sources[$variant]}"
-            test -s "$source_apk"
-            install -m 0644 "$source_apk" \
-              "$release_dir/$ARTIFACT_NAME-$variant.apk"
-          done
-
-          install -m 0644 build/app/outputs/bundle/release/app-release.aab \
-            "$play_dir/$ARTIFACT_NAME.aab"
-          (
-            cd "$release_dir"
-            sha256sum ./*.apk > "$ARTIFACT_NAME-SHA256SUMS.txt"
-          )
-
-          {
-            echo "UNIVERSAL_APK=$release_dir/$ARTIFACT_NAME-universal.apk"
-            echo "RELEASE_CHECKSUM=$release_dir/$ARTIFACT_NAME-SHA256SUMS.txt"
-            echo "RELEASE_ARTIFACT_DIR=$release_dir"
-            echo "PLAY_ARTIFACT_DIR=$play_dir"
-          } >> "$GITHUB_ENV"
-
-      - name: Upload temporary universal APK artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        with:
-          name: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
-          path: |
-            ${{ env.UNIVERSAL_APK }}
-            ${{ env.RELEASE_CHECKSUM }}
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Publish prebuilt App Bundle to Google Play as Draft
+      - name: Publish App Bundle to Google Play production as Draft
         working-directory: android
-        env:
-          PLAY_TRACK: ${{ needs.verify-merged-pr-and-version.outputs.play_track }}
         run: >-
-          ./gradlew --no-daemon --stacktrace :app:publishBundle
+          ./gradlew --no-daemon --stacktrace :app:publishPlayReleaseBundle
           --artifact-dir "$PLAY_ARTIFACT_DIR"
-          --track "$PLAY_TRACK"
+          --track production
           --release-status draft
-
-      - name: Publish APK in GitHub Releases
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ needs.verify-merged-pr-and-version.outputs.release_tag }}
-          RELEASE_TITLE: ${{ needs.verify-merged-pr-and-version.outputs.artifact_name }}
-          CHANNEL: ${{ needs.verify-merged-pr-and-version.outputs.channel }}
-          PLAY_TRACK: ${{ needs.verify-merged-pr-and-version.outputs.play_track }}
-          VERSION_NAME: ${{ needs.verify-merged-pr-and-version.outputs.version_name }}
-          VERSION_CODE: ${{ needs.verify-merged-pr-and-version.outputs.version_code }}
-          MERGED_PR_NUMBER: ${{ needs.verify-merged-pr-and-version.outputs.merged_pr_number }}
-          REPOSITORY: ${{ github.repository }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          pr_data="$(gh api "/repos/$REPOSITORY/pulls/$MERGED_PR_NUMBER")"
-          pr_title="$(jq -r '.title' <<< "$pr_data")"
-          pr_body="$(jq -r '.body // ""' <<< "$pr_data")"
-          pr_url="$(jq -r '.html_url' <<< "$pr_data")"
-
-          notes_file="$RUNNER_TEMP/release-notes.md"
-          {
-            printf '## 本次更新\n\n'
-            printf -- '- [#%s %s](%s)\n' "$MERGED_PR_NUMBER" "$pr_title" "$pr_url"
-            if [[ -n "${pr_body//[[:space:]]/}" ]]; then
-              printf '\n%s\n' "$pr_body"
-            fi
-            printf '\n### 提交记录\n\n'
-            gh api --paginate "/repos/$REPOSITORY/pulls/$MERGED_PR_NUMBER/commits" \
-              --jq '.[] | "- " + (.commit.message | split("\n")[0]) + " (`" + (.sha[0:7]) + "`)"'
-            printf '\n## APK 下载说明\n\n'
-            printf '%s\n' \
-              '- `arm64-v8a`：绝大多数现代 Android 手机和平板' \
-              '- `armeabi-v7a`：较旧的 32 位 ARM 设备' \
-              '- `x86_64`：Android 模拟器及 x86_64 设备' \
-              '- `universal`：包含全部架构，不确定设备架构时使用'
-            printf '\n## 构建信息\n\n'
-            printf -- '- Version: `%s` (`%s`)\n' "$VERSION_NAME" "$VERSION_CODE"
-            printf -- '- Source commit: `%s`\n' "$GITHUB_SHA"
-            printf -- '- Google Play track: `%s` (Draft)\n' "$PLAY_TRACK"
-          } > "$notes_file"
-
-          shopt -s nullglob
-          release_files=("$RELEASE_ARTIFACT_DIR"/*)
-          if (( ${#release_files[@]} == 0 )); then
-            echo "No GitHub Release artifacts found." >&2
-            exit 1
-          fi
-
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release edit "$RELEASE_TAG" \
-              --title "$RELEASE_TITLE" \
-              --notes-file "$notes_file"
-            gh release upload "$RELEASE_TAG" "${release_files[@]}" --clobber
-          else
-            release_args=(
-              release create "$RELEASE_TAG"
-              "${release_files[@]}"
-              --target "$GITHUB_SHA"
-              --title "$RELEASE_TITLE"
-              --notes-file "$notes_file"
-            )
-            if [[ "$CHANNEL" == "beta" ]]; then
-              release_args+=(--prerelease)
-            else
-              release_args+=(--latest)
-            fi
-            gh "${release_args[@]}"
-          fi
 
       - name: Remove credentials
         if: always()

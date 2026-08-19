@@ -738,7 +738,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get updateAvailableMessage => 'Google Play 上已有更新版本可用。';
 
   @override
+  String get githubStableUpdateAvailableMessage => 'GitHub 上已有新的正式版本可用。';
+
+  @override
+  String get githubBetaUpdateAvailableMessage => 'GitHub 上已有新的 Beta 版本可用。';
+
+  @override
   String get updateNow => '去更新';
+
+  @override
+  String get openGooglePlay => '前往 Google Play';
+
+  @override
+  String get openGitHubRelease => '前往 GitHub';
 
   @override
   String get later => '稍后';

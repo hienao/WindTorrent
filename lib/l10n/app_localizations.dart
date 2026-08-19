@@ -1498,11 +1498,35 @@ abstract class AppLocalizations {
   /// **'A newer WindTorrent version is available on Google Play.'**
   String get updateAvailableMessage;
 
+  /// No description provided for @githubStableUpdateAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A newer stable WindTorrent version is available on GitHub.'**
+  String get githubStableUpdateAvailableMessage;
+
+  /// No description provided for @githubBetaUpdateAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A newer WindTorrent Beta version is available on GitHub.'**
+  String get githubBetaUpdateAvailableMessage;
+
   /// No description provided for @updateNow.
   ///
   /// In en, this message translates to:
   /// **'Update now'**
   String get updateNow;
+
+  /// No description provided for @openGooglePlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Google Play'**
+  String get openGooglePlay;
+
+  /// No description provided for @openGitHubRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Open GitHub'**
+  String get openGitHubRelease;
 
   /// No description provided for @later.
   ///

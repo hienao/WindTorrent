@@ -34,7 +34,11 @@ class _FakeBackend extends AnalyticsBackend {
 class _FakeEnvProvider implements AnalyticsEnvProvider {
   @override
   Future<Map<String, Object>> getEnvParams() async {
-    return <String, Object>{'platform': 'test_platform'};
+    return <String, Object>{
+      'platform': 'test_platform',
+      'distribution_channel': 'github',
+      'release_track': 'beta',
+    };
   }
 }
 
@@ -84,6 +88,46 @@ void main() {
       final params =
           fake.logEventCalls.first['parameters'] as Map<String, Object>;
       expect(params.containsKey('host'), isFalse);
+    });
+
+    test('build identity cannot be overridden by event parameters', () async {
+      final fake = _FakeBackend();
+      final service = AnalyticsService(
+        backend: fake,
+        envProvider: _FakeEnvProvider(),
+        privacyFilter: AnalyticsPrivacyFilter(
+          mode: ReleaseModeAssertion.disabled,
+        ),
+      );
+
+      await service.track(
+        'test_event',
+        params: <String, Object>{
+          'distribution_channel': 'play',
+          'release_track': 'stable',
+        },
+      );
+
+      final params =
+          fake.logEventCalls.single['parameters'] as Map<String, Object>;
+      expect(params['distribution_channel'], 'github');
+      expect(params['release_track'], 'beta');
+    });
+
+    test('syncBuildUserProperties mirrors channel and track', () async {
+      final fake = _FakeBackend();
+      final service = AnalyticsService(
+        backend: fake,
+        envProvider: _FakeEnvProvider(),
+        privacyFilter: AnalyticsPrivacyFilter(
+          mode: ReleaseModeAssertion.disabled,
+        ),
+      );
+
+      await service.syncBuildUserProperties();
+
+      expect(fake.userProperties['distribution_channel'], 'github');
+      expect(fake.userProperties['release_track'], 'beta');
     });
 
     test('setUserId 上报到 backend', () async {

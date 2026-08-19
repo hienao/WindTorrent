@@ -38,6 +38,7 @@ void main() async {
   // 此处 try/catch 仅用于上报 app_init_failed 埋点，随后 rethrow 保持 fail-fast。
   try {
     await Firebase.initializeApp();
+    await AnalyticsService.instance.syncBuildUserProperties();
     StartupTrace.mark('firebase_init_done');
   } catch (e) {
     await AnalyticsService.instance.track(

@@ -108,6 +108,16 @@ android {
         versionName appVersionName
     }
 
+    flavorDimensions "distribution"
+    productFlavors {
+        play {
+            dimension "distribution"
+        }
+        github {
+            dimension "distribution"
+        }
+    }
+
     // GitHub Releases publish smaller ABI-specific APKs plus a universal APK.
     // This is opt-in so local Debug builds keep the standard single-APK flow.
     splits {
@@ -169,7 +179,7 @@ play {
     defaultToAppBundles = true
 }
 
-tasks.matching { it.name == "publishReleaseBundle" }.configureEach {
+tasks.matching { it.name == "publishPlayReleaseBundle" }.configureEach {
     doFirst {
         if (!playCredentialsFile.exists()) {
             throw new GradleException("Google Play credentials file not found. Set PLAY_SERVICE_ACCOUNT_FILE for publishing.")

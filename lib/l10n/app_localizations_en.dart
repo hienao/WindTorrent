@@ -755,7 +755,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'A newer WindTorrent version is available on Google Play.';
 
   @override
+  String get githubStableUpdateAvailableMessage =>
+      'A newer stable WindTorrent version is available on GitHub.';
+
+  @override
+  String get githubBetaUpdateAvailableMessage =>
+      'A newer WindTorrent Beta version is available on GitHub.';
+
+  @override
   String get updateNow => 'Update now';
+
+  @override
+  String get openGooglePlay => 'Open Google Play';
+
+  @override
+  String get openGitHubRelease => 'Open GitHub';
 
   @override
   String get later => 'Later';

@@ -4,6 +4,7 @@ import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:windwalker/core/utils/log.dart';
 import 'package:windwalker/features/update/domain/update_check_result.dart';
+import 'package:windwalker/features/update/data/update_service.dart';
 
 class PlayUpdateSnapshot {
   const PlayUpdateSnapshot({
@@ -30,7 +31,7 @@ typedef PlayUpdateCheck = Future<PlayUpdateSnapshot> Function();
 typedef SupportedBuildCheck = bool Function(PackageInfo packageInfo);
 typedef OpenStoreListing = Future<void> Function();
 
-class PlayStoreUpdateService {
+class PlayStoreUpdateService implements UpdateService {
   PlayStoreUpdateService({
     PackageInfoLoader? packageInfoLoader,
     PlayUpdateCheck? checkForUpdate,
@@ -47,6 +48,10 @@ class PlayStoreUpdateService {
   final SupportedBuildCheck _isSupportedBuild;
   final OpenStoreListing _openStoreListing;
 
+  @override
+  UpdateSource get source => UpdateSource.playStore;
+
+  @override
   Future<UpdateCheckResult> checkForUpdate() async {
     final packageInfo = await _packageInfoLoader();
 
@@ -56,7 +61,8 @@ class PlayStoreUpdateService {
 
     try {
       final snapshot = await _checkForUpdate();
-      if (!snapshot.isUpdateAvailable || snapshot.availableVersionCode == null) {
+      if (!snapshot.isUpdateAvailable ||
+          snapshot.availableVersionCode == null) {
         return const UpdateCheckResult.upToDate();
       }
       return UpdateCheckResult.available(snapshot.availableVersionCode!);
@@ -66,7 +72,8 @@ class PlayStoreUpdateService {
     }
   }
 
-  Future<void> openStorePage() {
+  @override
+  Future<void> openUpdatePage(UpdateCheckResult result) {
     return _openStoreListing();
   }
 
