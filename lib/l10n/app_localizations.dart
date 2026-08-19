@@ -1498,11 +1498,35 @@ abstract class AppLocalizations {
   /// **'A newer WindTorrent version is available on Google Play.'**
   String get updateAvailableMessage;
 
+  /// No description provided for @githubStableUpdateAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A newer stable WindTorrent version is available on GitHub.'**
+  String get githubStableUpdateAvailableMessage;
+
+  /// No description provided for @githubBetaUpdateAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A newer WindTorrent Beta version is available on GitHub.'**
+  String get githubBetaUpdateAvailableMessage;
+
   /// No description provided for @updateNow.
   ///
   /// In en, this message translates to:
   /// **'Update now'**
   String get updateNow;
+
+  /// No description provided for @openGooglePlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Google Play'**
+  String get openGooglePlay;
+
+  /// No description provided for @openGitHubRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Open GitHub'**
+  String get openGitHubRelease;
 
   /// No description provided for @later.
   ///
@@ -1555,8 +1579,14 @@ abstract class AppLocalizations {
   /// No description provided for @contactDeveloperDesc.
   ///
   /// In en, this message translates to:
-  /// **'Send feedback via email'**
+  /// **'Report issues on GitHub Issues'**
   String get contactDeveloperDesc;
+
+  /// No description provided for @githubRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub Repository'**
+  String get githubRepository;
 
   /// No description provided for @shareApp.
   ///
@@ -1569,12 +1599,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share with friends'**
   String get shareAppDesc;
-
-  /// No description provided for @contactEmailSubject.
-  ///
-  /// In en, this message translates to:
-  /// **'WindTorrent Feedback'**
-  String get contactEmailSubject;
 
   /// No description provided for @openLinkFailed.
   ///

@@ -740,7 +740,21 @@ class AppLocalizationsJa extends AppLocalizations {
       'Google Play に新しい WindTorrent バージョンがあります。';
 
   @override
+  String get githubStableUpdateAvailableMessage =>
+      'GitHub に新しい WindTorrent 正式版があります。';
+
+  @override
+  String get githubBetaUpdateAvailableMessage =>
+      'GitHub に新しい WindTorrent ベータ版があります。';
+
+  @override
   String get updateNow => '更新する';
+
+  @override
+  String get openGooglePlay => 'Google Play を開く';
+
+  @override
+  String get openGitHubRelease => 'GitHub を開く';
 
   @override
   String get later => 'あとで';
@@ -767,16 +781,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get contactDeveloper => '開発者に連絡';
 
   @override
-  String get contactDeveloperDesc => 'メールでフィードバック';
+  String get contactDeveloperDesc => 'GitHub Issues で問題を報告';
+
+  @override
+  String get githubRepository => 'GitHub リポジトリ';
 
   @override
   String get shareApp => 'アプリを共有';
 
   @override
   String get shareAppDesc => '友達に共有';
-
-  @override
-  String get contactEmailSubject => 'WindTorrent フィードバック';
 
   @override
   String get openLinkFailed => 'リンクを開けません';

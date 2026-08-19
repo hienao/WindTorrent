@@ -10,6 +10,7 @@ import 'package:windwalker/features/home/presentation/pages/tasks_tab.dart';
 import 'package:windwalker/features/home/presentation/widgets/neo_home_shell.dart';
 import 'package:windwalker/features/realtime/presentation/controllers/realtime_sync_controller.dart';
 import 'package:windwalker/features/update/presentation/controllers/update_controller.dart';
+import 'package:windwalker/features/update/presentation/update_presentation_copy.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 
 class HomeTabContainer extends StatefulWidget {
@@ -46,7 +47,13 @@ class _HomeTabContainerState extends State<HomeTabContainer> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(ctx)!.updateAvailableTitle),
-        content: Text(AppLocalizations.of(ctx)!.updateAvailableMessage),
+        content: Text(
+          UpdatePresentationCopy.availableMessage(
+            l10n: AppLocalizations.of(ctx)!,
+            source: update.updateSource,
+            releaseTrack: update.releaseTrack,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -54,7 +61,12 @@ class _HomeTabContainerState extends State<HomeTabContainer> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(AppLocalizations.of(ctx)!.updateNow),
+            child: Text(
+              UpdatePresentationCopy.actionLabel(
+                l10n: AppLocalizations.of(ctx)!,
+                source: update.updateSource,
+              ),
+            ),
           ),
         ],
       ),
@@ -62,7 +74,7 @@ class _HomeTabContainerState extends State<HomeTabContainer> {
 
     if (!mounted) return;
     if (go == true) {
-      await update.openStorePage();
+      await update.openUpdatePage();
       return;
     }
 

@@ -6,14 +6,19 @@ import 'package:windwalker/core/theme/app_theme.dart';
 import 'package:windwalker/core/theme/neo_components.dart';
 import 'package:windwalker/core/theme/neo_theme_extension.dart';
 import 'package:windwalker/core/utils/app_version.dart';
+import 'package:windwalker/core/utils/external_link.dart';
+import 'package:windwalker/core/utils/log.dart';
 import 'package:windwalker/core/utils/responsive_layout.dart';
 import 'package:windwalker/core/utils/review_manager.dart';
 import 'package:windwalker/features/update/domain/update_check_result.dart';
 import 'package:windwalker/features/update/presentation/controllers/update_controller.dart';
+import 'package:windwalker/features/update/presentation/update_presentation_copy.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 
 class AboutPage extends StatelessWidget {
-  const AboutPage({super.key});
+  const AboutPage({super.key, this.externalLinkOpener = openExternalLink});
+
+  final ExternalLinkOpener externalLinkOpener;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +113,14 @@ class AboutPage extends StatelessWidget {
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: () => ReviewManager().openStoreListing(),
                   ),
+                  const SizedBox(height: AppSpacing.sm),
+                  NeoSettingRow(
+                    icon: Icons.code_rounded,
+                    title: l10n.githubRepository,
+                    subtitle: AppConstants.githubRepositoryUrl,
+                    trailing: const Icon(Icons.open_in_new_rounded),
+                    onTap: () => _openGitHubRepository(context),
+                  ),
                 ],
               ),
             ),
@@ -115,6 +128,27 @@ class AboutPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _openGitHubRepository(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final opened = await externalLinkOpener(
+        Uri.parse(AppConstants.githubRepositoryUrl),
+      );
+      if (!opened && context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.openLinkFailed)));
+      }
+    } catch (e, st) {
+      Log.e('打开 GitHub 仓库失败', error: e, stackTrace: st);
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.openLinkFailed)));
+      }
+    }
   }
 
   String _updateStatusLabel(AppLocalizations l10n, UpdateCheckStatus status) {
@@ -151,7 +185,13 @@ class AboutPage extends StatelessWidget {
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Text(l10n.updateAvailableMessage),
+                Text(
+                  UpdatePresentationCopy.availableMessage(
+                    l10n: l10n,
+                    source: context.read<UpdateController>().updateSource,
+                    releaseTrack: context.read<UpdateController>().releaseTrack,
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
                   children: [
@@ -165,7 +205,14 @@ class AboutPage extends StatelessWidget {
                     Expanded(
                       child: NeoButton.primary(
                         onPressed: () => Navigator.pop(ctx, true),
-                        label: Text(l10n.updateNow),
+                        label: Text(
+                          UpdatePresentationCopy.actionLabel(
+                            l10n: l10n,
+                            source: context
+                                .read<UpdateController>()
+                                .updateSource,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -177,7 +224,7 @@ class AboutPage extends StatelessWidget {
       );
       if (!context.mounted) return;
       if (go == true) {
-        await context.read<UpdateController>().openStorePage();
+        await context.read<UpdateController>().openUpdatePage();
       }
     } else {
       if (!context.mounted) return;

@@ -1,8 +1,10 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/public/' }
-        maven { url 'https://maven.aliyun.com/repository/google/' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        if (System.getenv('GITHUB_ACTIONS') != 'true') {
+            maven { url 'https://maven.aliyun.com/repository/public/' }
+            maven { url 'https://maven.aliyun.com/repository/google/' }
+            maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        }
         google()
         mavenCentral()
     }
@@ -14,12 +16,17 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/public/' }
-        maven { url 'https://maven.aliyun.com/repository/google/' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        if (System.getenv('GITHUB_ACTIONS') != 'true') {
+            maven { url 'https://maven.aliyun.com/repository/public/' }
+            maven { url 'https://maven.aliyun.com/repository/google/' }
+            maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+            maven { url 'https://storage.flutter-io.cn/download.flutter.io' }
+        }
         google()
         mavenCentral()
-        maven { url 'https://storage.flutter-io.cn/download.flutter.io' }
+        if (System.getenv('GITHUB_ACTIONS') == 'true') {
+            maven { url 'https://storage.googleapis.com/download.flutter.io' }
+        }
     }
 }
 
