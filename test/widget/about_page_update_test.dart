@@ -1,12 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:windwalker/core/constants/app_constants.dart';
 import 'package:windwalker/core/theme/neo_components.dart';
 import 'package:windwalker/core/config/build_channel_config.dart';
+import 'package:windwalker/features/settings/presentation/pages/about_page.dart';
 import 'package:windwalker/features/update/domain/update_check_result.dart';
 
 import 'test_helpers.dart';
 
 void main() {
+  testWidgets('About page opens the WindTorrent GitHub repository', (
+    tester,
+  ) async {
+    Uri? openedUri;
+
+    await tester.pumpWidget(
+      createTestApp(
+        downloaderController: MockDownloaderController(),
+        child: AboutPage(
+          externalLinkOpener: (uri) async {
+            openedUri = uri;
+            return true;
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('GitHub Repository'), findsOneWidget);
+    expect(find.text(AppConstants.githubRepositoryUrl), findsOneWidget);
+    await tester.ensureVisible(find.text('GitHub Repository'));
+    await tester.tap(find.text('GitHub Repository'));
+    await tester.pump();
+
+    expect(openedUri, Uri.parse(AppConstants.githubRepositoryUrl));
+  });
+
   testWidgets('About page shows check update tile and update status', (
     tester,
   ) async {

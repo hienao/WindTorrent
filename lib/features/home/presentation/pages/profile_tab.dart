@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:windwalker/core/constants/app_constants.dart';
 import 'package:windwalker/core/theme/app_theme.dart';
 import 'package:windwalker/core/theme/neo_components.dart';
 import 'package:windwalker/core/theme/neo_theme_extension.dart';
 import 'package:windwalker/core/utils/app_version.dart';
+import 'package:windwalker/core/utils/external_link.dart';
 import 'package:windwalker/core/utils/log.dart';
 import 'package:windwalker/core/utils/responsive_layout.dart';
 import 'package:windwalker/features/update/presentation/controllers/update_controller.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 
 class ProfileTab extends StatelessWidget {
-  const ProfileTab({super.key});
+  const ProfileTab({super.key, this.externalLinkOpener = openExternalLink});
+
+  final ExternalLinkOpener externalLinkOpener;
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +123,7 @@ class ProfileTab extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     NeoSettingRow(
-                      icon: Icons.mail_outline_rounded,
+                      icon: Icons.bug_report_outlined,
                       title: l10n.contactDeveloper,
                       subtitle: l10n.contactDeveloperDesc,
                       trailing: const Icon(Icons.chevron_right_rounded),
@@ -198,9 +200,8 @@ class ProfileTab extends StatelessWidget {
   Future<void> _openPrivacyPolicy(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      final ok = await launchUrl(
+      final ok = await externalLinkOpener(
         Uri.parse(AppConstants.privacyPolicyUrl),
-        mode: LaunchMode.externalApplication,
       );
       if (!ok && context.mounted) {
         _showSnackBar(context, l10n.openLinkFailed);
@@ -215,16 +216,15 @@ class ProfileTab extends StatelessWidget {
 
   Future<void> _contactDeveloper(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
-    final uri = Uri.parse(
-      'mailto:${AppConstants.developerEmail}?subject=${Uri.encodeComponent(l10n.contactEmailSubject)}',
-    );
     try {
-      final ok = await launchUrl(uri);
+      final ok = await externalLinkOpener(
+        Uri.parse(AppConstants.githubIssuesUrl),
+      );
       if (!ok && context.mounted) {
         _showSnackBar(context, l10n.openLinkFailed);
       }
     } catch (e, st) {
-      Log.e('打开邮件客户端失败', error: e, stackTrace: st);
+      Log.e('打开 GitHub Issues 失败', error: e, stackTrace: st);
       if (context.mounted) {
         _showSnackBar(context, l10n.openLinkFailed);
       }

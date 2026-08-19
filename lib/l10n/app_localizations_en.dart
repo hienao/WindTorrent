@@ -797,16 +797,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactDeveloper => 'Contact Developer';
 
   @override
-  String get contactDeveloperDesc => 'Send feedback via email';
+  String get contactDeveloperDesc => 'Report issues on GitHub Issues';
+
+  @override
+  String get githubRepository => 'GitHub Repository';
 
   @override
   String get shareApp => 'Share App';
 
   @override
   String get shareAppDesc => 'Share with friends';
-
-  @override
-  String get contactEmailSubject => 'WindTorrent Feedback';
 
   @override
   String get openLinkFailed => 'Unable to open link';
