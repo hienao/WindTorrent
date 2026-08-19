@@ -18,8 +18,7 @@ class AnalyticsBackend {
 
   /// 惰性获取 FirebaseAnalytics.instance，延迟到方法调用时。
   /// 这样测试环境的初始化异常会被 AnalyticsService 的 try/catch 捕获。
-  FirebaseAnalytics get _analytics =>
-      _injected ?? FirebaseAnalytics.instance;
+  FirebaseAnalytics get _analytics => _injected ?? FirebaseAnalytics.instance;
 
   Future<void> logEvent({
     required String name,
@@ -70,7 +69,9 @@ class AnalyticsService {
   Future<void> track(String name, {Map<String, Object>? params}) async {
     try {
       final env = await _envProvider.getEnvParams();
-      final merged = <String, Object>{...env, ...?params};
+      // Build identity is reserved metadata and cannot be overridden by an
+      // individual event call.
+      final merged = <String, Object>{...?params, ...env};
       final safe = _privacyFilter.scrub(merged);
       await _backend.logEvent(name: name, parameters: safe);
     } catch (e) {
@@ -99,6 +100,19 @@ class AnalyticsService {
   Future<void> setUserProperties(Map<String, Object?> properties) async {
     for (final entry in properties.entries) {
       await setUserProperty(entry.key, entry.value?.toString());
+    }
+  }
+
+  /// Mirrors build identity to Firebase user properties for segmentation.
+  Future<void> syncBuildUserProperties() async {
+    try {
+      final env = await _envProvider.getEnvParams();
+      await setUserProperties(<String, Object?>{
+        'distribution_channel': env['distribution_channel'],
+        'release_track': env['release_track'],
+      });
+    } catch (e) {
+      Log.w('同步构建渠道用户属性失败: $e', tag: _tag);
     }
   }
 

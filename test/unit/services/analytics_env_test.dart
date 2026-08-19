@@ -1,13 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:windwalker/services/analytics_env.dart';
+import 'package:windwalker/core/config/build_channel_config.dart';
 import 'package:flutter/services.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
-    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     messenger.setMockMethodCallHandler(
       const MethodChannel('plugins.flutter.io/path_provider'),
       (MethodCall methodCall) async {
@@ -48,7 +50,12 @@ void main() {
   });
 
   test('getEnvParams 返回必填字段', () async {
-    final provider = AnalyticsEnvProvider();
+    final provider = AnalyticsEnvProvider(
+      buildChannelConfig: BuildChannelConfig.parse(
+        flavor: 'github',
+        track: 'beta',
+      ),
+    );
     final env = await provider.getEnvParams();
 
     expect(env.containsKey('app_version'), isTrue);
@@ -56,6 +63,8 @@ void main() {
     expect(env.containsKey('platform'), isTrue);
     expect(env.containsKey('locale'), isTrue);
     expect(env.containsKey('network_type'), isTrue);
+    expect(env['distribution_channel'], 'github');
+    expect(env['release_track'], 'beta');
   });
 
   test('缓存后第二次调用不重新读 PackageInfo', () async {

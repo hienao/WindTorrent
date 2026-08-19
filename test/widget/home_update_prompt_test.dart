@@ -5,7 +5,9 @@ import 'package:windwalker/features/update/domain/update_check_result.dart';
 import 'test_helpers.dart';
 
 void main() {
-  testWidgets('Home shows gentle update dialog when controller allows it', (tester) async {
+  testWidgets('Home shows gentle update dialog when controller allows it', (
+    tester,
+  ) async {
     final taskController = TaskController();
 
     final updateController = buildUpdateControllerForTest(
@@ -24,7 +26,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Update available'), findsOneWidget);
-    expect(find.text('Update now'), findsOneWidget);
+    expect(find.text('Open Google Play'), findsOneWidget);
     expect(find.text('Later'), findsOneWidget);
 
     // 清理由 HomeTabContainer → AllTasksTabPage 启动的 25s periodic Timer

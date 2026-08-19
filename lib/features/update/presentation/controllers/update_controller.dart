@@ -2,19 +2,26 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:windwalker/services/analytics_service.dart';
+import 'package:windwalker/core/config/build_channel_config.dart';
 import 'package:windwalker/features/tasks/presentation/controllers/task_controller.dart';
-import 'package:windwalker/features/update/data/play_store_update_service.dart';
+import 'package:windwalker/features/update/data/update_repository.dart';
 import 'package:windwalker/features/update/domain/update_check_result.dart';
 import 'package:windwalker/features/update/domain/update_prompt_policy.dart';
+import 'package:windwalker/services/analytics_service.dart';
 
 class UpdateController extends ChangeNotifier {
   UpdateController({
-    PlayStoreUpdateService? service,
+    UpdateRepository? repository,
+    BuildChannelConfig? buildConfig,
     GetStorage? storage,
     TaskController? taskController,
     UpdatePromptPolicy? policy,
-  }) : _service = service ?? PlayStoreUpdateService(),
+  }) : _buildConfig = buildConfig ?? BuildChannelConfig.fromBuildEnvironment(),
+       _repository =
+           repository ??
+           ChannelUpdateRepository.forBuild(
+             buildConfig ?? BuildChannelConfig.fromBuildEnvironment(),
+           ),
        _storage = storage ?? GetStorage(),
        _taskController = taskController,
        _policy = policy ?? const UpdatePromptPolicy();
@@ -23,7 +30,8 @@ class UpdateController extends ChangeNotifier {
   static const _lastPromptDayKey = 'last_update_prompt_day';
   static const _dismissedVersionCodeKey = 'dismissed_update_version_code';
 
-  final PlayStoreUpdateService _service;
+  final BuildChannelConfig _buildConfig;
+  final UpdateRepository _repository;
   final GetStorage _storage;
   final UpdatePromptPolicy _policy;
   TaskController? _taskController;
@@ -36,7 +44,10 @@ class UpdateController extends ChangeNotifier {
   bool get isChecking => _isChecking;
   bool get hasUpdate => _lastResult.hasUpdate;
   UpdateCheckStatus get status => _lastResult.status;
+  UpdateSource get updateSource => _repository.source;
+  ReleaseTrack get releaseTrack => _buildConfig.releaseTrack;
   int? get availableVersionCode => _lastResult.availableVersionCode;
+  String? get availableVersionName => _lastResult.availableVersionName;
   bool get shouldShowUpdateBadge => _lastResult.hasUpdate;
   bool get shouldOfferUpdateDialog => _shouldOfferUpdateDialog;
 
@@ -48,25 +59,26 @@ class UpdateController extends ChangeNotifier {
   Future<void> runSilentCheck({DateTime? now}) async {
     _isChecking = true;
     notifyListeners();
-    _lastResult = await _service.checkForUpdate();
+    _lastResult = await _repository.checkForUpdate();
     _isChecking = false;
     _recomputeDecision(now: now);
     await _trackCheckResult(source: 'silent');
   }
 
   Future<void> checkForUpdatesManually() async {
-    _lastResult = await _service.checkForUpdate();
+    _lastResult = await _repository.checkForUpdate();
     _recomputeDecision();
     await _trackCheckResult(source: 'manual');
   }
 
-  Future<void> openStorePage() async {
-    await _service.openStorePage();
+  Future<void> openUpdatePage() async {
+    await _repository.openUpdatePage(_lastResult);
     _recordPromptAccepted(DateTime.now());
     await AnalyticsService.instance.track(
       'update_prompt_response',
       params: <String, Object>{
         'response': 'accepted',
+        'update_source': _repository.source.analyticsValue,
         if (_lastResult.availableVersionCode != null)
           'available_version_code': _lastResult.availableVersionCode!,
       },
@@ -85,6 +97,7 @@ class UpdateController extends ChangeNotifier {
       'update_prompt_response',
       params: <String, Object>{
         'response': 'dismissed',
+        'update_source': _repository.source.analyticsValue,
         'available_version_code': ?versionCode,
       },
     );
@@ -96,6 +109,9 @@ class UpdateController extends ChangeNotifier {
       params: <String, Object>{
         'result': _lastResult.status.name,
         'source': source,
+        'update_source': _repository.source.analyticsValue,
+        if (_repository.source == UpdateSource.githubRelease)
+          'source_branch': _buildConfig.releaseTrack.sourceBranch,
         if (_lastResult.availableVersionCode != null)
           'available_version_code': _lastResult.availableVersionCode!,
       },

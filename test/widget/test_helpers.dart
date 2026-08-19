@@ -23,6 +23,7 @@ import 'package:windwalker/features/tasks/presentation/controllers/task_domain_s
 import 'package:windwalker/features/tasks/presentation/controllers/transmission_task_detail_controller.dart';
 import 'package:windwalker/features/settings/presentation/pages/settings_page.dart';
 import 'package:windwalker/features/update/domain/update_check_result.dart';
+import 'package:windwalker/core/config/build_channel_config.dart';
 import 'package:windwalker/features/update/presentation/controllers/update_controller.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 import 'package:windwalker/models/add_task_request.dart';
@@ -363,18 +364,28 @@ class FakeUpdateController extends UpdateController {
   FakeUpdateController({
     required UpdateCheckResult result,
     required bool shouldOfferDialog,
+    this.source = UpdateSource.playStore,
+    this.track = ReleaseTrack.stable,
   }) : _result = result,
        _shouldOfferDialog = shouldOfferDialog,
        super();
 
   final UpdateCheckResult _result;
   final bool _shouldOfferDialog;
+  final UpdateSource source;
+  final ReleaseTrack track;
 
   @override
   bool get hasUpdate => _result.hasUpdate;
 
   @override
   UpdateCheckStatus get status => _result.status;
+
+  @override
+  UpdateSource get updateSource => source;
+
+  @override
+  ReleaseTrack get releaseTrack => track;
 
   @override
   int? get availableVersionCode => _result.availableVersionCode;
@@ -390,6 +401,9 @@ class FakeUpdateController extends UpdateController {
 
   @override
   Future<void> checkForUpdatesManually() async {}
+
+  @override
+  Future<void> openUpdatePage() async {}
 }
 
 /// Fake SettingsBackupController — overrides state getters and async methods
@@ -456,10 +470,14 @@ class FakeSettingsBackupController extends SettingsBackupController {
 UpdateController buildUpdateControllerForTest({
   required UpdateCheckResult result,
   required bool shouldOfferDialog,
+  UpdateSource source = UpdateSource.playStore,
+  ReleaseTrack track = ReleaseTrack.stable,
 }) {
   return FakeUpdateController(
     result: result,
     shouldOfferDialog: shouldOfferDialog,
+    source: source,
+    track: track,
   );
 }
 

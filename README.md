@@ -115,11 +115,12 @@ flutter run
 flutter test
 
 # 构建 APK
-flutter build apk --debug
-flutter build apk --release
+flutter build apk --debug --flavor github
+flutter build apk --release --flavor github \
+  --dart-define=APP_RELEASE_TRACK=beta
 ```
 
-本地 Debug 构建未配置 keystore 时使用 Android 默认 Debug key。公开 PR 只执行静态检查和测试，不读取任何 Secret。只有 PR 合并到 `beta` 或 `main` 后，GitHub 才会从 `google-play-internal` Environment Secrets 恢复统一的 Android keystore，并生成签名 Release APK。
+Android 使用相同包名 `com.hienao.windtorrent` 的 `play`、`github` 两个分发 flavor。Debug 默认使用 `github + beta`，未配置 keystore 时使用 Android 默认 Debug key；Release 必须通过 `APP_RELEASE_TRACK=stable|beta` 固化更新轨道。公开 PR 只执行静态检查和测试，不读取任何 Secret。
 
 ## 发布前：版本号调整（Google Play）
 
@@ -142,22 +143,26 @@ Android 版本号现在由 Flutter 默认机制注入，直接来自 `pubspec.ya
 - `versionCode` = `buildNumber`
 - Android 构建脚本（`android/app/build.gradle`）会直接解析 `pubspec.yaml` 的 `version`，不会再依赖 `android/local.properties` 中的版本字段
 
-本地发布命令（Internal Testing 草稿）：
+本地发布命令（Google Play production 草稿）：
 ```bash
 cd android
-./gradlew :app:publishReleaseBundle
+dart_defines="$(printf 'APP_RELEASE_TRACK=stable' | base64 | tr -d '\n')"
+./gradlew -Pdart-defines="$dart_defines" :app:publishPlayReleaseBundle \
+  --track production \
+  --release-status draft
 ```
 
 发布命令需要通过 `ANDROID_KEYSTORE_FILE`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD` 和 `PLAY_SERVICE_ACCOUNT_FILE` 提供签名与 Google Play 凭证；这些文件不会提交到 Git。
 
 GitHub 发布规则：
 
-- PR 合并到 `beta`：要求 `versionCode` 相比合并前的 `beta` 严格递增，生成签名 Release APK，在 GitHub Releases 中创建 Pre-release，并将 AAB 上传到 Google Play `beta` 轨道为 Draft。
-- PR 合并到 `main`：要求 `versionCode` 相比合并前的 `main` 严格递增，生成签名 Release APK，在 GitHub Releases 中创建正式 Release，并将 AAB 上传到 Google Play `production` 轨道为 Draft。
-- GitHub Release 同时提供 `arm64-v8a`、`armeabi-v7a`、`x86_64` 和 `universal` APK，并附带 SHA-256 校验文件及本次合并 PR 的更新内容。
+- PR 合并到 `beta`：仅构建 `github + beta`，在 GitHub Releases 中创建 Pre-release，不构建或上传 Google Play AAB。
+- PR 合并到 `main`：并行构建 `github + stable` 和 `play + stable`；前者创建正式 GitHub Release，后者上传 Google Play `production` 轨道为 Draft。
+- GitHub Release 同时提供 `arm64-v8a`、`armeabi-v7a`、`x86_64` 和 `universal` APK，并附带渠道 manifest、SHA-256 校验文件及本次合并 PR 的更新内容。
 - Universal APK 和校验文件在 Actions Artifact 中保留 7 天；长期下载及分架构 APK 使用 GitHub Releases。Flutter、Pub 与 Gradle 依赖使用 Actions Cache 加速后续构建。
 - 普通 push、tag、手动运行以及仅关闭但未合并的 PR 都不会构建 Beta/Release。
-- `versionCode` 未增加或发生回退时，工作流会在读取任何签名或 Google Play Secret 前失败终止。
+- `beta` 版本名必须符合 `x.y.z-beta.n`，`main` 必须为 `x.y.z`；两者的 `versionCode` 都必须大于另一个发布分支的已发布值，保持同包名应用全局单调递增。
+- GitHub APK 发布前会将签名证书与仓库变量 `APP_SIGNING_CERT_SHA256` 比较。该变量填写 Play Console“应用签名密钥证书”的 SHA-256；签名 Secret 与 Play 服务账号凭证均从无审批规则的 `google-play-internal` Environment 注入，GitHub 渠道任务不会读取 Play 服务账号凭证。
 
 ## 开发
 

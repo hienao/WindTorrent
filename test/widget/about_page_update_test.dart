@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:windwalker/core/theme/neo_components.dart';
+import 'package:windwalker/core/config/build_channel_config.dart';
 import 'package:windwalker/features/update/domain/update_check_result.dart';
 
 import 'test_helpers.dart';
@@ -74,6 +75,33 @@ void main() {
     expect(find.byType(Dialog), findsOneWidget);
     expect(find.byType(NeoCard), findsWidgets);
     expect(find.text('Update available'), findsOneWidget);
-    expect(find.text('Update now'), findsOneWidget);
+    expect(find.text('Open Google Play'), findsOneWidget);
+  });
+
+  testWidgets('About page shows GitHub Beta update source', (tester) async {
+    final updateController = buildUpdateControllerForTest(
+      result: const UpdateCheckResult.available(2026081905),
+      shouldOfferDialog: false,
+      source: UpdateSource.githubRelease,
+      track: ReleaseTrack.beta,
+    );
+
+    await tester.pumpWidget(
+      createTestApp(
+        downloaderController: MockDownloaderController(),
+        updateController: updateController,
+        initialLocation: '/about',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Check for Updates'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('A newer WindTorrent Beta version is available on GitHub.'),
+      findsOneWidget,
+    );
+    expect(find.text('Open GitHub'), findsOneWidget);
   });
 }

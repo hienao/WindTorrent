@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:windwalker/core/config/build_channel_config.dart';
 import 'package:windwalker/core/utils/log.dart';
 
 /// 环境参数提供者：注入 app_version/platform/locale/network_type 等公共参数。
@@ -11,9 +12,12 @@ import 'package:windwalker/core/utils/log.dart';
 /// 作为独立服务提供环境参数，便于复用与测试。
 /// 除 network_type 外的字段缓存复用。
 class AnalyticsEnvProvider {
-  AnalyticsEnvProvider();
+  AnalyticsEnvProvider({BuildChannelConfig? buildChannelConfig})
+    : _buildChannelConfig =
+          buildChannelConfig ?? BuildChannelConfig.fromBuildEnvironment();
 
   static const _tag = 'AnalyticsEnv';
+  final BuildChannelConfig _buildChannelConfig;
   Map<String, Object>? _cached;
 
   Future<Map<String, Object>> getEnvParams() async {
@@ -31,6 +35,7 @@ class AnalyticsEnvProvider {
       'os_version': _shortOsVersion(Platform.operatingSystemVersion),
       'locale': locale.toLanguageTag(),
       'network_type': networkType,
+      ..._buildChannelConfig.analyticsParameters,
     };
 
     if (Platform.isAndroid) {
