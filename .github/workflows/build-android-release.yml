@@ -135,8 +135,13 @@ jobs:
             exit 1
           fi
 
-          artifact_name="WindTorrent-github-${release_track}-${current_name}-${current_code}"
-          release_tag="v${current_name}+${current_code}"
+          if [[ "$release_track" == "stable" ]]; then
+            artifact_name="WindTorrent-github-stable-${current_name}"
+            release_tag="v${current_name}"
+          else
+            artifact_name="WindTorrent-github-beta-${current_name}-${current_code}"
+            release_tag="v${current_name}+${current_code}"
+          fi
           {
             echo "release_track=$release_track"
             echo "source_branch=$BRANCH"
@@ -492,12 +497,12 @@ jobs:
           install -m 0644 "$source_aab" "$play_dir/WindTorrent-play-stable.aab"
           echo "PLAY_ARTIFACT_DIR=$play_dir" >> "$GITHUB_ENV"
 
-      - name: Publish App Bundle to Google Play production as Draft
+      - name: Publish App Bundle to Google Play internal testing as Draft
         working-directory: android
         run: >-
           ./gradlew --no-daemon --stacktrace :app:publishPlayReleaseBundle
           --artifact-dir "$PLAY_ARTIFACT_DIR"
-          --track production
+          --track internal
           --release-status draft
 
       - name: Remove credentials
