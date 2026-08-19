@@ -1,7 +1,7 @@
 name: windwalker
 description: "WindTorrent - Remote manager for Aria2, qBittorrent, and Transmission"
 publish_to: 'none'
-version: 1.1.4-beta.4+2026081804
+version: 1.1.4-beta.5+2026081901
 
 environment:
   sdk: '>=3.11.0 <3.20.0'
