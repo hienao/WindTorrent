@@ -143,12 +143,12 @@ Android 版本号现在由 Flutter 默认机制注入，直接来自 `pubspec.ya
 - `versionCode` = `buildNumber`
 - Android 构建脚本（`android/app/build.gradle`）会直接解析 `pubspec.yaml` 的 `version`，不会再依赖 `android/local.properties` 中的版本字段
 
-本地发布命令（Google Play production 草稿）：
+本地发布命令（Google Play internal 内部测试草稿）：
 ```bash
 cd android
 dart_defines="$(printf 'APP_RELEASE_TRACK=stable' | base64 | tr -d '\n')"
 ./gradlew -Pdart-defines="$dart_defines" :app:publishPlayReleaseBundle \
-  --track production \
+  --track internal \
   --release-status draft
 ```
 
@@ -157,8 +157,9 @@ dart_defines="$(printf 'APP_RELEASE_TRACK=stable' | base64 | tr -d '\n')"
 GitHub 发布规则：
 
 - PR 合并到 `beta`：仅构建 `github + beta`，在 GitHub Releases 中创建 Pre-release，不构建或上传 Google Play AAB。
-- PR 合并到 `main`：并行构建 `github + stable` 和 `play + stable`；前者创建正式 GitHub Release，后者上传 Google Play `production` 轨道为 Draft。
+- PR 合并到 `main`：并行构建 `github + stable` 和 `play + stable`；前者创建正式 GitHub Release，后者上传 Google Play `internal` 内部测试轨道为 Draft。
 - GitHub Release 同时提供 `arm64-v8a`、`armeabi-v7a`、`x86_64` 和 `universal` APK，并附带渠道 manifest、SHA-256 校验文件及本次合并 PR 的更新内容。
+- 正式版 GitHub tag、Release 名称和 APK 文件名只使用 `x.y.z`，不附加日期构建号；`versionCode` 仅作为 Android/Google Play 内部递增构建号。
 - Universal APK 和校验文件在 Actions Artifact 中保留 7 天；长期下载及分架构 APK 使用 GitHub Releases。Flutter、Pub 与 Gradle 依赖使用 Actions Cache 加速后续构建。
 - 普通 push、tag、手动运行以及仅关闭但未合并的 PR 都不会构建 Beta/Release。
 - `beta` 版本名必须符合 `x.y.z-beta.n`，`main` 必须为 `x.y.z`；两者的 `versionCode` 都必须大于另一个发布分支的已发布值，保持同包名应用全局单调递增。
