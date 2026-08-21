@@ -1227,123 +1227,32 @@ class AppLocalizationsJa extends AppLocalizations {
   String get backupRestore => 'バックアップと復元';
 
   @override
-  String get webDavServer => 'WebDAV サーバー';
+  String get exportConfigBackup => '設定を JSON にエクスポート';
 
   @override
-  String get webDavConfigSubtitle => 'バックアップと復元に使うリモートフォルダを設定';
+  String get importConfigBackup => 'JSON から設定をインポート';
 
   @override
-  String get webDavNotConfigured => '未設定';
-
-  @override
-  String get webDavRootUrl => 'ルート URL';
-
-  @override
-  String get webDavDirectory => 'リモートディレクトリ';
-
-  @override
-  String get webDavPasswordOrToken => 'パスワードまたはアプリトークン';
-
-  @override
-  String get testConnection => '接続テスト';
-
-  @override
-  String get testingConnection => 'テスト中...';
-
-  @override
-  String get saving => '保存中...';
-
-  @override
-  String get webDavRootUrlInvalid => '有効な WebDAV URL を入力してください';
-
-  @override
-  String get webDavDirectoryRequired => 'リモートディレクトリを入力してください';
-
-  @override
-  String get usernameRequired => 'ユーザー名を入力してください';
-
-  @override
-  String get webDavPasswordRequired => 'パスワードまたはアプリトークンを入力してください';
-
-  @override
-  String get backupToWebDav => 'WebDAV にバックアップ';
-
-  @override
-  String get restoreFromWebDav => 'WebDAV から復元';
-
-  @override
-  String get signInToUseBackup => 'バックアップを使うにはサインインしてください';
-
-  @override
-  String get configureWebDavToUseBackup => 'バックアップを使うには WebDAV を設定してください';
+  String get importBackupValidationNotice => '設定を置き換える前にファイルを検証します';
 
   @override
   String get backupIncludesCredentials => 'ダウンローダーのアドレスと認証情報を含みます';
 
   @override
-  String get confirmRestoreAndReplace => '復元と置換を確認';
+  String get confirmRestoreAndReplace => 'インポートと置換を確認';
 
   @override
   String get restoreWillReplaceAllDownloaders => '現在のすべてのダウンローダー設定が置き換えられます。';
 
   @override
-  String get restoreCreatesRollbackSnapshot => '復元前にローカルロールバックスナップショットが作成されます';
+  String get restoreCreatesRollbackSnapshot =>
+      'インポート前にローカルロールバックスナップショットを作成します';
 
   @override
-  String get undoLastRestore => '最後の復元を元に戻す';
+  String get undoLastRestore => '最後のインポートを元に戻す';
 
   @override
-  String get selectBackupVersion => 'バックアップバージョンを選択';
-
-  @override
-  String get noBackupsAvailable => '利用可能なバックアップがありません';
-
-  @override
-  String get latestBackupLabel => '最新バックアップ';
-
-  @override
-  String get latestBackupChip => '最新';
-
-  @override
-  String get confirmDeleteBackupVersion => 'バックアップを削除しますか？';
-
-  @override
-  String get deleteBackupVersionMessage => 'このバックアップは WebDAV から完全に削除されます。';
-
-  @override
-  String get restoreInProgress => '復元中...';
-
-  @override
-  String get backupInProgress => 'バックアップ中...';
-
-  @override
-  String get backupTimeJustNow => 'たった今';
-
-  @override
-  String backupTimeMinutesAgo(int count) {
-    return '$count分前';
-  }
-
-  @override
-  String backupTimeHoursAgo(int count) {
-    return '$count時間前';
-  }
-
-  @override
-  String backupTimeDaysAgo(int count) {
-    return '$count日前';
-  }
-
-  @override
-  String backupDownloaderCount(int count) {
-    return '$count 台のダウンローダー';
-  }
-
-  @override
-  String get restoreSuccess => '復元が完了しました';
-
-  @override
-  String get exportSuccess => 'バックアップが完了しました';
+  String get selectBackupFile => 'JSON ファイルを選択';
 
   @override
   String get forgotPassword => 'パスワードをお忘れですか？';

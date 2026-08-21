@@ -1,11 +1,4 @@
-enum BackupFailureReason {
-  notConfigured,
-  unauthorized,
-  network,
-  parseFailed,
-  server,
-  unknown,
-}
+enum BackupFailureReason { parseFailed, fileAccess, unknown }
 
 class BackupException implements Exception {
   const BackupException({required this.reason, this.message, this.statusCode});

@@ -4,46 +4,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:windwalker/core/constants/app_constants.dart';
-import 'package:windwalker/features/backup/data/backup_storage_api.dart';
+import 'package:windwalker/features/backup/data/backup_exceptions.dart';
+import 'package:windwalker/features/backup/data/backup_file_api.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/models/downloader.dart';
 import 'package:windwalker/models/downloader_backup_bundle.dart';
-import 'package:windwalker/models/downloader_backup_version.dart';
 import 'package:windwalker/services/downloader_backup_service.dart';
 
-class _FakeStorageApi implements BackupStorageApi {
-  _FakeStorageApi({
-    this.versionsToReturn = const <DownloaderBackupVersion>[],
-    this.downloadedBytes = const <int>[],
-    this.uploadError,
-  });
-
-  final List<DownloaderBackupVersion> versionsToReturn;
-  final List<int> downloadedBytes;
-  final Object? uploadError;
-
-  DownloaderBackupBundle? uploadedBundle;
-  final List<String> deletedIds = <String>[];
+class _FakeBackupFileApi implements BackupFileApi {
+  PickedBackupFile? pickedFile;
+  bool saveResult = true;
+  String? savedFileName;
+  Uint8List? savedBytes;
 
   @override
-  Future<void> testConnection() async {}
+  Future<PickedBackupFile?> pickBackup() async => pickedFile;
 
   @override
-  Future<List<DownloaderBackupVersion>> listVersions() async =>
-      versionsToReturn;
-
-  @override
-  Future<void> uploadBackup(DownloaderBackupBundle bundle) async {
-    if (uploadError != null) throw uploadError!;
-    uploadedBundle = bundle;
-  }
-
-  @override
-  Future<List<int>> downloadBackup(String fileId) async => downloadedBytes;
-
-  @override
-  Future<void> deleteBackup(String fileId) async {
-    deletedIds.add(fileId);
+  Future<bool> saveBackup({
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    savedFileName = fileName;
+    savedBytes = bytes;
+    return saveResult;
   }
 }
 
@@ -57,14 +41,41 @@ Downloader _downloader({String id = 'd1', String name = 'Test'}) {
   );
 }
 
+Map<String, dynamic> _validBackupJson({
+  String type = 'aria2',
+  Object port = 6800,
+  String id = 'new',
+}) {
+  return <String, dynamic>{
+    'schemaVersion': 1,
+    'backupId': 'backup-1',
+    'createdAt': '2026-08-22T10:00:00Z',
+    'appVersion': '1.1.4',
+    'downloaders': <Object?>[
+      <String, dynamic>{
+        'id': id,
+        'name': 'Imported',
+        'type': type,
+        'host': '127.0.0.1',
+        'port': port,
+        'secret': null,
+        'username': null,
+        'password': null,
+        'useHttps': false,
+        'version': null,
+      },
+    ],
+  };
+}
+
 DownloaderBackupService _buildService({
   required DownloaderController controller,
-  required BackupStorageApi storageApi,
+  required _FakeBackupFileApi fileApi,
 }) {
   return DownloaderBackupService(
-    storageApi: storageApi,
+    fileApi: fileApi,
     downloaderController: controller,
-    currentAppVersion: () async => '1.1.1',
+    currentAppVersion: () async => '1.1.4',
   );
 }
 
@@ -75,15 +86,7 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
           const MethodChannel('plugins.flutter.io/path_provider'),
-          (MethodCall methodCall) async {
-            if (methodCall.method == 'getApplicationDocumentsDirectory') {
-              return '/tmp/test_windwalker';
-            }
-            if (methodCall.method == 'getApplicationSupportDirectory') {
-              return '/tmp/test_windwalker';
-            }
-            return null;
-          },
+          (MethodCall methodCall) async => '/tmp/test_windwalker',
         );
     await GetStorage.init();
   });
@@ -95,140 +98,126 @@ void main() {
 
   group('DownloaderBackupService', () {
     test(
-      'exportBackup uploads bundle and deletes versions beyond newest two',
+      'exports a readable JSON backup through the system file API',
       () async {
-        final controller = DownloaderController();
-        controller.setTestDownloadersForTest(<Downloader>[_downloader()]);
-        final storageApi = _FakeStorageApi(
-          versionsToReturn: <DownloaderBackupVersion>[
-            DownloaderBackupVersion(
-              fileId: 'oldest',
-              fileName: 'oldest.json',
-              backupId: 'b1',
-              createdAt: DateTime.parse('2026-07-01T00:00:00Z'),
-              appVersion: '1.0.0',
-              downloaderCount: 1,
-              isLatest: false,
-            ),
-            DownloaderBackupVersion(
-              fileId: 'old',
-              fileName: 'old.json',
-              backupId: 'b2',
-              createdAt: DateTime.parse('2026-07-02T00:00:00Z'),
-              appVersion: '1.0.0',
-              downloaderCount: 1,
-              isLatest: false,
-            ),
-            DownloaderBackupVersion(
-              fileId: 'new',
-              fileName: 'new.json',
-              backupId: 'b3',
-              createdAt: DateTime.parse('2026-07-03T00:00:00Z'),
-              appVersion: '1.0.0',
-              downloaderCount: 1,
-              isLatest: true,
-            ),
-          ],
-        );
+        final controller = DownloaderController()
+          ..setTestDownloadersForTest(<Downloader>[_downloader()]);
+        final fileApi = _FakeBackupFileApi();
+        final service = _buildService(controller: controller, fileApi: fileApi);
 
-        final service = _buildService(
-          controller: controller,
-          storageApi: storageApi,
-        );
-        await service.exportBackup();
+        expect(await service.exportBackup(), isTrue);
+        expect(fileApi.savedFileName, endsWith('.json'));
 
-        expect(storageApi.uploadedBundle, isNotNull);
-        expect(storageApi.uploadedBundle!.downloaders.single.id, 'd1');
-        expect(storageApi.deletedIds, <String>['oldest']);
+        final decoded = jsonDecode(utf8.decode(fileApi.savedBytes!));
+        final bundle = DownloaderBackupBundle.fromJson(
+          Map<String, dynamic>.from(decoded as Map),
+        );
+        expect(bundle.downloaders.single.id, 'd1');
+        expect(bundle.schemaVersion, 1);
       },
     );
 
-    test('exportBackup keeps old versions when upload fails', () async {
-      final controller = DownloaderController();
-      controller.setTestDownloadersForTest(<Downloader>[_downloader()]);
-      final storageApi = _FakeStorageApi(
-        versionsToReturn: <DownloaderBackupVersion>[
-          DownloaderBackupVersion(
-            fileId: 'old',
-            fileName: 'old.json',
-            backupId: 'b1',
-            createdAt: DateTime.parse('2026-07-01T00:00:00Z'),
-            appVersion: '1.0.0',
-            downloaderCount: 1,
-            isLatest: true,
+    test('valid import replaces configurations after validation', () async {
+      final controller = DownloaderController()
+        ..setTestDownloadersForTest(<Downloader>[_downloader(id: 'old')]);
+      final fileApi = _FakeBackupFileApi()
+        ..pickedFile = PickedBackupFile(
+          fileName: 'backup.json',
+          bytes: Uint8List.fromList(
+            utf8.encode(jsonEncode(_validBackupJson())),
           ),
-        ],
-        uploadError: Exception('upload failed'),
-      );
+        );
+      final service = _buildService(controller: controller, fileApi: fileApi);
 
-      final service = _buildService(
-        controller: controller,
-        storageApi: storageApi,
-      );
+      final bundle = await service.importBackup();
 
-      expect(() => service.exportBackup(), throwsException);
-      expect(storageApi.deletedIds, isEmpty);
-    });
-
-    test('restoreBackup replaces controller downloaders', () async {
-      final controller = DownloaderController();
-      controller.setTestDownloadersForTest(<Downloader>[
-        _downloader(id: 'old'),
-      ]);
-      final bundle = DownloaderBackupBundle(
-        schemaVersion: DownloaderBackupBundle.supportedSchemaVersion,
-        backupId: 'backup-1',
-        createdAt: DateTime.parse('2026-07-04T10:00:00Z'),
-        appVersion: '1.1.1',
-        downloaders: <Downloader>[_downloader(id: 'new')],
-      );
-      final storageApi = _FakeStorageApi(
-        downloadedBytes: utf8.encode(jsonEncode(bundle.toJson())),
-      );
-
-      final service = _buildService(
-        controller: controller,
-        storageApi: storageApi,
-      );
-      await service.restoreBackup(fileId: 'file-1');
-
+      expect(bundle, isNotNull);
       expect(controller.downloaders.single.id, 'new');
+      expect(controller.hasRollbackSnapshot, isTrue);
     });
 
-    test('pickFilesToDeleteBeforeUpload keeps newest two versions', () {
-      final result = DownloaderBackupService.pickFilesToDeleteBeforeUpload(
-        <DownloaderBackupVersion>[
-          DownloaderBackupVersion(
-            fileId: '1',
-            fileName: '1.json',
-            backupId: 'b1',
-            createdAt: DateTime.parse('2026-07-01T00:00:00Z'),
-            appVersion: '1.0.0',
-            downloaderCount: 1,
-            isLatest: false,
-          ),
-          DownloaderBackupVersion(
-            fileId: '2',
-            fileName: '2.json',
-            backupId: 'b2',
-            createdAt: DateTime.parse('2026-07-02T00:00:00Z'),
-            appVersion: '1.0.0',
-            downloaderCount: 1,
-            isLatest: false,
-          ),
-          DownloaderBackupVersion(
-            fileId: '3',
-            fileName: '3.json',
-            backupId: 'b3',
-            createdAt: DateTime.parse('2026-07-03T00:00:00Z'),
-            appVersion: '1.0.0',
-            downloaderCount: 1,
-            isLatest: true,
-          ),
-        ],
-      );
+    test('malformed JSON is rejected without changing current data', () async {
+      final controller = DownloaderController()
+        ..setTestDownloadersForTest(<Downloader>[_downloader(id: 'old')]);
+      final fileApi = _FakeBackupFileApi()
+        ..pickedFile = PickedBackupFile(
+          fileName: 'invalid.json',
+          bytes: Uint8List.fromList(utf8.encode('{not-json')),
+        );
+      final service = _buildService(controller: controller, fileApi: fileApi);
 
-      expect(result.map((version) => version.fileId), <String>['1']);
+      await expectLater(
+        service.importBackup(),
+        throwsA(
+          isA<BackupException>().having(
+            (error) => error.reason,
+            'reason',
+            BackupFailureReason.parseFailed,
+          ),
+        ),
+      );
+      expect(controller.downloaders.single.id, 'old');
+      expect(controller.hasRollbackSnapshot, isFalse);
+    });
+
+    test(
+      'unsupported downloader type is rejected before replacement',
+      () async {
+        final controller = DownloaderController()
+          ..setTestDownloadersForTest(<Downloader>[_downloader(id: 'old')]);
+        final fileApi = _FakeBackupFileApi()
+          ..pickedFile = PickedBackupFile(
+            fileName: 'invalid.json',
+            bytes: Uint8List.fromList(
+              utf8.encode(jsonEncode(_validBackupJson(type: 'unknown'))),
+            ),
+          );
+        final service = _buildService(controller: controller, fileApi: fileApi);
+
+        await expectLater(
+          service.importBackup(),
+          throwsA(isA<BackupException>()),
+        );
+        expect(controller.downloaders.single.id, 'old');
+        expect(controller.hasRollbackSnapshot, isFalse);
+      },
+    );
+
+    test('out-of-range port is rejected before replacement', () async {
+      final bytes = utf8.encode(jsonEncode(_validBackupJson(port: 70000)));
+
+      expect(
+        () => DownloaderBackupService.decodeAndValidate(bytes),
+        throwsA(isA<BackupException>()),
+      );
+    });
+
+    test('duplicate downloader ids are rejected', () async {
+      final json = _validBackupJson();
+      final first = Map<String, dynamic>.from(
+        (json['downloaders'] as List<dynamic>).single as Map,
+      );
+      (json['downloaders'] as List<dynamic>).add(first);
+
+      expect(
+        () => DownloaderBackupService.decodeAndValidate(
+          utf8.encode(jsonEncode(json)),
+        ),
+        throwsA(isA<BackupException>()),
+      );
+    });
+
+    test('empty and oversized files are rejected', () {
+      expect(
+        () => DownloaderBackupService.decodeAndValidate(const <int>[]),
+        throwsA(isA<BackupException>()),
+      );
+      expect(
+        () => DownloaderBackupService.decodeAndValidate(
+          Uint8List(DownloaderBackupService.maxBackupFileBytes + 1),
+        ),
+        throwsA(isA<BackupException>()),
+      );
     });
   });
 }

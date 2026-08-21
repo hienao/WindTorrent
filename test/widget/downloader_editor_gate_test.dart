@@ -11,14 +11,24 @@ import 'package:windwalker/services/connection_result.dart';
 
 class GateMockController extends DownloaderController {
   ConnectionResult result;
+  Downloader? submittedDownloader;
+  int submissionCount = 0;
+
   GateMockController(this.result) : super();
 
   @override
-  Future<ConnectionResult> addDownloader(Downloader downloader) async => result;
+  Future<ConnectionResult> addDownloader(Downloader downloader) async {
+    submittedDownloader = downloader;
+    submissionCount++;
+    return result;
+  }
 
   @override
-  Future<ConnectionResult> updateDownloader(Downloader downloader) async =>
-      result;
+  Future<ConnectionResult> updateDownloader(Downloader downloader) async {
+    submittedDownloader = downloader;
+    submissionCount++;
+    return result;
+  }
 }
 
 Widget harness(DownloaderController c) =>
@@ -85,5 +95,51 @@ void main() {
 
     // 成功 → pop → 不再有标题
     expect(find.text('添加下载器'), findsNothing);
+  });
+
+  testWidgets('保存时移除地址协议且连接类型只取决于 HTTPS 开关', (tester) async {
+    final c = GateMockController(
+      const ConnectionFailure(
+        ConnectionFailureCategory.networkError,
+        'offline',
+      ),
+    );
+    await tester.pumpWidget(harness(c));
+
+    await tester.enterText(find.byType(TextFormField).at(0), 'D1');
+    await tester.enterText(
+      find.byType(TextFormField).at(1),
+      r'https\://example.com',
+    );
+    await tester.enterText(find.byType(TextFormField).at(2), '6800');
+    await tester.enterText(find.byType(TextFormField).at(3), 'secret');
+
+    await tester.tap(find.text('保存配置'));
+    await tester.pump();
+
+    expect(c.submittedDownloader?.host, 'example.com');
+    expect(c.submittedDownloader?.useHttps, isFalse);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is EditableText && widget.controller.text == 'example.com',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('仅输入协议时移除后触发服务器地址必填校验', (tester) async {
+    final c = GateMockController(const ConnectionSuccess());
+    await tester.pumpWidget(harness(c));
+
+    await tester.enterText(find.byType(TextFormField).at(0), 'D1');
+    await tester.enterText(find.byType(TextFormField).at(1), 'https://');
+    await tester.enterText(find.byType(TextFormField).at(2), '6800');
+
+    await tester.tap(find.text('保存配置'));
+    await tester.pump();
+
+    expect(c.submissionCount, 0);
+    expect(find.text('请输入服务器地址'), findsOneWidget);
   });
 }

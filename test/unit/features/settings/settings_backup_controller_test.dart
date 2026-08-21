@@ -1,73 +1,43 @@
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:windwalker/features/backup/data/backup_storage_api.dart';
-import 'package:windwalker/features/backup/data/webdav_config.dart';
-import 'package:windwalker/features/backup/data/webdav_config_store.dart';
+import 'package:windwalker/core/constants/app_constants.dart';
+import 'package:windwalker/features/backup/data/backup_file_api.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/features/settings/presentation/controllers/settings_backup_controller.dart';
-import 'package:windwalker/models/downloader_backup_bundle.dart';
-import 'package:windwalker/models/downloader_backup_version.dart';
+import 'package:windwalker/models/downloader.dart';
 import 'package:windwalker/services/downloader_backup_service.dart';
 
-class _FakeStorageApi implements BackupStorageApi {
-  _FakeStorageApi({this.versions = const <DownloaderBackupVersion>[]});
-
-  List<DownloaderBackupVersion> versions;
-
-  final deletedIds = <String>[];
+class _FakeBackupFileApi implements BackupFileApi {
+  PickedBackupFile? pickedFile;
+  bool saveResult = true;
 
   @override
-  Future<void> testConnection() async {}
+  Future<PickedBackupFile?> pickBackup() async => pickedFile;
 
   @override
-  Future<List<DownloaderBackupVersion>> listVersions() async => versions;
-
-  @override
-  Future<void> uploadBackup(DownloaderBackupBundle bundle) async {}
-
-  @override
-  Future<List<int>> downloadBackup(String fileId) async => const <int>[];
-
-  @override
-  Future<void> deleteBackup(String fileId) async {
-    deletedIds.add(fileId);
-  }
+  Future<bool> saveBackup({
+    required String fileName,
+    required Uint8List bytes,
+  }) async => saveResult;
 }
 
 SettingsBackupController _buildController({
-  required _FakeStorageApi storageApi,
-  DownloaderController? downloaderController,
-  WebDavConfigStore? configStore,
+  required _FakeBackupFileApi fileApi,
+  required DownloaderController downloaderController,
 }) {
-  final controller = SettingsBackupController(
-    configStore: configStore ?? WebDavConfigStore(storage: GetStorage()),
-  );
+  final controller = SettingsBackupController();
   controller.attach(
     backupService: DownloaderBackupService(
-      storageApi: storageApi,
-      downloaderController: downloaderController ?? DownloaderController(),
-      currentAppVersion: () async => '1.0.0',
+      fileApi: fileApi,
+      downloaderController: downloaderController,
+      currentAppVersion: () async => '1.1.4',
     ),
-    downloaderController: downloaderController ?? DownloaderController(),
+    downloaderController: downloaderController,
   );
   return controller;
-}
-
-DownloaderBackupVersion _version({
-  String fileId = 'file-1',
-  String backupId = 'backup-1',
-  bool isLatest = true,
-}) {
-  return DownloaderBackupVersion(
-    fileId: fileId,
-    fileName: '$backupId.json',
-    backupId: backupId,
-    createdAt: DateTime.parse('2026-07-04T12:00:00Z'),
-    appVersion: '1.0.0',
-    downloaderCount: 2,
-    isLatest: isLatest,
-  );
 }
 
 void main() {
@@ -77,15 +47,7 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
           const MethodChannel('plugins.flutter.io/path_provider'),
-          (MethodCall methodCall) async {
-            if (methodCall.method == 'getApplicationDocumentsDirectory') {
-              return '/tmp/test_windwalker';
-            }
-            if (methodCall.method == 'getApplicationSupportDirectory') {
-              return '/tmp/test_windwalker';
-            }
-            return null;
-          },
+          (MethodCall methodCall) async => '/tmp/test_windwalker',
         );
     await GetStorage.init();
   });
@@ -94,96 +56,46 @@ void main() {
     await GetStorage().erase();
   });
 
-  group('SettingsBackupController', () {
-    test('saveConfig persists WebDAV config and exposes summary', () async {
-      final controller = _buildController(storageApi: _FakeStorageApi());
+  test('successful export exposes a completion summary', () async {
+    final controller = _buildController(
+      fileApi: _FakeBackupFileApi(),
+      downloaderController: DownloaderController(),
+    );
 
-      await controller.saveConfig(
-        const WebDavConfig(
-          rootUrl: 'https://dav.example.com/root/',
-          remoteDirectory: 'WindTorrent/Backups',
-          username: 'alice',
-          password: 'secret',
-        ),
-      );
+    await controller.exportBackup();
 
-      expect(controller.hasConfig, isTrue);
-      expect(controller.configSummary, contains('alice'));
-    });
-
-    test('testConnection reports success summary', () async {
-      final controller = _buildController(storageApi: _FakeStorageApi());
-
-      await controller.testConnection(
-        const WebDavConfig(
-          rootUrl: 'https://dav.example.com/root/',
-          remoteDirectory: 'WindTorrent/Backups',
-          username: 'alice',
-          password: 'secret',
-        ),
-      );
-
-      expect(controller.errorMessage, isNull);
-      expect(controller.lastOperationSummary, contains('WebDAV'));
-    });
-
-    test('exportBackup requires config before exporting', () async {
-      final controller = _buildController(storageApi: _FakeStorageApi());
-
-      await controller.exportBackup();
-
-      expect(controller.errorMessage, contains('WebDAV'));
-    });
-
-    test('loadAvailableBackups populates remote versions', () async {
-      final controller = _buildController(
-        storageApi: _FakeStorageApi(
-          versions: <DownloaderBackupVersion>[
-            _version(fileId: 'f1', backupId: 'b1'),
-            _version(fileId: 'f2', backupId: 'b2', isLatest: false),
-          ],
-        ),
-      );
-      await controller.saveConfig(
-        const WebDavConfig(
-          rootUrl: 'https://dav.example.com/root/',
-          remoteDirectory: 'WindTorrent/Backups',
-          username: 'alice',
-          password: 'secret',
-        ),
-      );
-
-      await controller.loadAvailableBackups();
-
-      expect(controller.availableBackups, hasLength(2));
-      expect(controller.availableBackups.first.fileId, 'f1');
-    });
-
-    test('deleteBackup removes version from local list', () async {
-      final controller = _buildController(
-        storageApi: _FakeStorageApi(
-          versions: <DownloaderBackupVersion>[
-            _version(fileId: 'f1'),
-            _version(fileId: 'f2', backupId: 'b2', isLatest: false),
-          ],
-        ),
-      );
-      await controller.saveConfig(
-        const WebDavConfig(
-          rootUrl: 'https://dav.example.com/root/',
-          remoteDirectory: 'WindTorrent/Backups',
-          username: 'alice',
-          password: 'secret',
-        ),
-      );
-      await controller.loadAvailableBackups();
-
-      await controller.deleteBackup(fileId: 'f1');
-
-      expect(
-        controller.availableBackups.map((backup) => backup.fileId),
-        <String>['f2'],
-      );
-    });
+    expect(controller.errorMessage, isNull);
+    expect(controller.lastOperationSummary, contains('已导出'));
   });
+
+  test(
+    'invalid file exposes a clear error and preserves configurations',
+    () async {
+      final downloaderController = DownloaderController()
+        ..setTestDownloadersForTest(<Downloader>[
+          Downloader(
+            id: 'old',
+            name: 'Existing',
+            type: DownloaderType.aria2,
+            host: 'localhost',
+            port: 6800,
+          ),
+        ]);
+      final fileApi = _FakeBackupFileApi()
+        ..pickedFile = PickedBackupFile(
+          fileName: 'invalid.json',
+          bytes: Uint8List.fromList(utf8.encode('{bad-json')),
+        );
+      final controller = _buildController(
+        fileApi: fileApi,
+        downloaderController: downloaderController,
+      );
+
+      await controller.importBackup();
+
+      expect(controller.errorMessage, contains('不是有效的'));
+      expect(downloaderController.downloaders.single.id, 'old');
+      expect(downloaderController.hasRollbackSnapshot, isFalse);
+    },
+  );
 }

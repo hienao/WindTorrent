@@ -14,7 +14,6 @@ import 'package:windwalker/services/base_downloader_service.dart';
 import 'package:windwalker/services/connection_result.dart';
 import 'package:windwalker/services/qbit_service.dart';
 import 'package:windwalker/services/transmission_service.dart';
-import 'package:windwalker/features/tasks/presentation/controllers/task_domain_store.dart';
 
 /// 下载器管理控制器
 /// 按照 flutter-managing-state skill 规范使用 ChangeNotifier 实现 MVVM
@@ -26,6 +25,10 @@ class DownloaderController extends ChangeNotifier {
   // observable 状态
   List<Downloader> _downloaders = [];
   bool _isLoading = false;
+  bool _isRefreshingStatus = false;
+  Future<void>? _localLoadFuture;
+  Future<void>? _loadAndRefreshFuture;
+  Future<void>? _statusRefreshFuture;
 
   bool _notifyScheduled = false;
   final Map<String, int> _statusFailureCount = {};
@@ -53,26 +56,18 @@ class DownloaderController extends ChangeNotifier {
 
   /// 初始化 - 应在 UI 层调用
   ///
-  /// 全局 qBit / Transmission 实时轮询由 `RealtimeSyncController` 接管
-  /// （在 `HomeTabContainer` 中 `start()`）。本方法只负责加载本地数据，
-  /// 并刷新 Aria2 的连接状态与全局统计（Aria2 不纳入全局实时轮询）。
+  /// 全局实时轮询由 `RealtimeSyncController` 接管。
+  /// 本方法只负责加载本地配置，确保首页可以先展示已有下载器。
   void init() {
-    // 只加载本地数据
-    _loadDownloaders();
-    // 延迟刷新状态，避免阻塞启动
-    Future.delayed(const Duration(milliseconds: 500), () {
-      refreshLegacyAria2State();
-      _syncDownloaderUserProperties();
-    });
-  }
-
-  /// 刷新 Aria2 下载器状态与全局统计。
-  ///
-  /// Aria2 不纳入全局实时轮询，保留其原有的连接探测 / 统计刷新路径。
-  /// qBit / Transmission 的实时状态由 `RealtimeSyncController` 回写。
-  Future<void> refreshLegacyAria2State() async {
-    await refreshAllStatus();
-    await refreshGlobalStats();
+    _isLoading = _downloaders.isEmpty;
+    _notifySafely();
+    unawaited(
+      loadLocalDownloaders().whenComplete(() {
+        _isLoading = false;
+        _notifySafely();
+        unawaited(_syncDownloaderUserProperties());
+      }),
+    );
   }
 
   /// 兼容空操作：全局轮询已迁移至 `RealtimeSyncController`。
@@ -84,6 +79,7 @@ class DownloaderController extends ChangeNotifier {
   // Getters
   List<Downloader> get downloaders => List.unmodifiable(_downloaders);
   bool get isLoading => _isLoading;
+  bool get isRefreshingStatus => _isRefreshingStatus;
 
   /// 仅用于测试：直接覆盖下载器列表（跳过存储加载）。
   @visibleForTesting
@@ -91,34 +87,52 @@ class DownloaderController extends ChangeNotifier {
     _downloaders = List<Downloader>.from(downloaders);
   }
 
-  /// 加载下载器列表（仅本地数据）
-  Future<void> _loadDownloaders() async {
+  /// 从本地存储加载下载器配置。
+  ///
+  /// 已存在的运行时状态会按 ID 保留，避免下拉刷新时先把所有下载器闪成离线。
+  Future<void> loadLocalDownloaders() {
+    return _localLoadFuture ??= _readLocalDownloaders().whenComplete(() {
+      _localLoadFuture = null;
+    });
+  }
+
+  Future<void> _readLocalDownloaders() async {
     try {
       final data = _storage.read<List>(_storageKey);
-      if (data != null) {
-        _downloaders = data
-            .map((e) => Downloader.fromJson(Map<String, dynamic>.from(e)))
-            .toList();
-        _notifySafely();
-      }
+      final runtimeById = {for (final item in _downloaders) item.id: item};
+      final stored = (data ?? const <dynamic>[])
+          .map((e) => Downloader.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+      _downloaders = stored.map((item) {
+        final runtime = runtimeById[item.id];
+        if (runtime == null) return item;
+        return item.copyWith(
+          status: runtime.status,
+          taskCount: runtime.taskCount,
+          downloadSpeed: runtime.downloadSpeed,
+          uploadSpeed: runtime.uploadSpeed,
+          taskStats: runtime.taskStats,
+        );
+      }).toList();
+      _notifySafely();
     } catch (e) {
       Log.e('加载下载器失败: $e', error: e);
+      rethrow;
     }
   }
 
-  /// 加载下载器列表（包括刷新状态）
-  Future<void> loadDownloaders() async {
-    _isLoading = true;
-    _notifySafely();
+  /// 下载器页刷新：先回写本地配置，再仅探测连接状态。
+  ///
+  /// 不获取任务列表；任务数据继续由全局实时同步维护。
+  Future<void> loadDownloaders() {
+    return _loadAndRefreshFuture ??= _loadThenRefreshStatus().whenComplete(() {
+      _loadAndRefreshFuture = null;
+    });
+  }
 
-    try {
-      await _loadDownloaders();
-      await refreshAllStatus();
-      await refreshGlobalStats();
-    } finally {
-      _isLoading = false;
-      _notifySafely();
-    }
+  Future<void> _loadThenRefreshStatus() async {
+    await loadLocalDownloaders();
+    await refreshAllStatus();
   }
 
   /// 保存下载器列表
@@ -129,62 +143,127 @@ class DownloaderController extends ChangeNotifier {
     );
   }
 
-  /// 刷新所有下载器状态
-  Future<void> refreshAllStatus() async {
-    for (int i = 0; i < _downloaders.length; i++) {
-      await refreshStatus(_downloaders[i].id, notify: false);
-    }
+  /// 并发探测所有下载器状态，全部完成后一次性更新统一状态源。
+  Future<void> refreshAllStatus() {
+    return _statusRefreshFuture ??= _runStatusRefresh().whenComplete(() {
+      _statusRefreshFuture = null;
+    });
+  }
+
+  Future<void> _runStatusRefresh() async {
+    _isRefreshingStatus = true;
     _notifySafely();
+    try {
+      final ids = _downloaders.map((item) => item.id).toList(growable: false);
+      final results = await Future.wait(ids.map(_probeStatus));
+      for (final probe in results) {
+        _applyConnectionResult(probe.id, probe.result, notify: false);
+      }
+    } finally {
+      _isRefreshingStatus = false;
+      _notifySafely();
+    }
   }
 
   /// 刷新单个下载器状态
   Future<void> refreshStatus(String id, {bool notify = true}) async {
-    final index = _downloaders.indexWhere((d) => d.id == id);
-    if (index == -1) return;
+    final probe = await _probeStatus(id);
+    _applyConnectionResult(probe.id, probe.result, notify: notify);
+  }
 
-    final downloader = _downloaders[index];
-    final previousStatus = downloader.status;
-    final service = _createService(downloader);
-
-    try {
-      final result = await service.testConnection();
-      if (result is! ConnectionSuccess) {
-        final failCount = (_statusFailureCount[id] ?? 0) + 1;
-        _statusFailureCount[id] = failCount;
-        if (failCount >= _offlineFailureThreshold) {
-          _downloaders[index] = downloader.copyWith(
-            status: DownloaderStatus.offline,
-          );
-          _trackStatusChanged(downloader.type, previousStatus, DownloaderStatus.offline, failCount);
-        }
-        if (notify) _notifySafely();
-        return;
-      }
-
-      final stat = await service.getGlobalStat();
-      _statusFailureCount[id] = 0;
-
-      _downloaders[index] = downloader.copyWith(
-        status: DownloaderStatus.online,
-        downloadSpeed: _toInt(stat['downloadSpeed']),
-        uploadSpeed: _toInt(stat['uploadSpeed']),
-        taskCount: _toInt(
-          stat['torrentCount'] ?? stat['numActive'] ?? downloader.taskCount,
+  Future<_ConnectionProbe> _probeStatus(String id) async {
+    final downloader = getDownloader(id);
+    if (downloader == null) {
+      return _ConnectionProbe(
+        id,
+        const ConnectionFailure(
+          ConnectionFailureCategory.unknown,
+          'Downloader no longer exists',
         ),
       );
-      _trackStatusChanged(downloader.type, previousStatus, DownloaderStatus.online, 0);
-      if (notify) _notifySafely();
-    } catch (e) {
-      final failCount = (_statusFailureCount[id] ?? 0) + 1;
-      _statusFailureCount[id] = failCount;
-      if (failCount >= _offlineFailureThreshold) {
-        _downloaders[index] = downloader.copyWith(
-          status: DownloaderStatus.offline,
-        );
-        _trackStatusChanged(downloader.type, previousStatus, DownloaderStatus.offline, failCount);
-      }
-      if (notify) _notifySafely();
     }
+    try {
+      return _ConnectionProbe(
+        id,
+        await testConnection(downloader).timeout(const Duration(seconds: 10)),
+      );
+    } catch (e, st) {
+      Log.e('下载器状态探测失败: ${downloader.name}', error: e, stackTrace: st);
+      return _ConnectionProbe(
+        id,
+        ConnectionFailure(ConnectionFailureCategory.networkError, '$e'),
+      );
+    }
+  }
+
+  void _applyConnectionResult(
+    String id,
+    ConnectionResult result, {
+    required bool notify,
+  }) {
+    if (result is ConnectionSuccess) {
+      reportConnectionSuccess(
+        id,
+        version: result.serverVersion,
+        notify: notify,
+      );
+      return;
+    }
+    reportConnectionFailure(id, notify: notify);
+  }
+
+  /// 全 App 唯一的连接成功写入口。
+  void reportConnectionSuccess(
+    String id, {
+    String? version,
+    int? downloadSpeed,
+    int? uploadSpeed,
+    int? taskCount,
+    bool notify = true,
+  }) {
+    final index = _downloaders.indexWhere((item) => item.id == id);
+    if (index == -1) return;
+    final downloader = _downloaders[index];
+    _statusFailureCount[id] = 0;
+    _downloaders[index] = downloader.copyWith(
+      status: DownloaderStatus.online,
+      version: version,
+      downloadSpeed: downloadSpeed,
+      uploadSpeed: uploadSpeed,
+      taskCount: taskCount,
+    );
+    _trackStatusChanged(
+      downloader.type,
+      downloader.status,
+      DownloaderStatus.online,
+      0,
+    );
+    if (notify) _notifySafely();
+  }
+
+  /// 全 App 唯一的连接失败写入口；连续失败达到阈值后标记离线。
+  bool reportConnectionFailure(String id, {bool notify = true}) {
+    final index = _downloaders.indexWhere((item) => item.id == id);
+    if (index == -1) return false;
+    final downloader = _downloaders[index];
+    final failCount = (_statusFailureCount[id] ?? 0) + 1;
+    _statusFailureCount[id] = failCount;
+    if (failCount >= _offlineFailureThreshold) {
+      _downloaders[index] = downloader.copyWith(
+        status: DownloaderStatus.offline,
+        downloadSpeed: 0,
+        uploadSpeed: 0,
+        taskCount: 0,
+      );
+      _trackStatusChanged(
+        downloader.type,
+        downloader.status,
+        DownloaderStatus.offline,
+        failCount,
+      );
+    }
+    if (notify) _notifySafely();
+    return _downloaders[index].status == DownloaderStatus.offline;
   }
 
   /// 测试连接
@@ -342,8 +421,8 @@ class DownloaderController extends ChangeNotifier {
     final typeLabel = count == 0
         ? 'none'
         : types.length == 1
-              ? types.first
-              : 'multiple';
+        ? types.first
+        : 'multiple';
     final hasOnline = _downloaders.any(
       (d) => d.status == DownloaderStatus.online,
     );
@@ -414,24 +493,6 @@ class DownloaderController extends ChangeNotifier {
     _notifySafely();
     return true;
   }
-
-  /// 任务域单一事实来源（实时摘要派生源）。
-  ///
-  /// attach 后，qBit / Transmission 的实时摘要可经 [realtimeSummary] 读取；
-  /// 未 attach 时返回 null。
-  TaskDomainStore? _taskDomainStore;
-
-  /// 绑定任务域单一事实来源。生产环境通过 Provider 注入。
-  void attachTaskDomainStore(TaskDomainStore store) {
-    _taskDomainStore = store;
-  }
-
-  /// 读取下载器维度的实时摘要（来自 [TaskDomainStore]）。
-  ///
-  /// qBit / Transmission 的速度 / 任务数 / 在线状态由全局轮询写入 Store；
-  /// 列表与卡片可优先读此处派生展示态。无数据返回 null。
-  DownloaderRealtimeSummary? realtimeSummary(String downloaderId) =>
-      _taskDomainStore?.summary(downloaderId);
 
   /// 根据类型获取下载器
   List<Downloader> getDownloadersByType(DownloaderType type) {
@@ -644,11 +705,11 @@ class DownloaderController extends ChangeNotifier {
           _downloaders.any((d) => d.status != DownloaderStatus.online),
     );
   }
+}
 
-  int _toInt(dynamic value) {
-    if (value is int) return value;
-    if (value is num) return value.toInt();
-    if (value is String) return int.tryParse(value) ?? 0;
-    return 0;
-  }
+class _ConnectionProbe {
+  const _ConnectionProbe(this.id, this.result);
+
+  final String id;
+  final ConnectionResult result;
 }

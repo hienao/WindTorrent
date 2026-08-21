@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:windwalker/core/constants/app_constants.dart';
 import 'package:windwalker/core/theme/app_theme.dart';
 import 'package:windwalker/core/theme/neo_components.dart';
 import 'package:windwalker/core/theme/neo_theme_extension.dart';
-import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/features/downloaders/presentation/widgets/downloader_type_icon.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 import 'package:windwalker/models/downloader.dart';
@@ -120,11 +118,7 @@ class NeoDownloaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // 状态徽章颜色优先取 TaskDomainStore 实时摘要（qBit / Transmission），
-    // 无摘要时回退 Downloader 模型（Aria2）。
-    final status =
-        context.read<DownloaderController>().realtimeSummary(downloader.id)?.status ??
-        downloader.status;
+    final status = downloader.status;
     return NeoCard(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -164,10 +158,7 @@ class NeoDownloaderCard extends StatelessWidget {
                   ],
                 ),
               ),
-              NeoDownloaderStatusBadge(
-                label: statusLabel,
-                status: status,
-              ),
+              NeoDownloaderStatusBadge(label: statusLabel, status: status),
             ],
           ),
           const SizedBox(height: 14),

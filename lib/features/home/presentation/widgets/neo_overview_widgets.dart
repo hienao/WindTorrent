@@ -8,8 +8,8 @@ import 'package:windwalker/core/extensions/l10n_extensions.dart';
 import 'package:windwalker/core/theme/app_theme.dart';
 import 'package:windwalker/core/theme/neo_components.dart';
 import 'package:windwalker/core/theme/neo_theme_extension.dart';
-import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/features/downloaders/presentation/widgets/downloader_type_icon.dart';
+import 'package:windwalker/features/tasks/presentation/controllers/task_domain_store.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 import 'package:windwalker/models/downloader.dart';
 
@@ -165,13 +165,12 @@ class NeoOverviewSummaryPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // 总速率优先取 TaskDomainStore 实时摘要（qBit / Transmission），
-    // 无摘要时回退 Downloader 模型（Aria2）。
-    final controller = context.read<DownloaderController>();
+    final taskStore = context.watch<TaskDomainStore>();
     int totalDownloadSpeed = 0;
     int totalUploadSpeed = 0;
     for (final d in downloaders) {
-      final summary = controller.realtimeSummary(d.id);
+      if (d.status != DownloaderStatus.online) continue;
+      final summary = taskStore.summary(d.id);
       totalDownloadSpeed += summary?.downloadSpeed ?? d.downloadSpeed;
       totalUploadSpeed += summary?.uploadSpeed ?? d.uploadSpeed;
     }
@@ -718,14 +717,11 @@ class _DownloaderDistributionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 实时字段优先取 TaskDomainStore 摘要（qBit / Transmission），
-    // 无摘要时回退 Downloader 模型（Aria2）。
-    final summary = context.read<DownloaderController>().realtimeSummary(
-      downloader.id,
-    );
-    final status = summary?.status ?? downloader.status;
+    final summary = context.watch<TaskDomainStore>().summary(downloader.id);
+    final status = downloader.status;
     final color = statusColor(status);
-    final tasks = summary?.taskCount ?? downloader.taskCount;
+    final isOnline = status == DownloaderStatus.online;
+    final tasks = isOnline ? summary?.taskCount ?? downloader.taskCount : 0;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -759,7 +755,7 @@ class _DownloaderDistributionRow extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${downloader.type.label} · ${formatSpeed(summary?.downloadSpeed ?? downloader.downloadSpeed)}',
+                        '${downloader.type.label} · ${formatSpeed(isOnline ? summary?.downloadSpeed ?? downloader.downloadSpeed : 0)}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],

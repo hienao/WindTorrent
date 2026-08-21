@@ -172,9 +172,9 @@
   <main class="container">
     <article class="privacy-content">
       <h1 data-i18n="title">隐私政策</h1>
-      <p class="updated" data-i18n="updated">最后更新：2026年7月24日</p>
+      <p class="updated" data-i18n="updated">最后更新：2026年8月22日</p>
 
-      <p data-i18n="intro">WindTorrent（包名：com.hienao.windtorrent）是一款用于管理用户自行配置的 Aria2、qBittorrent 和 Transmission 服务的远程下载管理工具。本政策说明 WindTorrent 如何处理与本地配置、下载器连接、WebDAV 备份和使用分析有关的数据。</p>
+      <p data-i18n="intro">WindTorrent（包名：com.hienao.windtorrent）是一款用于管理用户自行配置的 Aria2、qBittorrent 和 Transmission 服务的远程下载管理工具。本政策说明 WindTorrent 如何处理与本地配置、下载器连接、本地文件备份和使用分析有关的数据。</p>
 
       <div class="notice">
         <p data-i18n="no_account"><strong>无需账号：</strong>WindTorrent 不提供登录或注册功能，不会收集您的姓名、邮箱、手机号或社交账号资料。</p>
@@ -185,18 +185,18 @@
       <ul>
         <li data-i18n="local_downloader"><strong>下载器配置：</strong>下载器类型、名称、服务器地址、端口及其他连接设置。</li>
         <li data-i18n="local_credentials"><strong>下载器凭据：</strong>用户名、密码、RPC 密钥或访问令牌，用于连接您指定的下载器服务。</li>
-        <li data-i18n="local_webdav"><strong>WebDAV 配置：</strong>服务器地址、远程目录、用户名、密码或应用专用令牌。</li>
+        <li data-i18n="local_rollback"><strong>导入回滚快照：</strong>导入 JSON 配置前保存的当前下载器配置，用于撤销上次导入。</li>
         <li data-i18n="local_preferences"><strong>应用设置：</strong>语言、主题、更新提示和应用内评价提示记录等偏好。</li>
       </ul>
-      <p data-i18n="local_control">这些数据用于在您的设备上提供相应功能。我们不会将下载器地址、下载器凭据或 WebDAV 凭据上传到我们的服务器。</p>
+      <p data-i18n="local_control">这些数据用于在您的设备上提供相应功能。我们不会将下载器地址或下载器凭据上传到我们的服务器。</p>
 
       <h2 data-i18n="connection_title">2. 下载器连接</h2>
       <p data-i18n="connection_desc">当您添加、连接或管理下载任务时，WindTorrent 会直接向您配置的 Aria2、qBittorrent 或 Transmission 服务发送请求。您输入的下载 URL、磁力链接或选择的种子文件内容会发送给该下载器；应用也会展示下载器返回的任务、文件、速度、Tracker 和 Peer 等信息。请求目的地和传输安全性取决于您配置的服务器地址与协议。</p>
       <p data-i18n="connection_notice">WindTorrent 本身不提供、不托管且不存储任何下载内容。相关任务和文件保存在您的下载器服务器或设备上。</p>
 
-      <h2 data-i18n="webdav_title">3. WebDAV 备份与恢复</h2>
-      <p data-i18n="webdav_desc">使用 WebDAV 备份功能时，WindTorrent 会把下载器配置备份到您指定的 WebDAV 服务器。备份内容可能包含下载器地址、用户名、密码、RPC 密钥或访问令牌。恢复时，应用会从该 WebDAV 服务器下载备份并写回本地。</p>
-      <p data-i18n="webdav_control">WebDAV 服务由您自行选择和控制，其数据处理、保存期限和安全措施受该服务提供商的条款和隐私政策约束。建议使用 HTTPS 和应用专用密码，并妥善保护 WebDAV 账号。</p>
+      <h2 data-i18n="backup_title">3. 本地 JSON 备份与恢复</h2>
+      <p data-i18n="backup_desc">导出配置时，WindTorrent 会通过系统文件选择器把 JSON 备份保存到您选择的位置。备份可能包含下载器地址、用户名、密码、RPC 密钥或访问令牌。导入时，应用会先校验文件格式，再将配置写入本地。</p>
+      <p data-i18n="backup_control">备份文件由您自行保存和管理。请将其存放在安全位置，避免向他人共享；删除应用不会自动删除已经导出到其他位置的备份文件。</p>
 
       <h2 data-i18n="analytics_title">4. Firebase Analytics</h2>
       <p data-i18n="analytics_desc">WindTorrent 使用 Firebase Analytics 了解应用功能的使用情况和稳定性。可能处理的信息包括：</p>
@@ -218,17 +218,17 @@
       <p data-i18n="google_policy">Google 会根据其隐私政策处理相关信息：<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">https://policies.google.com/privacy</a></p>
 
       <h2 data-i18n="sharing_title">6. 数据共享和出售</h2>
-      <p data-i18n="sharing_desc">除向您指定的下载器、WebDAV 服务以及上述为实现功能所必需的第三方服务传输数据外，我们不会出售、出租或向广告商提供您的个人信息、下载器配置、凭据或下载内容。</p>
+      <p data-i18n="sharing_desc">除向您指定的下载器以及上述为实现功能所必需的第三方服务传输数据外，我们不会出售、出租或向广告商提供您的个人信息、下载器配置、凭据或下载内容。</p>
 
       <h2 data-i18n="retention_title">7. 数据保存与删除</h2>
       <ul>
-        <li data-i18n="delete_local"><strong>本地数据：</strong>您可以在应用中删除下载器配置或覆盖 WebDAV 配置。若要一并删除本地保存的 WebDAV 配置及其他应用数据，可以通过系统设置清除 WindTorrent 的应用数据，或卸载应用。</li>
-        <li data-i18n="delete_webdav"><strong>WebDAV 备份：</strong>您可以在应用中删除备份版本，也可以直接登录自己的 WebDAV 服务进行管理。</li>
+        <li data-i18n="delete_local"><strong>本地数据：</strong>您可以在应用中删除下载器配置。若要删除全部应用数据和导入回滚快照，可以通过系统设置清除 WindTorrent 的应用数据，或卸载应用。</li>
+        <li data-i18n="delete_backup"><strong>导出的备份文件：</strong>备份保存在您通过系统文件选择器指定的位置，需要由您通过系统文件管理器或对应存储服务自行删除。</li>
         <li data-i18n="delete_analytics"><strong>分析数据：</strong>Firebase Analytics 数据的保存和删除遵循 Google/Firebase 的政策与配置。</li>
       </ul>
 
       <h2 data-i18n="security_title">8. 数据安全</h2>
-      <p data-i18n="security_desc">我们采取合理措施减少敏感信息进入分析系统。由于您连接的下载器和 WebDAV 服务由您自行管理，请使用可信服务器、HTTPS、安全密码和适当的访问控制。任何互联网传输或本地存储方式都无法保证绝对安全。</p>
+      <p data-i18n="security_desc">我们采取合理措施减少敏感信息进入分析系统。由于您连接的下载器和导出的 JSON 备份由您自行管理，请使用可信服务器、HTTPS、安全密码，并妥善保管备份文件。任何互联网传输或本地存储方式都无法保证绝对安全。</p>
 
       <h2 data-i18n="children_title">9. 儿童隐私</h2>
       <p data-i18n="children_desc">WindTorrent 不面向 13 岁以下儿童，也不会有意收集儿童个人信息。如果您认为我们无意中处理了儿童个人信息，请联系我们。</p>
@@ -250,22 +250,22 @@
         pageTitle: "隐私政策 - WindTorrent",
         meta_desc: "WindTorrent 隐私政策",
         title: "隐私政策",
-        updated: "最后更新：2026年7月24日",
-        intro: "WindTorrent（包名：com.hienao.windtorrent）是一款用于管理用户自行配置的 Aria2、qBittorrent 和 Transmission 服务的远程下载管理工具。本政策说明 WindTorrent 如何处理与本地配置、下载器连接、WebDAV 备份和使用分析有关的数据。",
+        updated: "最后更新：2026年8月22日",
+        intro: "WindTorrent（包名：com.hienao.windtorrent）是一款用于管理用户自行配置的 Aria2、qBittorrent 和 Transmission 服务的远程下载管理工具。本政策说明 WindTorrent 如何处理与本地配置、下载器连接、本地文件备份和使用分析有关的数据。",
         no_account: "<strong>无需账号：</strong>WindTorrent 不提供登录或注册功能，不会收集您的姓名、邮箱、手机号或社交账号资料。",
         local_title: "1. 保存在设备本地的数据",
         local_desc: "为了提供核心功能，WindTorrent 会在您的设备上保存：",
         local_downloader: "<strong>下载器配置：</strong>下载器类型、名称、服务器地址、端口及其他连接设置。",
         local_credentials: "<strong>下载器凭据：</strong>用户名、密码、RPC 密钥或访问令牌，用于连接您指定的下载器服务。",
-        local_webdav: "<strong>WebDAV 配置：</strong>服务器地址、远程目录、用户名、密码或应用专用令牌。",
+        local_rollback: "<strong>导入回滚快照：</strong>导入 JSON 配置前保存的当前下载器配置，用于撤销上次导入。",
         local_preferences: "<strong>应用设置：</strong>语言、主题、更新提示和应用内评价提示记录等偏好。",
-        local_control: "这些数据用于在您的设备上提供相应功能。我们不会将下载器地址、下载器凭据或 WebDAV 凭据上传到我们的服务器。",
+        local_control: "这些数据用于在您的设备上提供相应功能。我们不会将下载器地址或下载器凭据上传到我们的服务器。",
         connection_title: "2. 下载器连接",
         connection_desc: "当您添加、连接或管理下载任务时，WindTorrent 会直接向您配置的 Aria2、qBittorrent 或 Transmission 服务发送请求。您输入的下载 URL、磁力链接或选择的种子文件内容会发送给该下载器；应用也会展示下载器返回的任务、文件、速度、Tracker 和 Peer 等信息。请求目的地和传输安全性取决于您配置的服务器地址与协议。",
         connection_notice: "WindTorrent 本身不提供、不托管且不存储任何下载内容。相关任务和文件保存在您的下载器服务器或设备上。",
-        webdav_title: "3. WebDAV 备份与恢复",
-        webdav_desc: "使用 WebDAV 备份功能时，WindTorrent 会把下载器配置备份到您指定的 WebDAV 服务器。备份内容可能包含下载器地址、用户名、密码、RPC 密钥或访问令牌。恢复时，应用会从该 WebDAV 服务器下载备份并写回本地。",
-        webdav_control: "WebDAV 服务由您自行选择和控制，其数据处理、保存期限和安全措施受该服务提供商的条款和隐私政策约束。建议使用 HTTPS 和应用专用密码，并妥善保护 WebDAV 账号。",
+        backup_title: "3. 本地 JSON 备份与恢复",
+        backup_desc: "导出配置时，WindTorrent 会通过系统文件选择器把 JSON 备份保存到您选择的位置。备份可能包含下载器地址、用户名、密码、RPC 密钥或访问令牌。导入时，应用会先校验文件格式，再将配置写入本地。",
+        backup_control: "备份文件由您自行保存和管理。请将其存放在安全位置，避免向他人共享；删除应用不会自动删除已经导出到其他位置的备份文件。",
         analytics_title: "4. Firebase Analytics",
         analytics_desc: "WindTorrent 使用 Firebase Analytics 了解应用功能的使用情况和稳定性。可能处理的信息包括：",
         analytics_events: "<strong>应用交互事件：</strong>应用启动、页面访问、下载器连接结果、任务操作结果、备份或恢复结果、设置变更和更新提示交互。",
@@ -280,13 +280,13 @@
         third_update: "<strong>Google Play 应用内更新：</strong>用于检查并提示可用的应用更新。",
         google_policy: "Google 会根据其隐私政策处理相关信息：<a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\">https://policies.google.com/privacy</a>",
         sharing_title: "6. 数据共享和出售",
-        sharing_desc: "除向您指定的下载器、WebDAV 服务以及上述为实现功能所必需的第三方服务传输数据外，我们不会出售、出租或向广告商提供您的个人信息、下载器配置、凭据或下载内容。",
+        sharing_desc: "除向您指定的下载器以及上述为实现功能所必需的第三方服务传输数据外，我们不会出售、出租或向广告商提供您的个人信息、下载器配置、凭据或下载内容。",
         retention_title: "7. 数据保存与删除",
-        delete_local: "<strong>本地数据：</strong>您可以在应用中删除下载器配置或覆盖 WebDAV 配置。若要一并删除本地保存的 WebDAV 配置及其他应用数据，可以通过系统设置清除 WindTorrent 的应用数据，或卸载应用。",
-        delete_webdav: "<strong>WebDAV 备份：</strong>您可以在应用中删除备份版本，也可以直接登录自己的 WebDAV 服务进行管理。",
+        delete_local: "<strong>本地数据：</strong>您可以在应用中删除下载器配置。若要删除全部应用数据和导入回滚快照，可以通过系统设置清除 WindTorrent 的应用数据，或卸载应用。",
+        delete_backup: "<strong>导出的备份文件：</strong>备份保存在您通过系统文件选择器指定的位置，需要由您通过系统文件管理器或对应存储服务自行删除。",
         delete_analytics: "<strong>分析数据：</strong>Firebase Analytics 数据的保存和删除遵循 Google/Firebase 的政策与配置。",
         security_title: "8. 数据安全",
-        security_desc: "我们采取合理措施减少敏感信息进入分析系统。由于您连接的下载器和 WebDAV 服务由您自行管理，请使用可信服务器、HTTPS、安全密码和适当的访问控制。任何互联网传输或本地存储方式都无法保证绝对安全。",
+        security_desc: "我们采取合理措施减少敏感信息进入分析系统。由于您连接的下载器和导出的 JSON 备份由您自行管理，请使用可信服务器、HTTPS、安全密码，并妥善保管备份文件。任何互联网传输或本地存储方式都无法保证绝对安全。",
         children_title: "9. 儿童隐私",
         children_desc: "WindTorrent 不面向 13 岁以下儿童，也不会有意收集儿童个人信息。如果您认为我们无意中处理了儿童个人信息，请联系我们。",
         changes_title: "10. 政策更新",
@@ -300,22 +300,22 @@
         pageTitle: "Privacy Policy - WindTorrent",
         meta_desc: "WindTorrent Privacy Policy",
         title: "Privacy Policy",
-        updated: "Last updated: July 24, 2026",
-        intro: "WindTorrent (package name: com.hienao.windtorrent) is a remote download manager for user-configured Aria2, qBittorrent, and Transmission services. This policy explains how WindTorrent handles data related to local configuration, downloader connections, WebDAV backup, and usage analytics.",
+        updated: "Last updated: August 22, 2026",
+        intro: "WindTorrent (package name: com.hienao.windtorrent) is a remote download manager for user-configured Aria2, qBittorrent, and Transmission services. This policy explains how WindTorrent handles data related to local configuration, downloader connections, local file backups, and usage analytics.",
         no_account: "<strong>No account required:</strong> WindTorrent does not provide sign-in or registration and does not collect your name, email address, phone number, or social account profile.",
         local_title: "1. Data stored locally on your device",
         local_desc: "To provide its core features, WindTorrent stores the following on your device:",
         local_downloader: "<strong>Downloader configuration:</strong> downloader type, name, server address, port, and other connection settings.",
         local_credentials: "<strong>Downloader credentials:</strong> usernames, passwords, RPC secrets, or access tokens used to connect to services you specify.",
-        local_webdav: "<strong>WebDAV configuration:</strong> server address, remote directory, username, password, or app-specific token.",
+        local_rollback: "<strong>Import rollback snapshot:</strong> your current downloader configuration saved before a JSON import so the last import can be undone.",
         local_preferences: "<strong>App settings:</strong> language, theme, update prompts, in-app review prompt records, and similar preferences.",
-        local_control: "This data is used to provide the corresponding features on your device. We do not upload downloader addresses, downloader credentials, or WebDAV credentials to our servers.",
+        local_control: "This data is used to provide the corresponding features on your device. We do not upload downloader addresses or downloader credentials to our servers.",
         connection_title: "2. Downloader connections",
         connection_desc: "When you add, connect to, or manage download tasks, WindTorrent sends requests directly to the Aria2, qBittorrent, or Transmission service you configured. Download URLs, magnet links, or torrent file contents you provide are sent to that downloader. The app also displays task, file, speed, tracker, and peer information returned by the service. The destination and transport security depend on the server address and protocol you configure.",
         connection_notice: "WindTorrent does not provide, host, or store downloaded content. Related tasks and files remain on your downloader server or device.",
-        webdav_title: "3. WebDAV backup and restore",
-        webdav_desc: "When you use WebDAV backup, WindTorrent uploads downloader configuration to the WebDAV server you specify. A backup may contain downloader addresses, usernames, passwords, RPC secrets, or access tokens. During restore, the app downloads the backup from that WebDAV server and writes it to local storage.",
-        webdav_control: "You choose and control the WebDAV service. Its data handling, retention, and security are governed by that provider's terms and privacy policy. We recommend HTTPS, app-specific passwords, and appropriate protection for your WebDAV account.",
+        backup_title: "3. Local JSON backup and restore",
+        backup_desc: "When you export configuration, WindTorrent uses the system file picker to save a JSON backup to a location you choose. A backup may contain downloader addresses, usernames, passwords, RPC secrets, or access tokens. On import, the app validates the file before writing configuration locally.",
+        backup_control: "You store and manage exported backup files. Keep them in a secure location and do not share them with others. Uninstalling the app does not automatically delete backups exported elsewhere.",
         analytics_title: "4. Firebase Analytics",
         analytics_desc: "WindTorrent uses Firebase Analytics to understand feature usage and app stability. Information that may be processed includes:",
         analytics_events: "<strong>App interaction events:</strong> app launches, screen views, downloader connection results, task operation results, backup or restore results, setting changes, and update prompt interactions.",
@@ -330,13 +330,13 @@
         third_update: "<strong>Google Play In-App Updates:</strong> to check for and notify you about available app updates.",
         google_policy: "Google processes related information under its privacy policy: <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\">https://policies.google.com/privacy</a>",
         sharing_title: "6. Data sharing and sale",
-        sharing_desc: "Except for transmissions to the downloader and WebDAV services you specify and the third-party services required for the features described above, we do not sell, rent, or provide advertisers with your personal information, downloader configuration, credentials, or downloaded content.",
+        sharing_desc: "Except for transmissions to the downloader services you specify and the third-party services required for the features described above, we do not sell, rent, or provide advertisers with your personal information, downloader configuration, credentials, or downloaded content.",
         retention_title: "7. Data retention and deletion",
-        delete_local: "<strong>Local data:</strong> You can delete downloader configuration or overwrite WebDAV configuration in the app. To remove the locally stored WebDAV configuration together with other app data, clear WindTorrent app data in system settings or uninstall the app.",
-        delete_webdav: "<strong>WebDAV backups:</strong> You can delete backup versions in the app or manage them directly through your WebDAV service.",
+        delete_local: "<strong>Local data:</strong> You can delete downloader configuration in the app. To remove all app data and the import rollback snapshot, clear WindTorrent app data in system settings or uninstall the app.",
+        delete_backup: "<strong>Exported backup files:</strong> Backups remain in the location selected through the system file picker and must be deleted through the system file manager or corresponding storage service.",
         delete_analytics: "<strong>Analytics data:</strong> Firebase Analytics data retention and deletion follow Google/Firebase policies and configuration.",
         security_title: "8. Data security",
-        security_desc: "We take reasonable measures to reduce sensitive information entering analytics systems. Because you manage the downloader and WebDAV services you connect to, use trusted servers, HTTPS, secure passwords, and appropriate access controls. No internet transmission or local storage method can be guaranteed absolutely secure.",
+        security_desc: "We take reasonable measures to reduce sensitive information entering analytics systems. Because you manage the downloader services you connect to and exported JSON backups, use trusted servers, HTTPS, secure passwords, and protect backup files appropriately. No internet transmission or local storage method can be guaranteed absolutely secure.",
         children_title: "9. Children's privacy",
         children_desc: "WindTorrent is not directed to children under 13 and does not knowingly collect children's personal information. Contact us if you believe we have inadvertently processed such information.",
         changes_title: "10. Changes to this policy",

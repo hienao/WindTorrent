@@ -1246,63 +1246,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupRestore => 'Backup & Restore';
 
   @override
-  String get webDavServer => 'WebDAV Server';
+  String get exportConfigBackup => 'Export configuration to JSON';
 
   @override
-  String get webDavConfigSubtitle =>
-      'Configure the remote folder used for backup and restore';
+  String get importConfigBackup => 'Import configuration from JSON';
 
   @override
-  String get webDavNotConfigured => 'Not configured';
-
-  @override
-  String get webDavRootUrl => 'Root URL';
-
-  @override
-  String get webDavDirectory => 'Remote directory';
-
-  @override
-  String get webDavPasswordOrToken => 'Password or app token';
-
-  @override
-  String get testConnection => 'Test';
-
-  @override
-  String get testingConnection => 'Testing...';
-
-  @override
-  String get saving => 'Saving...';
-
-  @override
-  String get webDavRootUrlInvalid => 'Please enter a valid WebDAV URL';
-
-  @override
-  String get webDavDirectoryRequired => 'Please enter the remote directory';
-
-  @override
-  String get usernameRequired => 'Please enter the username';
-
-  @override
-  String get webDavPasswordRequired => 'Please enter the password or app token';
-
-  @override
-  String get backupToWebDav => 'Back up to WebDAV';
-
-  @override
-  String get restoreFromWebDav => 'Restore from WebDAV';
-
-  @override
-  String get signInToUseBackup => 'Sign in to use backup';
-
-  @override
-  String get configureWebDavToUseBackup => 'Configure WebDAV to use backup';
+  String get importBackupValidationNotice =>
+      'The file is validated before any configuration is replaced';
 
   @override
   String get backupIncludesCredentials =>
       'Includes downloader addresses and credentials';
 
   @override
-  String get confirmRestoreAndReplace => 'Confirm restore and replace';
+  String get confirmRestoreAndReplace => 'Confirm import and replace';
 
   @override
   String get restoreWillReplaceAllDownloaders =>
@@ -1310,64 +1268,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restoreCreatesRollbackSnapshot =>
-      'A local rollback snapshot will be created before restore';
+      'A local rollback snapshot will be created before import';
 
   @override
-  String get undoLastRestore => 'Undo last restore';
+  String get undoLastRestore => 'Undo last import';
 
   @override
-  String get selectBackupVersion => 'Select backup version';
-
-  @override
-  String get noBackupsAvailable => 'No backups available';
-
-  @override
-  String get latestBackupLabel => 'Latest backup';
-
-  @override
-  String get latestBackupChip => 'Latest';
-
-  @override
-  String get confirmDeleteBackupVersion => 'Delete backup version?';
-
-  @override
-  String get deleteBackupVersionMessage =>
-      'This backup version will be permanently removed from WebDAV.';
-
-  @override
-  String get restoreInProgress => 'Restoring...';
-
-  @override
-  String get backupInProgress => 'Backing up...';
-
-  @override
-  String get backupTimeJustNow => 'Just now';
-
-  @override
-  String backupTimeMinutesAgo(int count) {
-    return '${count}m ago';
-  }
-
-  @override
-  String backupTimeHoursAgo(int count) {
-    return '${count}h ago';
-  }
-
-  @override
-  String backupTimeDaysAgo(int count) {
-    return '${count}d ago';
-  }
-
-  @override
-  String backupDownloaderCount(int count) {
-    return '$count downloaders';
-  }
-
-  @override
-  String get restoreSuccess => 'Restore completed successfully';
-
-  @override
-  String get exportSuccess => 'Backup exported successfully';
+  String get selectBackupFile => 'Select JSON file';
 
   @override
   String get forgotPassword => 'Forgot password?';

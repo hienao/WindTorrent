@@ -19,7 +19,6 @@ import 'package:windwalker/features/downloaders/presentation/pages/downloader_co
 import 'package:windwalker/features/downloaders/presentation/pages/downloader_editor_page.dart';
 import 'package:windwalker/features/settings/presentation/pages/about_page.dart';
 import 'package:windwalker/features/settings/presentation/pages/settings_page.dart';
-import 'package:windwalker/features/settings/presentation/pages/webdav_config_page.dart';
 import 'package:windwalker/features/startup/presentation/pages/startup_page.dart';
 import 'package:windwalker/core/constants/app_constants.dart';
 
@@ -210,13 +209,6 @@ final appRouter = GoRouter(
       path: '/settings',
       name: 'settings',
       builder: (context, state) => const SettingsPage(),
-      routes: [
-        GoRoute(
-          path: 'webdav',
-          name: 'settings-webdav',
-          builder: (context, state) => const WebDavConfigPage(),
-        ),
-      ],
     ),
     GoRoute(
       path: '/about',

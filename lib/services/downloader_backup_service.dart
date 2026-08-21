@@ -1,33 +1,34 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:windwalker/core/utils/log.dart';
-import 'package:windwalker/features/backup/data/backup_storage_api.dart';
+import 'package:windwalker/features/backup/data/backup_exceptions.dart';
+import 'package:windwalker/features/backup/data/backup_file_api.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/models/downloader_backup_bundle.dart';
-import 'package:windwalker/models/downloader_backup_version.dart';
 import 'package:windwalker/services/analytics_service.dart';
 
-/// 备份编排服务：导出下载器配置到云端、从云端恢复。
+/// Creates and restores local JSON backups selected through the system picker.
 class DownloaderBackupService {
   DownloaderBackupService({
-    required BackupStorageApi storageApi,
+    required BackupFileApi fileApi,
     required DownloaderController downloaderController,
     required Future<String> Function() currentAppVersion,
-  }) : _storageApi = storageApi,
+  }) : _fileApi = fileApi,
        _downloaderController = downloaderController,
        _currentAppVersion = currentAppVersion;
 
-  final BackupStorageApi _storageApi;
+  static const maxBackupFileBytes = 5 * 1024 * 1024;
+
+  final BackupFileApi _fileApi;
   final DownloaderController _downloaderController;
   final Future<String> Function() _currentAppVersion;
 
-  /// 埋点入口（子类可覆盖以便测试注入）。
   AnalyticsService get analyticsService => AnalyticsService.instance;
 
-  /// 导出当前下载器配置到远端存储。
-  ///
-  /// 上传前删除旧版本，保留最新两个。
-  Future<void> exportBackup() async {
+  /// Opens the system save dialog and writes the current configuration as JSON.
+  /// Returns false when the user cancels the dialog.
+  Future<bool> exportBackup() async {
     final now = DateTime.now().toUtc();
     final bundle = DownloaderBackupBundle(
       schemaVersion: DownloaderBackupBundle.supportedSchemaVersion,
@@ -36,33 +37,31 @@ class DownloaderBackupService {
       appVersion: await _currentAppVersion(),
       downloaders: _downloaderController.downloaders,
     );
-
-    final versionsBefore = await _storageApi.listVersions();
+    final bytes = Uint8List.fromList(
+      utf8.encode(const JsonEncoder.withIndent('  ').convert(bundle.toJson())),
+    );
 
     try {
-      // 先上传新版本，再删除旧版本——避免上传失败时丢失所有备份。
-      await _storageApi.uploadBackup(bundle);
-      final versionsAfter = await _storageApi.listVersions();
-      for (final version in pickFilesToDeleteBeforeUpload(versionsAfter)) {
-        await _storageApi.deleteBackup(version.fileId);
+      final saved = await _fileApi.saveBackup(
+        fileName: _buildBackupFileName(now),
+        bytes: bytes,
+      );
+      if (!saved) {
+        return false;
       }
 
       Log.i(
         'Backup exported: backupId=${bundle.backupId}, '
         'downloaderCount=${bundle.downloaders.length}',
       );
-
       await analyticsService.track(
         'downloader_backup_export_result',
         params: <String, Object>{
           'result': 'success',
           'downloader_count': bundle.downloaders.length,
-          'cloud_version_count_before': versionsBefore.length,
-          'cloud_version_count_after': versionsAfter.length >= 2
-              ? 2
-              : versionsAfter.length,
         },
       );
+      return true;
     } catch (e) {
       await analyticsService.track(
         'downloader_backup_export_result',
@@ -72,25 +71,25 @@ class DownloaderBackupService {
     }
   }
 
-  /// 从远端恢复备份。
-  ///
-  /// 下载备份 JSON，解析后原子替换当前下载器列表。
-  Future<void> restoreBackup({required String fileId}) async {
+  /// Opens the system file picker, validates the selected JSON completely, and
+  /// only then replaces the current downloader configuration.
+  /// Returns null when the user cancels the picker.
+  Future<DownloaderBackupBundle?> importBackup() async {
     try {
-      final bytes = await _storageApi.downloadBackup(fileId);
-      final bundle = DownloaderBackupBundle.fromJson(
-        jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>,
-      );
+      final picked = await _fileApi.pickBackup();
+      if (picked == null) {
+        return null;
+      }
+      final bundle = decodeAndValidate(picked.bytes);
       await _downloaderController.replaceAllDownloadersFromBackup(
         downloaders: bundle.downloaders,
         sourceBackupId: bundle.backupId,
       );
 
       Log.i(
-        'Backup restored: backupId=${bundle.backupId}, '
+        'Backup imported: backupId=${bundle.backupId}, '
         'downloaderCount=${bundle.downloaders.length}',
       );
-
       await analyticsService.track(
         'downloader_backup_import_result',
         params: <String, Object>{
@@ -98,32 +97,62 @@ class DownloaderBackupService {
           'downloader_count': bundle.downloaders.length,
         },
       );
-    } catch (e) {
-      await analyticsService.track(
-        'downloader_backup_import_result',
-        params: <String, Object>{'result': 'failure'},
+      return bundle;
+    } on BackupException {
+      await _trackImportFailure();
+      rethrow;
+    } on FormatException catch (e) {
+      await _trackImportFailure();
+      throw BackupException(
+        reason: BackupFailureReason.parseFailed,
+        message: e.message,
       );
+    } catch (e) {
+      await _trackImportFailure();
       rethrow;
     }
   }
 
-  /// 列出远端存储中的所有备份版本。
-  Future<List<DownloaderBackupVersion>> listVersions() {
-    return _storageApi.listVersions();
+  /// Parses and validates an imported backup without mutating app state.
+  static DownloaderBackupBundle decodeAndValidate(List<int> bytes) {
+    if (bytes.isEmpty) {
+      throw const BackupException(
+        reason: BackupFailureReason.parseFailed,
+        message: 'The file is empty',
+      );
+    }
+    if (bytes.length > maxBackupFileBytes) {
+      throw const BackupException(
+        reason: BackupFailureReason.parseFailed,
+        message: 'The file exceeds the 5 MB limit',
+      );
+    }
+
+    try {
+      final decoded = jsonDecode(utf8.decode(bytes));
+      if (decoded is! Map<String, dynamic>) {
+        throw const FormatException('The JSON root must be an object');
+      }
+      return DownloaderBackupBundle.fromJson(decoded);
+    } on BackupException {
+      rethrow;
+    } on FormatException catch (e) {
+      throw BackupException(
+        reason: BackupFailureReason.parseFailed,
+        message: e.message,
+      );
+    }
   }
 
-  Future<void> deleteBackup({required String fileId}) {
-    return _storageApi.deleteBackup(fileId);
+  Future<void> _trackImportFailure() {
+    return analyticsService.track(
+      'downloader_backup_import_result',
+      params: <String, Object>{'result': 'failure'},
+    );
   }
 
-  Future<void> testConnection() {
-    return _storageApi.testConnection();
-  }
-
-  /// 生成备份 ID：ISO 时间戳 + 5 位随机后缀。
   static String _buildBackupId(DateTime now) {
     final iso = now.toUtc().toIso8601String().replaceAll(':', '');
-    // 简单随机后缀，足够用于去重
     final suffix = (now.microsecondsSinceEpoch % 100000).toString().padLeft(
       5,
       '0',
@@ -131,13 +160,12 @@ class DownloaderBackupService {
     return '${iso}_$suffix';
   }
 
-  /// 返回上传前应删除的旧版本列表（保留最新两个）。
-  static List<DownloaderBackupVersion> pickFilesToDeleteBeforeUpload(
-    List<DownloaderBackupVersion> versions,
-  ) {
-    final sorted = List<DownloaderBackupVersion>.from(versions)
-      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    if (sorted.length < 3) return const [];
-    return sorted.take(sorted.length - 2).toList();
+  static String _buildBackupFileName(DateTime createdAtUtc) {
+    final stamp = createdAtUtc
+        .toUtc()
+        .toIso8601String()
+        .replaceAll(':', '-')
+        .replaceAll('.000', '');
+    return 'windtorrent-config-$stamp.json';
   }
 }
