@@ -6,33 +6,18 @@ import 'package:windwalker/core/theme/app_theme.dart';
 import 'package:windwalker/core/utils/responsive_layout.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/features/home/presentation/widgets/neo_downloader_widgets.dart';
-import 'package:windwalker/features/tasks/presentation/controllers/task_domain_store.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 import 'package:windwalker/models/downloader.dart';
 
-class ManagementTab extends StatefulWidget {
+class ManagementTab extends StatelessWidget {
   const ManagementTab({super.key});
-
-  @override
-  State<ManagementTab> createState() => _ManagementTabState();
-}
-
-class _ManagementTabState extends State<ManagementTab> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      context.read<DownloaderController>().loadDownloaders();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Consumer2<DownloaderController, TaskDomainStore>(
-      builder: (context, controller, store, _) {
+    return Consumer<DownloaderController>(
+      builder: (context, controller, _) {
         return RefreshIndicator(
           onRefresh: controller.loadDownloaders,
           child: ListView(
@@ -51,7 +36,7 @@ class _ManagementTabState extends State<ManagementTab> {
               const SizedBox(height: AppSpacing.xl),
               _SectionTitle(label: l10n.configuredDownloaders),
               const SizedBox(height: AppSpacing.md),
-              if (controller.isLoading)
+              if (controller.isLoading && controller.downloaders.isEmpty)
                 const NeoDownloaderLoadingState()
               else if (controller.downloaders.isEmpty)
                 NeoDownloaderEmptyState(
@@ -64,11 +49,7 @@ class _ManagementTabState extends State<ManagementTab> {
                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: NeoDownloaderCard(
                       downloader: downloader,
-                      // 状态标签优先取 TaskDomainStore 实时摘要（qBit / Transmission），
-                      // 无摘要时回退 Downloader 模型（Aria2）。
-                      statusLabel:
-                          (store.summary(downloader.id)?.status ?? downloader.status)
-                              .localizedLabel(context),
+                      statusLabel: downloader.status.localizedLabel(context),
                       onOpenTasks: () => context.push(
                         '/tasks?id=${downloader.id}&type=${downloader.type.name}',
                       ),

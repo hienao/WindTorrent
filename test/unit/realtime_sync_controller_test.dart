@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:windwalker/core/constants/app_constants.dart';
+import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/features/realtime/presentation/controllers/realtime_sync_controller.dart';
 import 'package:windwalker/features/tasks/presentation/controllers/task_domain_store.dart';
 import 'package:windwalker/models/aria2_realtime_snapshot.dart';
@@ -18,6 +21,17 @@ final Downloader fakeQBitDownloader = Downloader(
 );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('plugins.flutter.io/path_provider'),
+          (methodCall) async => '/tmp/test_windwalker',
+        );
+    await GetStorage.init();
+  });
+
   group('RealtimeSyncController tracking', () {
     test('debugBindDownloaders 后 _trackedDownloaders 包含所有下载器（含 Aria2）', () {
       final controller = RealtimeSyncController();
@@ -74,10 +88,7 @@ void main() {
           return {
             'rid': 1,
             'full_update': true,
-            'server_state': {
-              'dl_info_speed': 100,
-              'up_info_speed': 20,
-            },
+            'server_state': {'dl_info_speed': 100, 'up_info_speed': 20},
             'torrents': {
               'abc': {
                 'name': 'demo',
@@ -89,7 +100,7 @@ void main() {
                 'downloaded': 200,
                 'uploaded': 50,
                 'save_path': '/ptd',
-              }
+              },
             },
           };
         },
@@ -256,7 +267,7 @@ void main() {
               'peersSendingToUs': 0,
               'peersGettingFromUs': 1,
               'trackerStats': [],
-            }
+            },
           ],
         ),
       );
@@ -382,7 +393,7 @@ void main() {
               'downloaded': 200,
               'uploaded': 50,
               'save_path': '/ptd',
-            }
+            },
           },
         },
       )..attachStore(store);
@@ -393,11 +404,37 @@ void main() {
       expect(store.qbitSnapshot('q1')?.rid, 1);
       expect(store.task('q1', 'abc')?.name, 'demo');
     });
+
+    test('轮询成功把连接状态写回全局 DownloaderController', () async {
+      final downloader = Downloader(
+        id: 'q1',
+        name: 'qbit',
+        type: DownloaderType.qbittorrent,
+        host: '127.0.0.1',
+        port: 8080,
+      );
+      final downloaderController = DownloaderController()
+        ..setTestDownloadersForTest([downloader]);
+      final controller = RealtimeSyncController(
+        qbitPollerFactory: (downloader, rid) async => {
+          'rid': 1,
+          'full_update': true,
+          'server_state': {'dl_info_speed': 100, 'up_info_speed': 20},
+          'torrents': {},
+        },
+      )..attach(downloaderController: downloaderController);
+
+      await controller.debugPollOnce(downloader);
+
+      final current = downloaderController.getDownloader('q1')!;
+      expect(current.status, DownloaderStatus.online);
+      expect(current.downloadSpeed, 100);
+      expect(current.uploadSpeed, 20);
+    });
   });
 
   group('RealtimeSyncController lifecycle', () {
-    testWidgets('app paused 时取消所有 timer，resumed 时重建并立即刷新',
-        (tester) async {
+    testWidgets('app paused 时取消所有 timer，resumed 时重建并立即刷新', (tester) async {
       int pollCount = 0;
       final controller = RealtimeSyncController(
         qbitPollerFactory: (downloader, rid) async {

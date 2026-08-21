@@ -1,11 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:windwalker/core/constants/app_constants.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
-import 'package:windwalker/features/tasks/presentation/controllers/task_domain_store.dart';
 import 'package:windwalker/models/downloader.dart';
-import 'package:windwalker/models/qbit_realtime_snapshot.dart';
 import 'package:windwalker/services/connection_result.dart';
 
 /// 可注入 testConnection 结果的测试用 controller。
@@ -16,7 +16,8 @@ class TestableDownloaderController extends DownloaderController {
   void setTestResult(ConnectionResult result) => _result = _result;
 
   @override
-  Future<ConnectionResult> testConnection(Downloader downloader) async => _result;
+  Future<ConnectionResult> testConnection(Downloader downloader) async =>
+      _result;
 }
 
 /// 预置下载器列表的测试用 controller（绕过存储加载）。
@@ -30,23 +31,50 @@ class PrefilledDownloaderController extends DownloaderController {
       const ConnectionSuccess(serverVersion: 'test');
 }
 
+class DelayedStatusDownloaderController extends DownloaderController {
+  final Completer<ConnectionResult> statusResult = Completer();
+  int globalStatsRefreshCount = 0;
+
+  @override
+  Future<ConnectionResult> testConnection(Downloader downloader) =>
+      statusResult.future;
+
+  @override
+  Future<void> refreshGlobalStats() async {
+    globalStatsRefreshCount++;
+  }
+}
+
+class PerDownloaderStatusController extends DownloaderController {
+  final Map<String, Completer<ConnectionResult>> _results = {};
+
+  @override
+  Future<ConnectionResult> testConnection(Downloader downloader) => _results
+      .putIfAbsent(downloader.id, Completer<ConnectionResult>.new)
+      .future;
+
+  void complete(String id, ConnectionResult result) {
+    _results[id]!.complete(result);
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-      const MethodChannel('plugins.flutter.io/path_provider'),
-      (MethodCall methodCall) async {
-        if (methodCall.method == 'getApplicationDocumentsDirectory') {
-          return '/tmp/test_windwalker';
-        }
-        if (methodCall.method == 'getApplicationSupportDirectory') {
-          return '/tmp/test_windwalker';
-        }
-        return null;
-      },
-    );
+          const MethodChannel('plugins.flutter.io/path_provider'),
+          (MethodCall methodCall) async {
+            if (methodCall.method == 'getApplicationDocumentsDirectory') {
+              return '/tmp/test_windwalker';
+            }
+            if (methodCall.method == 'getApplicationSupportDirectory') {
+              return '/tmp/test_windwalker';
+            }
+            return null;
+          },
+        );
     await GetStorage.init();
   });
 
@@ -55,15 +83,22 @@ void main() {
   });
 
   Downloader sample() => Downloader(
-    id: 'd1', name: 'D1', type: DownloaderType.aria2,
-    host: 'h', port: 6800,
+    id: 'd1',
+    name: 'D1',
+    type: DownloaderType.aria2,
+    host: 'h',
+    port: 6800,
   );
 
   test('版本不符时不保存且返回 versionUnsupported', () async {
-    final c = TestableDownloaderController(const ConnectionFailure(
-      ConnectionFailureCategory.versionUnsupported, '版本过低',
-      actualVersion: '1.35.0', minVersion: '1.36',
-    ));
+    final c = TestableDownloaderController(
+      const ConnectionFailure(
+        ConnectionFailureCategory.versionUnsupported,
+        '版本过低',
+        actualVersion: '1.35.0',
+        minVersion: '1.36',
+      ),
+    );
     final result = await c.addDownloader(sample());
     expect(result, isA<ConnectionFailure>());
     expect((result as ConnectionFailure).isVersionUnsupported, isTrue);
@@ -72,7 +107,8 @@ void main() {
 
   test('成功时保存、写入 version、状态 online', () async {
     final c = TestableDownloaderController(
-        const ConnectionSuccess(serverVersion: '1.36.0'));
+      const ConnectionSuccess(serverVersion: '1.36.0'),
+    );
     final result = await c.addDownloader(sample());
     expect(result.isSuccess, isTrue);
     expect(c.downloaders.length, 1);
@@ -81,88 +117,97 @@ void main() {
   });
 
   test('认证失败时不保存', () async {
-    final c = TestableDownloaderController(const ConnectionFailure(
-      ConnectionFailureCategory.authFailed, '认证失败',
-    ));
+    final c = TestableDownloaderController(
+      const ConnectionFailure(ConnectionFailureCategory.authFailed, '认证失败'),
+    );
     await c.addDownloader(sample());
     expect(c.downloaders, isEmpty);
   });
 
   test('legacy Transmission success should still save downloader', () async {
     final c = TestableDownloaderController(
-        const ConnectionSuccess(serverVersion: '4.0.3'),
+      const ConnectionSuccess(serverVersion: '4.0.3'),
     );
 
-    final result = await c.addDownloader(Downloader(
-      id: 'tx',
-      name: 'Legacy Transmission',
-      type: DownloaderType.transmission,
-      host: 'localhost',
-      port: 9091,
-      username: 'u',
-      password: 'p',
-    ));
+    final result = await c.addDownloader(
+      Downloader(
+        id: 'tx',
+        name: 'Legacy Transmission',
+        type: DownloaderType.transmission,
+        host: 'localhost',
+        port: 9091,
+        username: 'u',
+        password: 'p',
+      ),
+    );
 
     expect(result.isSuccess, isTrue);
     expect(c.downloaders.single.version, '4.0.3');
   });
 
-  group('realtimeSummary (TaskDomainStore facade)', () {
-    test('attach 后从 TaskDomainStore 派生下载器实时摘要', () {
-      final controller = PrefilledDownloaderController([
-        Downloader(
-          id: 'q1',
-          name: 'qbit',
-          type: DownloaderType.qbittorrent,
-          host: '127.0.0.1',
-          port: 8080,
-        ),
-      ]);
-      final store = TaskDomainStore();
-      controller.attachTaskDomainStore(store);
+  group('下载器列表刷新', () {
+    test('先展示本地配置，状态探测完成后再更新，且不刷新任务统计', () async {
+      final downloader = sample();
+      await GetStorage().write('downloaders', [downloader.toJson()]);
+      final controller = DelayedStatusDownloaderController();
 
-      // 未写入快照时返回 null
-      expect(controller.realtimeSummary('q1'), isNull);
+      final refresh = controller.loadDownloaders();
+      await Future<void>.delayed(Duration.zero);
 
-      store.applyQBitSnapshot(
-        QBitRealtimeSnapshot.fromJson(
-          downloaderId: 'q1',
-          json: {
-            'rid': 1,
-            'full_update': true,
-            'server_state': {'dl_info_speed': 100, 'up_info_speed': 20},
-            'torrents': {
-              'abc': {
-                'name': 'demo',
-                'state': 'downloading',
-                'progress': 0.2,
-                'dlspeed': 100,
-                'upspeed': 20,
-                'save_path': '/ptd',
-              },
-            },
-          },
-        ),
+      expect(controller.downloaders.single.id, downloader.id);
+      expect(controller.downloaders.single.status, DownloaderStatus.offline);
+      expect(controller.isRefreshingStatus, isTrue);
+      expect(controller.globalStatsRefreshCount, 0);
+
+      controller.statusResult.complete(
+        const ConnectionSuccess(serverVersion: '1.37.0'),
       );
+      await refresh;
 
-      final summary = controller.realtimeSummary('q1')!;
-      expect(summary.status, DownloaderStatus.online);
-      expect(summary.downloadSpeed, 100);
-      expect(summary.uploadSpeed, 20);
-      expect(summary.taskCount, 1);
+      expect(controller.downloaders.single.status, DownloaderStatus.online);
+      expect(controller.downloaders.single.version, '1.37.0');
+      expect(controller.isRefreshingStatus, isFalse);
+      expect(controller.globalStatsRefreshCount, 0);
     });
 
-    test('未 attach Store 时 realtimeSummary 返回 null', () {
-      final controller = PrefilledDownloaderController([
-        Downloader(
-          id: 'q1',
-          name: 'qbit',
-          type: DownloaderType.qbittorrent,
-          host: '127.0.0.1',
-          port: 8080,
-        ),
+    test('所有下载器探测完成后一次性提交状态', () async {
+      final first = sample();
+      final second = Downloader(
+        id: 'd2',
+        name: 'D2',
+        type: DownloaderType.qbittorrent,
+        host: 'qbit',
+        port: 8080,
+      );
+      await GetStorage().write('downloaders', [
+        first.toJson(),
+        second.toJson(),
       ]);
-      expect(controller.realtimeSummary('q1'), isNull);
+      final controller = PerDownloaderStatusController();
+
+      final refresh = controller.loadDownloaders();
+      await Future<void>.delayed(Duration.zero);
+      controller.complete(
+        first.id,
+        const ConnectionSuccess(serverVersion: '1.37.0'),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(
+        controller.downloaders.map((item) => item.status),
+        everyElement(DownloaderStatus.offline),
+      );
+
+      controller.complete(
+        second.id,
+        const ConnectionSuccess(serverVersion: '5.1.0'),
+      );
+      await refresh;
+
+      expect(
+        controller.downloaders.map((item) => item.status),
+        everyElement(DownloaderStatus.online),
+      );
     });
   });
 
@@ -217,41 +262,44 @@ void main() {
       expect(c.downloaders.single.host, 'new-host');
     });
 
-    test('saveRollbackSnapshot and restoreRollbackSnapshot round-trip', () async {
-      final c = PrefilledDownloaderController([
-        Downloader(
-          id: 'before',
-          name: 'Before',
-          type: DownloaderType.aria2,
-          host: 'before-host',
-          port: 6800,
-        ),
-      ]);
-
-      await c.saveRollbackSnapshot(sourceBackupId: 'snap-1');
-
-      // 替换为新数据
-      await c.replaceAllDownloadersFromBackup(
-        downloaders: [
+    test(
+      'saveRollbackSnapshot and restoreRollbackSnapshot round-trip',
+      () async {
+        final c = PrefilledDownloaderController([
           Downloader(
-            id: 'after',
-            name: 'After',
+            id: 'before',
+            name: 'Before',
             type: DownloaderType.aria2,
-            host: 'after-host',
+            host: 'before-host',
             port: 6800,
           ),
-        ],
-        sourceBackupId: 'backup-2',
-      );
-      expect(c.downloaders.single.id, 'after');
+        ]);
 
-      // 恢复回滚快照
-      final restored = await c.restoreRollbackSnapshot();
-      expect(restored, isTrue);
-      // 注意：saveRollbackSnapshot 保存的是调用时的列表，
-      // 但 replaceAll 也会先保存快照，所以这里恢复的是 replaceAll 前的快照
-      expect(c.downloaders.single.id, 'before');
-    });
+        await c.saveRollbackSnapshot(sourceBackupId: 'snap-1');
+
+        // 替换为新数据
+        await c.replaceAllDownloadersFromBackup(
+          downloaders: [
+            Downloader(
+              id: 'after',
+              name: 'After',
+              type: DownloaderType.aria2,
+              host: 'after-host',
+              port: 6800,
+            ),
+          ],
+          sourceBackupId: 'backup-2',
+        );
+        expect(c.downloaders.single.id, 'after');
+
+        // 恢复回滚快照
+        final restored = await c.restoreRollbackSnapshot();
+        expect(restored, isTrue);
+        // 注意：saveRollbackSnapshot 保存的是调用时的列表，
+        // 但 replaceAll 也会先保存快照，所以这里恢复的是 replaceAll 前的快照
+        expect(c.downloaders.single.id, 'before');
+      },
+    );
 
     test('restoreRollbackSnapshot returns false when no snapshot', () async {
       final c = PrefilledDownloaderController([
@@ -286,7 +334,10 @@ void main() {
 
       await c.saveRollbackSnapshot(sourceBackupId: 'snap-cleanup');
       // 快照已写入
-      expect(GetStorage().read('downloaders_import_rollback_snapshot'), isNotNull);
+      expect(
+        GetStorage().read('downloaders_import_rollback_snapshot'),
+        isNotNull,
+      );
 
       // 替换为新数据
       await c.replaceAllDownloadersFromBackup(

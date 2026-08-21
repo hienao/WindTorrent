@@ -5,8 +5,7 @@ import 'package:windwalker/core/constants/app_constants.dart';
 import 'package:windwalker/core/theme/app_theme.dart';
 import 'package:windwalker/core/router/app_router.dart';
 import 'package:windwalker/core/utils/app_version.dart';
-import 'package:windwalker/features/backup/data/webdav_backup_storage_api.dart';
-import 'package:windwalker/features/backup/data/webdav_config_store.dart';
+import 'package:windwalker/features/backup/data/file_picker_backup_file_api.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/features/realtime/presentation/controllers/realtime_sync_controller.dart';
 import 'package:windwalker/features/settings/presentation/controllers/settings_controller.dart';
@@ -33,18 +32,10 @@ class WindTorrentApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         // 提供 TaskDomainStore 作为任务域单一事实来源
-        // （qBit / Transmission 的 snapshot、标准化任务、下载器实时摘要）
+        // （snapshot、标准化任务、速度与任务数量摘要）
         ChangeNotifierProvider(create: (_) => TaskDomainStore()),
-        // 提供 DownloaderController 作为全局状态
-        // 实时摘要从 TaskDomainStore 派生（attach 后读 Store）
-        ChangeNotifierProxyProvider<TaskDomainStore, DownloaderController>(
-          create: (_) => DownloaderController(),
-          update: (_, taskDomainStore, previous) {
-            final controller = previous ?? DownloaderController();
-            controller.attachTaskDomainStore(taskDomainStore);
-            return controller;
-          },
-        ),
+        // 下载器配置与连接状态的全 App 单一事实来源
+        ChangeNotifierProvider(create: (_) => DownloaderController()),
         // 提供 TaskController 作为全局状态
         // qBit / Transmission 共享任务读取委托给 TaskDomainStore（attach 后）
         ChangeNotifierProxyProvider<TaskDomainStore, TaskController>(
@@ -57,7 +48,7 @@ class WindTorrentApp extends StatelessWidget {
         ),
         // 提供 RealtimeSyncController 作为全局状态
         // （唯一持有 timer 的层，接管 qBit / Transmission 全局轮询）
-        // 轮询结果只写入 TaskDomainStore，不再直推 TaskController / DownloaderController
+        // 任务结果写入 TaskDomainStore，连接状态写入 DownloaderController
         ChangeNotifierProxyProvider2<
           DownloaderController,
           TaskDomainStore,
@@ -94,18 +85,12 @@ class WindTorrentApp extends StatelessWidget {
           DownloaderController,
           SettingsBackupController
         >(
-          create: (_) =>
-              SettingsBackupController(configStore: WebDavConfigStore()),
+          create: (_) => SettingsBackupController(),
           update: (_, downloader, previous) {
-            final controller =
-                previous ??
-                SettingsBackupController(configStore: WebDavConfigStore());
+            final controller = previous ?? SettingsBackupController();
             controller.attach(
               backupService: DownloaderBackupService(
-                storageApi: WebDavBackupStorageApi(
-                  readConfig: controller.readConfig,
-                  client: controller.httpClient,
-                ),
+                fileApi: const FilePickerBackupFileApi(),
                 downloaderController: downloader,
                 currentAppVersion: () async {
                   final info = await AppVersion.info();
@@ -114,7 +99,6 @@ class WindTorrentApp extends StatelessWidget {
               ),
               downloaderController: downloader,
             );
-            controller.loadConfig();
             return controller;
           },
         ),

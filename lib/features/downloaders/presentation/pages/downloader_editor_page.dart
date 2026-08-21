@@ -8,6 +8,7 @@ import 'package:windwalker/core/theme/neo_components.dart';
 import 'package:windwalker/core/theme/neo_theme_extension.dart';
 import 'package:windwalker/core/utils/review_manager.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
+import 'package:windwalker/features/downloaders/presentation/utils/downloader_host_input.dart';
 import 'package:windwalker/features/downloaders/presentation/widgets/downloader_type_icon.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 import 'package:windwalker/models/downloader.dart';
@@ -225,6 +226,13 @@ class _DownloaderEditorPageState extends State<DownloaderEditorPage> {
   }
 
   Future<void> _save() async {
+    final normalizedHost = normalizeDownloaderHostInput(_hostController.text);
+    if (normalizedHost != _hostController.text) {
+      _hostController.value = TextEditingValue(
+        text: normalizedHost,
+        selection: TextSelection.collapsed(offset: normalizedHost.length),
+      );
+    }
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _saving = true);
@@ -342,10 +350,7 @@ class _DownloaderTypeCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          DownloaderTypeIcon(
-            type: type,
-            size: DownloaderTypeIconSize.medium,
-          ),
+          DownloaderTypeIcon(type: type, size: DownloaderTypeIconSize.medium),
           const SizedBox(width: 14),
           Expanded(
             child: Text(

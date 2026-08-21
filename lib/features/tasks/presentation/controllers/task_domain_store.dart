@@ -11,14 +11,12 @@ import 'package:windwalker/models/transmission_realtime_snapshot.dart';
 /// 不再让消费方各自保存第二份实时态。
 class DownloaderRealtimeSummary {
   const DownloaderRealtimeSummary({
-    required this.status,
     required this.downloadSpeed,
     required this.uploadSpeed,
     required this.taskCount,
     required this.taskStats,
   });
 
-  final DownloaderStatus status;
   final int downloadSpeed;
   final int uploadSpeed;
   final int taskCount;
@@ -91,7 +89,6 @@ class TaskDomainStore extends ChangeNotifier {
     _qbitSnapshots[snapshot.downloaderId] = snapshot;
     _tasksByDownloader[snapshot.downloaderId] = List<DownloadTask>.from(tasks);
     _summaries[snapshot.downloaderId] = DownloaderRealtimeSummary(
-      status: DownloaderStatus.online,
       downloadSpeed: snapshot.serverState.downloadSpeed,
       uploadSpeed: snapshot.serverState.uploadSpeed,
       taskCount: tasks.length,
@@ -106,7 +103,6 @@ class TaskDomainStore extends ChangeNotifier {
     _transmissionSnapshots[snapshot.downloaderId] = snapshot;
     _tasksByDownloader[snapshot.downloaderId] = List<DownloadTask>.from(tasks);
     _summaries[snapshot.downloaderId] = DownloaderRealtimeSummary(
-      status: DownloaderStatus.online,
       downloadSpeed: snapshot.totalDownloadSpeed,
       uploadSpeed: snapshot.totalUploadSpeed,
       taskCount: tasks.length,
@@ -120,10 +116,10 @@ class TaskDomainStore extends ChangeNotifier {
   /// 由 [RealtimeSyncController] 定时调用，与 qBit / Transmission 路径一致。
   void applyAria2Snapshot(Aria2RealtimeSnapshot snapshot) {
     _aria2Snapshots[snapshot.downloaderId] = snapshot;
-    _tasksByDownloader[snapshot.downloaderId] =
-        List<DownloadTask>.from(snapshot.tasks);
+    _tasksByDownloader[snapshot.downloaderId] = List<DownloadTask>.from(
+      snapshot.tasks,
+    );
     _summaries[snapshot.downloaderId] = DownloaderRealtimeSummary(
-      status: DownloaderStatus.online,
       downloadSpeed: snapshot.downloadSpeed,
       uploadSpeed: snapshot.uploadSpeed,
       taskCount: snapshot.taskCount,
@@ -142,10 +138,9 @@ class TaskDomainStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 标记下载器离线：清零速度与任务数，状态置为 offline。
-  void markDownloaderOffline(String downloaderId) {
+  /// 清空下载器的实时指标。连接状态由 DownloaderController 统一维护。
+  void clearDownloaderRealtimeSummary(String downloaderId) {
     _summaries[downloaderId] = const DownloaderRealtimeSummary(
-      status: DownloaderStatus.offline,
       downloadSpeed: 0,
       uploadSpeed: 0,
       taskCount: 0,

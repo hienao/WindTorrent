@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:windwalker/core/constants/app_constants.dart';
 import 'package:windwalker/core/theme/app_theme.dart';
-import 'package:windwalker/features/backup/data/webdav_config.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/features/realtime/presentation/controllers/realtime_sync_controller.dart';
 import 'package:windwalker/features/home/presentation/pages/home_tab_container.dart';
@@ -28,7 +27,6 @@ import 'package:windwalker/features/update/presentation/controllers/update_contr
 import 'package:windwalker/l10n/app_localizations.dart';
 import 'package:windwalker/models/add_task_request.dart';
 import 'package:windwalker/models/downloader.dart';
-import 'package:windwalker/models/downloader_backup_version.dart';
 import 'package:windwalker/models/downloader_speed_config.dart';
 import 'package:windwalker/models/speed_config_descriptor.dart';
 import 'package:windwalker/models/transmission_realtime_snapshot.dart';
@@ -207,13 +205,6 @@ Widget createTestApp({
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsPage(),
-        routes: [
-          GoRoute(
-            path: 'webdav',
-            name: 'settings-webdav',
-            builder: (context, state) => const SizedBox.shrink(),
-          ),
-        ],
       ),
       GoRoute(
         path: '/downloaders',
@@ -406,65 +397,22 @@ class FakeUpdateController extends UpdateController {
   Future<void> openUpdatePage() async {}
 }
 
-/// Fake SettingsBackupController — overrides state getters and async methods
-/// so widget tests can drive backup UI without hitting Drive API.
+/// Fake SettingsBackupController for local backup widget tests.
 class FakeSettingsBackupController extends SettingsBackupController {
   FakeSettingsBackupController() : super();
 
-  FakeSettingsBackupController.configured() : super() {
-    _fakeHasConfig = true;
-  }
+  int exportCalls = 0;
+  int importCalls = 0;
 
-  FakeSettingsBackupController.unconfigured() : super();
-
-  bool _fakeHasConfig = false;
-  final WebDavConfig _fakeConfig = const WebDavConfig(
-    rootUrl: 'https://dav.example.com/root/',
-    remoteDirectory: 'WindTorrent/Backups',
-    username: 'tester',
-    password: 'secret',
-  );
-
-  List<DownloaderBackupVersion>? _seededBackups;
-
-  /// Pre-populate available backups for testing the version list sheet.
-  void seedAvailableBackups(List<DownloaderBackupVersion> backups) {
-    _seededBackups = backups;
+  @override
+  Future<void> exportBackup() async {
+    exportCalls++;
   }
 
   @override
-  bool get hasConfig => _fakeHasConfig;
-
-  @override
-  WebDavConfig? get config => _fakeHasConfig ? _fakeConfig : null;
-
-  @override
-  String? get configSummary =>
-      _fakeHasConfig ? _fakeConfig.maskedSummary : null;
-
-  @override
-  List<DownloaderBackupVersion> get availableBackups =>
-      _seededBackups ?? super.availableBackups;
-
-  @override
-  Future<void> exportBackup() async {}
-
-  @override
-  Future<void> loadAvailableBackups() async {}
-
-  @override
-  Future<void> restoreBackup({required String fileId}) async {}
-
-  @override
-  Future<void> deleteBackup({required String fileId}) async {
-    _seededBackups = (_seededBackups ?? <DownloaderBackupVersion>[])
-        .where((backup) => backup.fileId != fileId)
-        .toList();
-    notifyListeners();
+  Future<void> importBackup() async {
+    importCalls++;
   }
-
-  @override
-  Future<void> undoLastRestore() async {}
 }
 
 UpdateController buildUpdateControllerForTest({

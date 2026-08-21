@@ -1223,123 +1223,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupRestore => '备份与恢复';
 
   @override
-  String get webDavServer => 'WebDAV 服务器';
+  String get exportConfigBackup => '导出配置到 JSON';
 
   @override
-  String get webDavConfigSubtitle => '配置用于备份与恢复的远端目录';
+  String get importConfigBackup => '从 JSON 导入配置';
 
   @override
-  String get webDavNotConfigured => '未配置';
-
-  @override
-  String get webDavRootUrl => '根地址';
-
-  @override
-  String get webDavDirectory => '远端目录';
-
-  @override
-  String get webDavPasswordOrToken => '密码或应用令牌';
-
-  @override
-  String get testConnection => '测试连接';
-
-  @override
-  String get testingConnection => '测试中...';
-
-  @override
-  String get saving => '保存中...';
-
-  @override
-  String get webDavRootUrlInvalid => '请输入有效的 WebDAV 地址';
-
-  @override
-  String get webDavDirectoryRequired => '请输入远端目录';
-
-  @override
-  String get usernameRequired => '请输入用户名';
-
-  @override
-  String get webDavPasswordRequired => '请输入密码或应用令牌';
-
-  @override
-  String get backupToWebDav => '备份到 WebDAV';
-
-  @override
-  String get restoreFromWebDav => '从 WebDAV 恢复';
-
-  @override
-  String get signInToUseBackup => '登录后可使用备份功能';
-
-  @override
-  String get configureWebDavToUseBackup => '请先配置 WebDAV';
+  String get importBackupValidationNotice => '替换任何配置前会先校验文件是否合法';
 
   @override
   String get backupIncludesCredentials => '包含下载器地址和登录凭据';
 
   @override
-  String get confirmRestoreAndReplace => '确认恢复并替换';
+  String get confirmRestoreAndReplace => '确认导入并替换';
 
   @override
   String get restoreWillReplaceAllDownloaders => '此操作将替换当前所有下载器配置。';
 
   @override
-  String get restoreCreatesRollbackSnapshot => '恢复前将创建本地回滚快照';
+  String get restoreCreatesRollbackSnapshot => '导入前将创建本地回滚快照';
 
   @override
-  String get undoLastRestore => '撤销上次恢复';
+  String get undoLastRestore => '撤销上次导入';
 
   @override
-  String get selectBackupVersion => '选择备份版本';
-
-  @override
-  String get noBackupsAvailable => '暂无可用备份';
-
-  @override
-  String get latestBackupLabel => '最新备份';
-
-  @override
-  String get latestBackupChip => '最新';
-
-  @override
-  String get confirmDeleteBackupVersion => '删除备份版本？';
-
-  @override
-  String get deleteBackupVersionMessage => '该备份版本将从 WebDAV 中永久删除。';
-
-  @override
-  String get restoreInProgress => '正在恢复...';
-
-  @override
-  String get backupInProgress => '正在备份...';
-
-  @override
-  String get backupTimeJustNow => '刚刚';
-
-  @override
-  String backupTimeMinutesAgo(int count) {
-    return '$count分钟前';
-  }
-
-  @override
-  String backupTimeHoursAgo(int count) {
-    return '$count小时前';
-  }
-
-  @override
-  String backupTimeDaysAgo(int count) {
-    return '$count天前';
-  }
-
-  @override
-  String backupDownloaderCount(int count) {
-    return '$count 个下载器';
-  }
-
-  @override
-  String get restoreSuccess => '恢复成功';
-
-  @override
-  String get exportSuccess => '备份导出成功';
+  String get selectBackupFile => '选择 JSON 文件';
 
   @override
   String get forgotPassword => '忘记密码？';

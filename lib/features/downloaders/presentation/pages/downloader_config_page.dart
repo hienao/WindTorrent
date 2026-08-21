@@ -5,7 +5,6 @@ import 'package:windwalker/core/theme/app_theme.dart';
 import 'package:windwalker/core/theme/neo_components.dart';
 import 'package:windwalker/core/theme/neo_theme_extension.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
-import 'package:windwalker/features/tasks/presentation/controllers/task_domain_store.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 import 'package:windwalker/models/downloader.dart';
 import 'package:windwalker/models/downloader_speed_config.dart';
@@ -84,14 +83,17 @@ class _DownloaderConfigPageState extends State<DownloaderConfigPage> {
       }
 
       _toggleValues['speedLimitModeEnabled'] = config.speedLimitModeEnabled;
-      _kbpsControllers['downloadLimitKB']?.text =
-          config.downloadLimitKB > 0 ? '${config.downloadLimitKB}' : '';
-      _kbpsControllers['uploadLimitKB']?.text =
-          config.uploadLimitKB > 0 ? '${config.uploadLimitKB}' : '';
+      _kbpsControllers['downloadLimitKB']?.text = config.downloadLimitKB > 0
+          ? '${config.downloadLimitKB}'
+          : '';
+      _kbpsControllers['uploadLimitKB']?.text = config.uploadLimitKB > 0
+          ? '${config.uploadLimitKB}'
+          : '';
       _kbpsControllers['altDownloadLimitKB']?.text =
           config.altDownloadLimitKB > 0 ? '${config.altDownloadLimitKB}' : '';
-      _kbpsControllers['altUploadLimitKB']?.text =
-          config.altUploadLimitKB > 0 ? '${config.altUploadLimitKB}' : '';
+      _kbpsControllers['altUploadLimitKB']?.text = config.altUploadLimitKB > 0
+          ? '${config.altUploadLimitKB}'
+          : '';
 
       setState(() {
         _descriptor = descriptor;
@@ -127,9 +129,9 @@ class _DownloaderConfigPageState extends State<DownloaderConfigPage> {
     );
 
     final ok = await context.read<DownloaderController>().setSpeedConfig(
-          widget.downloaderId,
-          config,
-        );
+      widget.downloaderId,
+      config,
+    );
     if (!mounted) return;
 
     setState(() => _saving = false);
@@ -152,13 +154,9 @@ class _DownloaderConfigPageState extends State<DownloaderConfigPage> {
     final l10n = AppLocalizations.of(context)!;
     final tokens = Theme.of(context).extension<NeoThemeTokens>()!;
     final downloader = context.watch<DownloaderController>().getDownloader(
-          widget.downloaderId,
-        );
-    // 监听 TaskDomainStore，使 hero 在线徽章随 qBit / Transmission 实时摘要更新。
-    final summary =
-        context.watch<TaskDomainStore>().summary(widget.downloaderId);
-    final online =
-        (summary?.status ?? downloader?.status) == DownloaderStatus.online;
+      widget.downloaderId,
+    );
+    final online = downloader?.status == DownloaderStatus.online;
 
     return Scaffold(
       backgroundColor: tokens.baseBackground,
@@ -219,14 +217,18 @@ class _DownloaderConfigPageState extends State<DownloaderConfigPage> {
   }
 
   Widget _buildDownloaderHero(
-      Downloader? downloader, AppLocalizations l10n, bool online) {
+    Downloader? downloader,
+    AppLocalizations l10n,
+    bool online,
+  ) {
     final statusColor = online ? AppColors.success : AppColors.offline;
 
     return NeoStatusHeroCard(
       icon: _downloaderIcon(downloader?.type),
       title: downloader?.name ?? '--',
-      subtitle:
-          downloader == null ? '--' : '${downloader.host}:${downloader.port}',
+      subtitle: downloader == null
+          ? '--'
+          : '${downloader.host}:${downloader.port}',
       badge: NeoBadge(
         label: online ? l10n.online : l10n.offline,
         backgroundColor: statusColor.withValues(alpha: 0.16),
@@ -260,9 +262,9 @@ class _DownloaderConfigPageState extends State<DownloaderConfigPage> {
             child: Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.error,
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: colorScheme.error,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
@@ -290,7 +292,8 @@ class _DownloaderConfigPageState extends State<DownloaderConfigPage> {
   }
 
   Widget _buildSection(ConfigSection section) {
-    final enabled = section.enabledBy == null ||
+    final enabled =
+        section.enabledBy == null ||
         (_toggleValues[section.enabledBy!] ?? false);
     final l10n = AppLocalizations.of(context)!;
 
@@ -349,18 +352,18 @@ class _DownloaderConfigPageState extends State<DownloaderConfigPage> {
                   Text(
                     field.label,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   if (field.hint != null) ...[
                     const SizedBox(height: 4),
                     Text(
                       field.hint!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurface.withValues(alpha: 0.64),
-                          ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.64),
+                      ),
                     ),
                   ],
                 ],

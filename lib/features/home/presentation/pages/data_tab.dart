@@ -7,7 +7,6 @@ import 'package:windwalker/core/theme/neo_components.dart';
 import 'package:windwalker/core/utils/responsive_layout.dart';
 import 'package:windwalker/features/downloaders/presentation/controllers/downloader_controller.dart';
 import 'package:windwalker/features/home/presentation/widgets/neo_overview_widgets.dart';
-import 'package:windwalker/features/tasks/presentation/controllers/task_domain_store.dart';
 import 'package:windwalker/l10n/app_localizations.dart';
 
 class DataTab extends StatelessWidget {
@@ -20,18 +19,14 @@ class DataTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Consumer2<DownloaderController, TaskDomainStore>(
-      builder: (context, controller, store, _) {
+    return Consumer<DownloaderController>(
+      builder: (context, controller, _) {
         final stats = controller.globalStats;
         final totalTasks = totalTaskCount(stats);
         final downloaders = controller.downloaders;
-        // 在线计数优先取 TaskDomainStore 实时摘要（qBit / Transmission），
-        // 无摘要时回退 Downloader 模型状态（Aria2）。
-        final onlineCount = downloaders.where((downloader) {
-          final summary = store.summary(downloader.id);
-          final status = summary?.status ?? downloader.status;
-          return status == DownloaderStatus.online;
-        }).length;
+        final onlineCount = downloaders
+            .where((downloader) => downloader.status == DownloaderStatus.online)
+            .length;
 
         return RefreshIndicator(
           edgeOffset: 16,
@@ -73,7 +68,9 @@ class DataTab extends StatelessWidget {
                     downloaders: downloaders,
                     onAddTask: () => context.push(AppConstants.addTaskRoute),
                     onShowDownloaders: onShowDownloaders,
-                    onShowTasks: onShowTasks != null ? () => onShowTasks!(null) : null,
+                    onShowTasks: onShowTasks != null
+                        ? () => onShowTasks!(null)
+                        : null,
                   ),
                 ),
               ),

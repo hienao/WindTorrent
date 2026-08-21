@@ -18,9 +18,9 @@ import 'package:windwalker/services/transmission_service.dart';
 ///
 /// 唯一持有定时器的层。按下载器维度轮询 qBit `sync/maindata` 增量接口、
 /// Transmission `torrent-get` 全量接口与 Aria2 JSON-RPC 全量接口，
-/// 将 typed 快照写入 [TaskDomainStore]（任务域单一事实来源），由 Store 通知下游消费方。
-/// 页面与下游 controller（TaskController / DownloaderController）不再自起 timer，
-/// 只从 TaskDomainStore 派生展示态。
+/// 将 typed 快照写入 [TaskDomainStore]（任务域单一事实来源），并将连接状态写入
+/// [DownloaderController]（下载器状态单一事实来源）。页面与下游 controller 不再
+/// 自起 timer 或维护第二份连接状态。
 ///
 /// 同时实现 [WidgetsBindingObserver] 以感知 App 生命周期：
 /// 锁屏 / 进入后台时暂停轮询，恢复时清零退避状态并立即重连。
@@ -42,19 +42,19 @@ class RealtimeSyncController extends ChangeNotifier
   /// `full_update`、增量 `torrents`、`torrents_removed` 等）。控制器据此做
   /// 精确的增量合并，避免 `fromJson` 默认值污染缺失字段。
   final Future<Map<String, dynamic>> Function(Downloader downloader, int rid)?
-      qbitPollerFactory;
+  qbitPollerFactory;
 
   /// 可注入的 Transmission 轮询工厂（返回全量 typed 快照）。
-  final Future<TransmissionRealtimeSnapshot> Function(
-      Downloader downloader)? transmissionPollerFactory;
+  final Future<TransmissionRealtimeSnapshot> Function(Downloader downloader)?
+  transmissionPollerFactory;
 
   /// 可注入的 Aria2 轮询工厂（返回全量 typed 快照）。
-  final Future<Aria2RealtimeSnapshot> Function(
-      Downloader downloader)? aria2PollerFactory;
+  final Future<Aria2RealtimeSnapshot> Function(Downloader downloader)?
+  aria2PollerFactory;
 
   DownloaderController? _downloaderController;
 
-  /// 任务域单一事实来源。轮询结果只写入这里，不再直推下游 controller。
+  /// 任务域单一事实来源。只保存任务、速度与数量，不保存连接状态。
   TaskDomainStore? _taskDomainStore;
 
   /// 测试 / 启动期使用的下载器直绑入口，避免依赖 DownloaderController 的 init 时序。
@@ -106,9 +106,7 @@ class RealtimeSyncController extends ChangeNotifier
   }
 
   /// 绑定下载器列表来源。生产环境通过 `ChangeNotifierProxyProvider` 注入。
-  void attach({
-    required DownloaderController downloaderController,
-  }) {
+  void attach({required DownloaderController downloaderController}) {
     _downloaderController = downloaderController;
     if (_started) {
       _syncTrackedDownloaders();
@@ -226,8 +224,10 @@ class RealtimeSyncController extends ChangeNotifier
   void _onResumed() {
     if (!_paused) return;
     _paused = false;
-    Log.i('RealtimeSyncController: app resumed, resetting backoff and '
-        'refreshing all downloaders');
+    Log.i(
+      'RealtimeSyncController: app resumed, resetting backoff and '
+      'refreshing all downloaders',
+    );
     _clearAllBackoffState();
     _syncTrackedDownloaders();
     unawaited(refreshNow());
@@ -291,8 +291,10 @@ class RealtimeSyncController extends ChangeNotifier
     }
   }
 
-  Future<void> _pollDownloader(Downloader downloader,
-      {bool bypassBackoff = false}) async {
+  Future<void> _pollDownloader(
+    Downloader downloader, {
+    bool bypassBackoff = false,
+  }) async {
     // 退避检查：未到下次轮询时间则跳过（无 IO）
     if (!bypassBackoff) {
       final nextAt = _nextPollAt[downloader.id];
@@ -339,8 +341,7 @@ class RealtimeSyncController extends ChangeNotifier
 
     final previous = _qbitSnapshots[downloader.id];
     final merged = (previous == null || isFullUpdate)
-        ? QBitRealtimeSnapshot.fromJson(
-            downloaderId: downloader.id, json: raw)
+        ? QBitRealtimeSnapshot.fromJson(downloaderId: downloader.id, json: raw)
         : previous.mergeJson(raw);
 
     _qbitSnapshots[downloader.id] = merged;
@@ -371,18 +372,37 @@ class RealtimeSyncController extends ChangeNotifier
 
   /// 将 qBit 快照写入 TaskDomainStore（任务域单一事实来源）。
   void _propagateQBit(Downloader downloader, QBitRealtimeSnapshot snapshot) {
+    _downloaderController?.reportConnectionSuccess(
+      downloader.id,
+      downloadSpeed: snapshot.serverState.downloadSpeed,
+      uploadSpeed: snapshot.serverState.uploadSpeed,
+      taskCount: snapshot.tasks.length,
+    );
     _taskDomainStore?.applyQBitSnapshot(snapshot);
   }
 
   /// 将 Transmission 快照写入 TaskDomainStore（任务域单一事实来源）。
   void _propagateTransmission(
-      Downloader downloader, TransmissionRealtimeSnapshot snapshot) {
+    Downloader downloader,
+    TransmissionRealtimeSnapshot snapshot,
+  ) {
+    _downloaderController?.reportConnectionSuccess(
+      downloader.id,
+      downloadSpeed: snapshot.totalDownloadSpeed,
+      uploadSpeed: snapshot.totalUploadSpeed,
+      taskCount: snapshot.tasks.length,
+    );
     _taskDomainStore?.applyTransmissionSnapshot(snapshot);
   }
 
   /// 将 Aria2 快照写入 TaskDomainStore（任务域单一事实来源）。
-  void _propagateAria2(
-      Downloader downloader, Aria2RealtimeSnapshot snapshot) {
+  void _propagateAria2(Downloader downloader, Aria2RealtimeSnapshot snapshot) {
+    _downloaderController?.reportConnectionSuccess(
+      downloader.id,
+      downloadSpeed: snapshot.downloadSpeed,
+      uploadSpeed: snapshot.uploadSpeed,
+      taskCount: snapshot.taskCount,
+    );
     _taskDomainStore?.applyAria2Snapshot(snapshot);
   }
 
@@ -397,8 +417,11 @@ class RealtimeSyncController extends ChangeNotifier
       stackTrace: st,
     );
 
-    if (count >= _maxConsecutiveFailures) {
-      _taskDomainStore?.markDownloaderOffline(downloader.id);
+    final isOffline =
+        _downloaderController?.reportConnectionFailure(downloader.id) ??
+        count >= _maxConsecutiveFailures;
+    if (isOffline) {
+      _taskDomainStore?.clearDownloaderRealtimeSummary(downloader.id);
     }
 
     // 指数退避：base × 2^failures，上限 _maxBackoff
@@ -406,17 +429,22 @@ class RealtimeSyncController extends ChangeNotifier
     _consecutiveFailures[downloader.id] = failures;
     final backoffMs = (_baseBackoff.inMilliseconds * (1 << (failures - 1)))
         .clamp(0, _maxBackoff.inMilliseconds);
-    _nextPollAt[downloader.id] =
-        DateTime.now().add(Duration(milliseconds: backoffMs));
+    _nextPollAt[downloader.id] = DateTime.now().add(
+      Duration(milliseconds: backoffMs),
+    );
   }
 
   /// 默认 qBit 轮询：走真实 service（返回原始 JSON 以保留增量语义）。
   ///
   /// 按 downloader ID 缓存 service 实例，复用内部 adapter/profile/session 缓存。
   Future<Map<String, dynamic>> _defaultQBitPoller(
-      Downloader downloader, int rid) {
+    Downloader downloader,
+    int rid,
+  ) {
     final service = _qbitServices.putIfAbsent(
-        downloader.id, () => QBitService(downloader));
+      downloader.id,
+      () => QBitService(downloader),
+    );
     return service.getRealtimeMainData(rid: rid);
   }
 
@@ -424,9 +452,12 @@ class RealtimeSyncController extends ChangeNotifier
   ///
   /// 按 downloader ID 缓存 service 实例，复用内部 adapter 缓存。
   Future<TransmissionRealtimeSnapshot> _defaultTransmissionPoller(
-      Downloader downloader) {
+    Downloader downloader,
+  ) {
     final service = _transmissionServices.putIfAbsent(
-        downloader.id, () => TransmissionService(downloader));
+      downloader.id,
+      () => TransmissionService(downloader),
+    );
     return service.getRealtimeSnapshot();
   }
 
@@ -435,7 +466,9 @@ class RealtimeSyncController extends ChangeNotifier
   /// 按 downloader ID 缓存 service 实例，复用 HTTP client。
   Future<Aria2RealtimeSnapshot> _defaultAria2Poller(Downloader downloader) {
     final service = _aria2Services.putIfAbsent(
-        downloader.id, () => Aria2Service(downloader));
+      downloader.id,
+      () => Aria2Service(downloader),
+    );
     return service.getRealtimeSnapshot();
   }
 }

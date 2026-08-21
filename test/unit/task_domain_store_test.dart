@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:windwalker/core/constants/app_constants.dart';
 import 'package:windwalker/features/tasks/presentation/controllers/task_domain_store.dart';
 import 'package:windwalker/models/qbit_realtime_snapshot.dart';
 import 'package:windwalker/models/transmission_realtime_snapshot.dart';
@@ -45,7 +44,7 @@ void main() {
       expect(store.qbitTags('q1'), ['RENAME']);
     });
 
-    test('qBit 摘要聚合下载器速度、任务数与状态统计', () {
+    test('qBit 摘要聚合下载器速度、任务数与任务状态统计', () {
       final store = TaskDomainStore();
 
       store.applyQBitSnapshot(
@@ -70,7 +69,6 @@ void main() {
       );
 
       final summary = store.summary('q1')!;
-      expect(summary.status, DownloaderStatus.online);
       expect(summary.downloadSpeed, 100);
       expect(summary.uploadSpeed, 20);
       expect(summary.taskCount, 1);
@@ -141,7 +139,7 @@ void main() {
               'peersSendingToUs': 2,
               'peersGettingFromUs': 1,
               'trackerStats': [],
-            }
+            },
           ],
         ),
       );
@@ -194,7 +192,7 @@ void main() {
               'peersSendingToUs': 0,
               'peersGettingFromUs': 0,
               'trackerStats': [],
-            }
+            },
           ],
         ),
       );
@@ -204,12 +202,11 @@ void main() {
       expect(all[0].downloadSpeed, greaterThan(all[1].downloadSpeed));
     });
 
-    test('markDownloaderOffline 清零速度并标记离线', () {
+    test('clearDownloaderRealtimeSummary 清零实时指标', () {
       final store = TaskDomainStore();
-      store.markDownloaderOffline('q1');
+      store.clearDownloaderRealtimeSummary('q1');
 
       final summary = store.summary('q1')!;
-      expect(summary.status, DownloaderStatus.offline);
       expect(summary.downloadSpeed, 0);
       expect(summary.taskCount, 0);
     });

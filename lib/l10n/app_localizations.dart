@@ -2416,227 +2416,59 @@ abstract class AppLocalizations {
   /// **'Backup & Restore'**
   String get backupRestore;
 
-  /// Settings row title for WebDAV configuration
+  /// Settings row: export a local JSON configuration backup
   ///
   /// In en, this message translates to:
-  /// **'WebDAV Server'**
-  String get webDavServer;
+  /// **'Export configuration to JSON'**
+  String get exportConfigBackup;
 
-  /// WebDAV settings page subtitle
+  /// Settings row: import a local JSON configuration backup
   ///
   /// In en, this message translates to:
-  /// **'Configure the remote folder used for backup and restore'**
-  String get webDavConfigSubtitle;
+  /// **'Import configuration from JSON'**
+  String get importConfigBackup;
 
-  /// WebDAV not configured subtitle
+  /// Settings row subtitle explaining safe import validation
   ///
   /// In en, this message translates to:
-  /// **'Not configured'**
-  String get webDavNotConfigured;
+  /// **'The file is validated before any configuration is replaced'**
+  String get importBackupValidationNotice;
 
-  /// WebDAV root URL field label
-  ///
-  /// In en, this message translates to:
-  /// **'Root URL'**
-  String get webDavRootUrl;
-
-  /// WebDAV remote directory field label
-  ///
-  /// In en, this message translates to:
-  /// **'Remote directory'**
-  String get webDavDirectory;
-
-  /// WebDAV password or token field label
-  ///
-  /// In en, this message translates to:
-  /// **'Password or app token'**
-  String get webDavPasswordOrToken;
-
-  /// Test WebDAV connection button text
-  ///
-  /// In en, this message translates to:
-  /// **'Test'**
-  String get testConnection;
-
-  /// Test WebDAV connection loading text
-  ///
-  /// In en, this message translates to:
-  /// **'Testing...'**
-  String get testingConnection;
-
-  /// Saving state label
-  ///
-  /// In en, this message translates to:
-  /// **'Saving...'**
-  String get saving;
-
-  /// Invalid WebDAV URL validation message
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a valid WebDAV URL'**
-  String get webDavRootUrlInvalid;
-
-  /// Missing WebDAV directory validation message
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter the remote directory'**
-  String get webDavDirectoryRequired;
-
-  /// Missing username validation message
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter the username'**
-  String get usernameRequired;
-
-  /// Missing WebDAV password validation message
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter the password or app token'**
-  String get webDavPasswordRequired;
-
-  /// Settings row: export backup to WebDAV
-  ///
-  /// In en, this message translates to:
-  /// **'Back up to WebDAV'**
-  String get backupToWebDav;
-
-  /// Settings row: import backup from WebDAV
-  ///
-  /// In en, this message translates to:
-  /// **'Restore from WebDAV'**
-  String get restoreFromWebDav;
-
-  /// Settings row subtitle when not signed in
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in to use backup'**
-  String get signInToUseBackup;
-
-  /// Settings row subtitle when WebDAV is not configured
-  ///
-  /// In en, this message translates to:
-  /// **'Configure WebDAV to use backup'**
-  String get configureWebDavToUseBackup;
-
-  /// Settings row subtitle for backup row when signed in
+  /// Settings row subtitle warning about sensitive backup contents
   ///
   /// In en, this message translates to:
   /// **'Includes downloader addresses and credentials'**
   String get backupIncludesCredentials;
 
-  /// Restore confirmation dialog title
+  /// Import confirmation dialog title
   ///
   /// In en, this message translates to:
-  /// **'Confirm restore and replace'**
+  /// **'Confirm import and replace'**
   String get confirmRestoreAndReplace;
 
-  /// Restore confirmation dialog body
+  /// Import confirmation dialog body
   ///
   /// In en, this message translates to:
   /// **'This will replace all current downloader configurations.'**
   String get restoreWillReplaceAllDownloaders;
 
-  /// Settings row subtitle for restore row when signed in
+  /// Import confirmation and undo row subtitle
   ///
   /// In en, this message translates to:
-  /// **'A local rollback snapshot will be created before restore'**
+  /// **'A local rollback snapshot will be created before import'**
   String get restoreCreatesRollbackSnapshot;
 
-  /// Undo button text after a successful restore
+  /// Undo button text after a successful import
   ///
   /// In en, this message translates to:
-  /// **'Undo last restore'**
+  /// **'Undo last import'**
   String get undoLastRestore;
 
-  /// Bottom sheet title for selecting a backup version
+  /// Button that opens the JSON backup file picker
   ///
   /// In en, this message translates to:
-  /// **'Select backup version'**
-  String get selectBackupVersion;
-
-  /// Empty state when no backup versions are found
-  ///
-  /// In en, this message translates to:
-  /// **'No backups available'**
-  String get noBackupsAvailable;
-
-  /// Latest backup row title prefix
-  ///
-  /// In en, this message translates to:
-  /// **'Latest backup'**
-  String get latestBackupLabel;
-
-  /// Latest backup badge label
-  ///
-  /// In en, this message translates to:
-  /// **'Latest'**
-  String get latestBackupChip;
-
-  /// Delete backup version dialog title
-  ///
-  /// In en, this message translates to:
-  /// **'Delete backup version?'**
-  String get confirmDeleteBackupVersion;
-
-  /// Delete backup version dialog body
-  ///
-  /// In en, this message translates to:
-  /// **'This backup version will be permanently removed from WebDAV.'**
-  String get deleteBackupVersionMessage;
-
-  /// Shown while restore is in progress
-  ///
-  /// In en, this message translates to:
-  /// **'Restoring...'**
-  String get restoreInProgress;
-
-  /// Shown while backup export is in progress
-  ///
-  /// In en, this message translates to:
-  /// **'Backing up...'**
-  String get backupInProgress;
-
-  /// Backup time: less than 1 minute ago
-  ///
-  /// In en, this message translates to:
-  /// **'Just now'**
-  String get backupTimeJustNow;
-
-  /// Backup time: minutes ago
-  ///
-  /// In en, this message translates to:
-  /// **'{count}m ago'**
-  String backupTimeMinutesAgo(int count);
-
-  /// Backup time: hours ago
-  ///
-  /// In en, this message translates to:
-  /// **'{count}h ago'**
-  String backupTimeHoursAgo(int count);
-
-  /// Backup time: days ago
-  ///
-  /// In en, this message translates to:
-  /// **'{count}d ago'**
-  String backupTimeDaysAgo(int count);
-
-  /// Backup version subtitle: downloader count
-  ///
-  /// In en, this message translates to:
-  /// **'{count} downloaders'**
-  String backupDownloaderCount(int count);
-
-  /// Snackbar after successful restore
-  ///
-  /// In en, this message translates to:
-  /// **'Restore completed successfully'**
-  String get restoreSuccess;
-
-  /// Snackbar after successful backup export
-  ///
-  /// In en, this message translates to:
-  /// **'Backup exported successfully'**
-  String get exportSuccess;
+  /// **'Select JSON file'**
+  String get selectBackupFile;
 
   /// Forgot password link on login page
   ///
