@@ -1,0 +1,91 @@
+name: Bug report / 问题反馈
+description: Report an app or downloader connection problem / 报告应用或连接问题
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve WindTorrent. English and Chinese are welcome.
+        Check the [FAQ](https://github.com/hienao/WindTorrent/blob/main/docs/faq.md) / [常见问题](https://github.com/hienao/WindTorrent/blob/main/docs/zh-CN/faq.md) and existing issues first.
+        This report is public. Remove passwords, RPC secrets, private URLs, server addresses, and personal task data. Never attach a backup.
+        本反馈公开可见，请移除密码、RPC 密钥、私有链接、服务器地址和个人任务信息，勿上传备份。敏感问题请联系 shiwentao666@gmail.com。
+  - type: input
+    id: app_version
+    attributes:
+      label: App version / 应用版本
+      placeholder: "Example: 1.1.21"
+    validations:
+      required: true
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Edition / 版本类型
+      options:
+        - Free
+        - Pro
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Android version and device / Android 版本与设备
+      placeholder: "Example: Android 15, Pixel 8"
+    validations:
+      required: true
+  - type: dropdown
+    id: downloader
+    attributes:
+      label: Downloader / 下载器
+      options:
+        - Aria2
+        - qBittorrent
+        - Transmission
+        - Multiple downloaders / 多种下载器
+        - Not downloader-specific / 与下载器无关
+    validations:
+      required: true
+  - type: input
+    id: downloader_version
+    attributes:
+      label: Downloader version / 下载器版本
+      description: Exact server version, or N/A if unrelated / 服务端准确版本，无关时填 N/A
+      placeholder: "Example: qBittorrent 5.1.4"
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Connection setup / 连接环境
+      description: LAN, VPN, Docker, HTTP/HTTPS, reverse proxy; omit actual addresses and credentials / 说明局域网、VPN、Docker、HTTP/HTTPS、反向代理，不填写真实地址与凭据
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / 复现步骤
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / 预期结果
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and exact error / 实际结果与准确错误
+      description: Sanitized screenshots or short logs are optional / 可附脱敏截图或简短日志
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Before submitting / 提交前确认
+      options:
+        - label: I removed sensitive data and did not attach a backup / 已移除敏感信息，未上传备份
+          required: true

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: FAQ and connection help / 常见问题与连接帮助
+    url: https://github.com/hienao/WindTorrent/blob/main/docs/faq.md
+    about: Troubleshooting and links to Chinese guides / 故障排查与中文指南入口
+  - name: Private support / 私密支持
+    url: mailto:shiwentao666@gmail.com
+    about: Use email for sensitive reports; never share credentials publicly / 敏感问题请发邮件，不要公开凭据
