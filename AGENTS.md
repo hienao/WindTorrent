@@ -2,7 +2,8 @@
 
 This repository contains product documentation, presentation assets, and user feedback. The application source is private and must remain outside this repository. Do not copy application code, development configuration, build output, credentials, real backups, or private Git history here.
 
-- Keep `README.md` in English and `README.zh-CN.md` in Simplified Chinese. Connection guides and FAQ have matching files in `docs/` and `docs/zh-CN/`.
+- Keep `README.md` in English. Localized introductions are `README.zh-CN.md`, `README.ja.md`, `README.de.md`, `README.es.md`, `README.fr.md`, `README.pt-BR.md`, and `README.ru.md`. Keep the language selector on every README complete, with the current language shown as plain text. Keep product facts aligned across all introductions.
+- Connection guides and FAQ are available in English (`docs/`) and Simplified Chinese (`docs/zh-CN/`). Label links to those guides, the website, privacy policy, and support forms with their actual languages in other introductions. The app interface currently supports English, Simplified Chinese, and Japanese; translated repository introductions do not imply additional app UI languages. If adding another introduction, also update the introduction count in each README.
 - Verify product claims against the current app and store listing. Link to Google Play for installs; do not imply iOS availability or that this app downloads files directly onto Android.
 - Free and Pro have the same core management features. Pro is a separate paid app with no advertising SDK; both editions use Firebase Analytics. Do not describe Pro as analytics-free or an in-app upgrade.
 - Use only reviewed public assets or dedicated demo captures. Distinguish store preview compositions from current screenshots. Keep image provenance in `assets/readme/README.md`.

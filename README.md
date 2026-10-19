@@ -13,7 +13,8 @@
   <a href="https://hienao-apps.pages.dev/windtorrent/">Website</a>
 </p>
 
-<p align="center">English · <a href="README.zh-CN.md">简体中文</a></p>
+<p align="center">English · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a> · <a href="README.de.md">Deutsch</a><br>
+  <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.ru.md">Русский</a></p>
 
 WindTorrent connects to downloaders you already run on a NAS, server, or computer. Check progress, add tasks, and pause or resume downloads from one place. Files are downloaded by your connected downloader and saved on that machine.
 
@@ -57,6 +58,10 @@ Use your actual externally reachable port, including any Docker port mapping. En
 | Install | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro) |
 
 Both editions can be installed together. Use local JSON export and import to transfer downloader settings. Pro is a separate app purchase, rather than an in-app upgrade. Both editions use Firebase Analytics; see the [privacy policy](https://hienao-apps.pages.dev/windtorrent/privacy/) for details.
+
+## Languages
+
+The app interface supports English, Simplified Chinese, and Japanese. Repository introductions are available in eight languages; detailed connection guides and the FAQ are available in [English](docs/faq.md) and [Simplified Chinese](docs/zh-CN/faq.md).
 
 ## Help shape WindTorrent
 

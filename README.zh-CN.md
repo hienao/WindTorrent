@@ -13,7 +13,8 @@
   <a href="https://hienao-apps.pages.dev/windtorrent/">官方网站</a>
 </p>
 
-<p align="center"><a href="README.md">English</a> · 简体中文</p>
+<p align="center"><a href="README.md">English</a> · 简体中文 · <a href="README.ja.md">日本語</a> · <a href="README.de.md">Deutsch</a><br>
+  <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.ru.md">Русский</a></p>
 
 WindTorrent 连接你已经部署在 NAS、服务器或电脑上的下载器。在手机上查看进度、添加任务、暂停和继续下载。文件由连接的下载器下载，并保存在下载器所在的设备上。
 
@@ -57,6 +58,10 @@ WindTorrent 连接你已经部署在 NAS、服务器或电脑上的下载器。�
 | 安装入口 | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro) |
 
 两个版本可以同时安装，通过本地 JSON 导出、导入迁移下载器配置。Pro 需要单独购买，不通过 Free 内购升级。两个版本均使用 Firebase Analytics，详见[隐私政策](https://hienao-apps.pages.dev/windtorrent/privacy/)。
+
+## 语言支持
+
+App 界面目前支持英文、简体中文和日文。仓库介绍提供八种语言；详细连接指南和 FAQ 提供[英文](docs/faq.md)与[简体中文](docs/zh-CN/faq.md)。
 
 ## 一起改进 WindTorrent
 
