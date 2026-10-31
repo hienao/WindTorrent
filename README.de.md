@@ -19,9 +19,9 @@
 WindTorrent verbindet sich mit Downloadern, die bereits auf deinem NAS, Server oder Computer laufen. Prüfe den Fortschritt, füge Aufgaben hinzu und pausiere oder starte Downloads an einem Ort. Die Dateien werden vom verbundenen Downloader heruntergeladen und auf dessen Gerät gespeichert.
 
 <p align="center">
-  <a href="assets/readme/overview.webp"><img src="assets/readme/overview.webp" width="31%" alt="Google-Play-Vorschaubild mit Downloader- und Aufgabenübersicht"></a>
-  <a href="assets/readme/downloaders.webp"><img src="assets/readme/downloaders.webp" width="31%" alt="Google-Play-Vorschaubild mit Verbindungen zu Aria2, qBittorrent und Transmission"></a>
-  <a href="assets/readme/tasks.webp"><img src="assets/readme/tasks.webp" width="31%" alt="Google-Play-Vorschaubild mit Aufgabensuche, Statusfiltern und Fortschritt"></a>
+  <a href="assets/readme/overview-en-US.webp"><img src="assets/readme/overview-en-US.webp" width="31%" alt="Google-Play-Vorschaubild mit Downloader- und Aufgabenübersicht"></a>
+  <a href="assets/readme/downloaders-en-US.webp"><img src="assets/readme/downloaders-en-US.webp" width="31%" alt="Google-Play-Vorschaubild mit Verbindungen zu Aria2, qBittorrent und Transmission"></a>
+  <a href="assets/readme/tasks-en-US.webp"><img src="assets/readme/tasks-en-US.webp" width="31%" alt="Google-Play-Vorschaubild mit Aufgabensuche, Statusfiltern und Fortschritt"></a>
 </p>
 
 <p align="center"><a href="assets/readme/tablet.webp"><img src="assets/readme/tablet.webp" width="80%" alt="WindTorrent tablet interface preview"></a></p>

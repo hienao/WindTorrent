@@ -19,9 +19,9 @@
 WindTorrent подключается к загрузчикам, которые уже работают на вашем NAS, сервере или компьютере. Проверяйте прогресс, добавляйте задания, приостанавливайте и возобновляйте загрузки в одном приложении. Файлы скачиваются и сохраняются на устройстве, где работает подключённый загрузчик.
 
 <p align="center">
-  <a href="assets/readme/overview.webp"><img src="assets/readme/overview.webp" width="31%" alt="Изображение из Google Play: обзор загрузчиков и заданий"></a>
-  <a href="assets/readme/downloaders.webp"><img src="assets/readme/downloaders.webp" width="31%" alt="Изображение из Google Play: подключения к Aria2, qBittorrent и Transmission"></a>
-  <a href="assets/readme/tasks.webp"><img src="assets/readme/tasks.webp" width="31%" alt="Изображение из Google Play: поиск, фильтры состояния и прогресс заданий"></a>
+  <a href="assets/readme/overview-en-US.webp"><img src="assets/readme/overview-en-US.webp" width="31%" alt="Изображение из Google Play: обзор загрузчиков и заданий"></a>
+  <a href="assets/readme/downloaders-en-US.webp"><img src="assets/readme/downloaders-en-US.webp" width="31%" alt="Изображение из Google Play: подключения к Aria2, qBittorrent и Transmission"></a>
+  <a href="assets/readme/tasks-en-US.webp"><img src="assets/readme/tasks-en-US.webp" width="31%" alt="Изображение из Google Play: поиск, фильтры состояния и прогресс заданий"></a>
 </p>
 
 <p align="center"><a href="assets/readme/tablet.webp"><img src="assets/readme/tablet.webp" width="80%" alt="WindTorrent tablet interface preview"></a></p>

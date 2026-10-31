@@ -19,9 +19,9 @@
 WindTorrent se conecta a las herramientas de descarga que ya tienes en un NAS, servidor u ordenador. Consulta el progreso, añade tareas y pausa o reanuda descargas desde un solo lugar. Los archivos se descargan y se guardan en el equipo que ejecuta la herramienta conectada.
 
 <p align="center">
-  <a href="assets/readme/overview.webp"><img src="assets/readme/overview.webp" width="31%" alt="Imagen de Google Play con el resumen de conexiones y tareas"></a>
-  <a href="assets/readme/downloaders.webp"><img src="assets/readme/downloaders.webp" width="31%" alt="Imagen de Google Play con conexiones a Aria2, qBittorrent y Transmission"></a>
-  <a href="assets/readme/tasks.webp"><img src="assets/readme/tasks.webp" width="31%" alt="Imagen de Google Play con búsqueda, filtros de estado y progreso de tareas"></a>
+  <a href="assets/readme/overview-en-US.webp"><img src="assets/readme/overview-en-US.webp" width="31%" alt="Imagen de Google Play con el resumen de conexiones y tareas"></a>
+  <a href="assets/readme/downloaders-en-US.webp"><img src="assets/readme/downloaders-en-US.webp" width="31%" alt="Imagen de Google Play con conexiones a Aria2, qBittorrent y Transmission"></a>
+  <a href="assets/readme/tasks-en-US.webp"><img src="assets/readme/tasks-en-US.webp" width="31%" alt="Imagen de Google Play con búsqueda, filtros de estado y progreso de tareas"></a>
 </p>
 
 <p align="center"><a href="assets/readme/tablet.webp"><img src="assets/readme/tablet.webp" width="80%" alt="WindTorrent tablet interface preview"></a></p>
