@@ -8,8 +8,7 @@
 <p align="center">Manage Aria2, qBittorrent, and Transmission from your phone.</p>
 
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Get Free on Google Play</a> ·
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro">Get Pro</a> ·
+  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Get it on Google Play</a> ·
   <a href="https://hienao-apps.pages.dev/windtorrent/">Website</a>
 </p>
 
@@ -38,7 +37,7 @@ WindTorrent connects to downloaders you already run on a NAS, server, or compute
 
 ## Get connected
 
-1. Install [WindTorrent Free](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) or [WindTorrent Pro](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro).
+1. Install [WindTorrent](https://play.google.com/store/apps/details?id=com.hienao.windtorrent).
 2. Enable your downloader's remote interface and make sure your phone can reach it.
 3. Open **Downloaders**, tap **+**, choose the downloader type, and enter its host, port, and credentials. Match the HTTPS switch to your server, then save.
 
@@ -50,16 +49,9 @@ WindTorrent connects to downloaders you already run on a NAS, server, or compute
 
 Use your actual externally reachable port, including any Docker port mapping. Enter a hostname or IP in the address field; the app adds the API path automatically. See the guides for examples and reverse proxy requirements.
 
-## Free or Pro?
+## Ads and purchases
 
-| | WindTorrent Free | WindTorrent Pro |
-| --- | --- | --- |
-| Core download management | Included | Included |
-| Advertising | After a seven-day introductory period, subject to privacy choices | No advertising SDK |
-| Purchase | Free to install | Separate paid app |
-| Install | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro) |
-
-Both editions can be installed together. Use local JSON export and import to transfer downloader settings. Pro is a separate app purchase, rather than an in-app upgrade. Both editions use Firebase Analytics; see the [privacy policy](https://hienao-apps.pages.dev/windtorrent/privacy/) for details.
+WindTorrent is one app with free download management. Optional in-app purchases provide ad-free access through a lifetime purchase or an annual subscription. The app includes the advertising SDK and uses Firebase Analytics; see the [privacy policy](https://hienao-apps.pages.dev/windtorrent/privacy/).
 
 ## Languages
 

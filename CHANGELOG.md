@@ -9,4 +9,4 @@ Selected user-facing changes. Google Play determines the version available to yo
 - Fixed pausing seeding torrents. Seeding tasks can be paused from the task list and included in batch pause actions alongside downloading and waiting tasks.
 - 修复做种任务无法暂停的问题。任务列表可暂停做种任务，批量暂停也包含下载中、等待中和做种中的任务。
 
-Install or update: [Free](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) · [Pro](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro).
+Install or update: [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent).

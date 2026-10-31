@@ -8,8 +8,7 @@
 <p align="center">在 Android 上统一管理 Aria2、qBittorrent 和 Transmission。</p>
 
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">获取免费版</a> ·
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro">获取 Pro</a> ·
+  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">在 Google Play 获取</a> ·
   <a href="https://hienao-apps.pages.dev/windtorrent/">官方网站</a>
 </p>
 
@@ -38,7 +37,7 @@ WindTorrent 连接你已经部署在 NAS、服务器或电脑上的下载器。�
 
 ## 三步开始使用
 
-1. 安装 [WindTorrent Free](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) 或 [WindTorrent Pro](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro)。
+1. 安装 [WindTorrent](https://play.google.com/store/apps/details?id=com.hienao.windtorrent)。
 2. 为下载器开启远程接口，确认手机能够访问它。
 3. 打开「下载器」，点击「+」，选择类型并填写地址、端口和认证信息，按服务端配置设置 HTTPS 后保存。
 
@@ -50,16 +49,9 @@ WindTorrent 连接你已经部署在 NAS、服务器或电脑上的下载器。�
 
 端口以实际可访问的配置为准，Docker 部署请填写映射后的端口。地址栏填写主机名或 IP，App 会自动补充接口路径。示例和反向代理要求见各连接指南。
 
-## Free 与 Pro 怎么选？
+## 广告与购买
 
-| | WindTorrent Free | WindTorrent Pro |
-| --- | --- | --- |
-| 核心下载管理 | 完整提供 | 完整提供 |
-| 广告 | 七天体验期后按隐私选择展示 | 不包含广告 SDK |
-| 购买方式 | 免费安装 | 独立付费应用 |
-| 安装入口 | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro) |
-
-两个版本可以同时安装，通过本地 JSON 导出、导入迁移下载器配置。Pro 需要单独购买，不通过 Free 内购升级。两个版本均使用 Firebase Analytics，详见[隐私政策](https://hienao-apps.pages.dev/windtorrent/privacy/)。
+WindTorrent 是单一应用，下载管理功能可免费使用。可通过应用内购买永久免广告权益或年度免广告订阅。应用包含广告 SDK，并使用 Firebase Analytics，详见[隐私政策](https://hienao-apps.pages.dev/windtorrent/privacy/)。
 
 ## 语言支持
 

@@ -8,8 +8,7 @@
 <p align="center">スマートフォンから Aria2、qBittorrent、Transmission をまとめて管理。</p>
 
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Google Play で無料版を入手</a> ·
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro">Pro を入手</a> ·
+  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Google Play で入手</a> ·
   <a href="https://hienao-apps.pages.dev/windtorrent/">公式サイト</a>
 </p>
 
@@ -38,7 +37,7 @@ WindTorrent は、NAS、サーバー、パソコンで稼働しているダウ�
 
 ## 接続を始める
 
-1. [WindTorrent Free](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) または [WindTorrent Pro](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro) をインストールします。
+1. [WindTorrent](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) をインストールします。
 2. ダウンローダーのリモートインターフェースを有効にし、スマートフォンから接続できることを確認します。
 3. 「ダウンローダー」で「+」をタップし、種類、ホスト、ポート、認証情報を入力します。HTTPS の設定をサーバーに合わせて保存します。
 
@@ -50,16 +49,9 @@ WindTorrent は、NAS、サーバー、パソコンで稼働しているダウ�
 
 Docker のポートマッピングを含め、実際に接続できるポートを指定してください。アドレス欄にはホスト名または IP アドレスを入力します。API パスはアプリが自動で補います。リバースプロキシの要件は各ガイドを参照してください。
 
-## Free と Pro
+## 広告と購入
 
-| | WindTorrent Free | WindTorrent Pro |
-| --- | --- | --- |
-| 基本のダウンロード管理機能 | 利用可能 | 利用可能 |
-| 広告 | 7 日間の体験期間後、プライバシー設定に応じて表示 | 広告 SDK なし |
-| 購入方法 | 無料でインストール | 独立した有料アプリ |
-| 入手先 | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro) |
-
-両方のアプリを同時にインストールできます。設定はローカル JSON で移行できます。Pro は個別に購入するアプリで、Free 内のアプリ内課金によるアップグレードではありません。両版とも Firebase Analytics を使用します。詳細は[プライバシーポリシー（英語・中国語）](https://hienao-apps.pages.dev/windtorrent/privacy/)をご覧ください。
+WindTorrent は単一のアプリで、ダウンロード管理機能を無料で利用できます。アプリ内購入で買い切りまたは年間サブスクリプションの広告非表示を選べます。アプリには広告 SDK が含まれ、Firebase Analytics を使用します。詳しくは[プライバシーポリシー（英語・中国語）](https://hienao-apps.pages.dev/windtorrent/privacy/)をご覧ください。
 
 ## 言語とサポート
 

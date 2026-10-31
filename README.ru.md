@@ -8,8 +8,7 @@
 <p align="center">Управляйте Aria2, qBittorrent и Transmission с телефона.</p>
 
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Бесплатная версия в Google Play</a> ·
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro">Версия Pro</a> ·
+  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Скачать в Google Play</a> ·
   <a href="https://hienao-apps.pages.dev/windtorrent/">Сайт</a>
 </p>
 
@@ -38,7 +37,7 @@ WindTorrent подключается к загрузчикам, которые �
 
 ## Как подключиться
 
-1. Установите [WindTorrent Free](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) или [WindTorrent Pro](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro).
+1. Установите [WindTorrent](https://play.google.com/store/apps/details?id=com.hienao.windtorrent).
 2. Включите интерфейс удалённого управления загрузчика и убедитесь, что он доступен с телефона.
 3. Откройте **Downloaders**, нажмите **+**, выберите тип и укажите адрес сервера, порт и данные для входа. Настройте переключатель HTTPS в соответствии с сервером и сохраните подключение.
 
@@ -50,16 +49,9 @@ WindTorrent подключается к загрузчикам, которые �
 
 Укажите фактически доступный порт с учётом проброса портов Docker. В поле адреса введите имя хоста или IP-адрес; приложение само добавит путь API. Требования к обратному прокси описаны в инструкциях.
 
-## Free или Pro?
+## Реклама и покупки
 
-| | WindTorrent Free | WindTorrent Pro |
-| --- | --- | --- |
-| Основные функции управления | Включены | Включены |
-| Реклама | После семи дней ознакомительного периода, с учётом настроек конфиденциальности | Без рекламных SDK |
-| Покупка | Бесплатная установка | Отдельное платное приложение |
-| Установка | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro) |
-
-Обе версии можно установить одновременно. Настройки переносятся через локальный файл JSON. Pro приобретается отдельно, а не через встроенную покупку в Free. Обе версии используют Firebase Analytics. Подробнее — в [политике конфиденциальности на английском и китайском](https://hienao-apps.pages.dev/windtorrent/privacy/).
+WindTorrent — единое приложение с бесплатным управлением загрузками. Покупка внутри приложения или годовая подписка отключает рекламу. Приложение содержит рекламный SDK и использует Firebase Analytics; см. [политику конфиденциальности на английском и китайском](https://hienao-apps.pages.dev/windtorrent/privacy/).
 
 ## Языки и помощь
 

@@ -60,19 +60,19 @@ App 自动拼接以下路径：
 
 填写下载器进程能够访问的目录。Docker 场景通常填写**容器内路径**，并将它映射到期望的宿主机目录。手机上的 Android 文件路径不代表服务器磁盘。添加任务失败时检查服务端目录权限和剩余空间。
 
-## Free 与 Pro 有什么区别？
+## 广告和购买方式是什么？
 
-核心下载管理功能相同。Free 在七天体验期后按隐私选择展示广告；Pro 为 Google Play 上单独购买的付费应用，不包含广告 SDK。两个版本均使用 Firebase Analytics，详见[隐私政策](https://hienao-apps.pages.dev/windtorrent/privacy/)。
+WindTorrent 是单一应用，下载管理功能可免费使用。可通过应用内购买永久免广告权益或年度免广告订阅。应用包含广告 SDK，并使用 Firebase Analytics，详见[隐私政策](https://hienao-apps.pages.dev/windtorrent/privacy/)。
 
-## 可以在 Free 与 Pro 之间迁移配置吗？
+## 可以从旧版应用迁移配置吗？
 
-可以。在原 App 的「设置 → 备份与恢复」导出本地 JSON，再到另一版本导入。两个版本可以同时安装。导入会替换目标 App 的下载器列表，需要保留原配置时请先导出。
+在旧应用的「设置 → 备份与恢复」导出本地 JSON，再导入 WindTorrent。导入会替换目标应用的下载器列表，需要保留原配置时请先备份。备份包含下载器地址与连接凭据，请私密保存，不要上传到 Issue。迁移配置不会搬移已下载文件或服务端任务。
 
-备份包含下载器地址与连接凭据，请私密保存，不要上传到 Issue。迁移配置不会搬移已下载文件或服务端任务。
+旧独立 Pro 应用的购买记录无法在 WindTorrent 中自动恢复。请通过购买页面的迁移说明和联系入口获取订单核验帮助。
 
 ## 从哪里安装和更新？
 
-通过 [Google Play Free](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) 或 [Google Play Pro](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro)。本仓库提供文档和反馈入口，不提供 APK 下载。近期改进见[更新记录](../../CHANGELOG.md)；实际可用版本可能因地区或分批发布而不同。
+通过 [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) 安装。本仓库提供文档和反馈入口，不提供 APK 下载。近期改进见[更新记录](../../CHANGELOG.md)；实际可用版本可能因地区或分批发布而不同。
 
 ## WindTorrent 开源吗？
 
@@ -80,6 +80,6 @@ App 目前为闭源应用。本仓库公开文档与用户反馈，欢迎改进�
 
 ## 怎样安全地报告问题？
 
-先搜索[已有 Issue](https://github.com/hienao/WindTorrent/issues)，再填写[问题反馈表](https://github.com/hienao/WindTorrent/issues/new?template=bug_report.yml)。提供 App 版本与 Free/Pro、Android 版本、下载器类型与版本、网络部署方式、复现步骤和准确错误。
+先搜索[已有 Issue](https://github.com/hienao/WindTorrent/issues)，再填写[问题反馈表](https://github.com/hienao/WindTorrent/issues/new?template=bug_report.yml)。提供 App 版本、Android 版本、下载器类型与版本、网络部署方式、复现步骤和准确错误。
 
 附件中请移除密码、令牌、服务器地址、私有 Tracker 链接、任务名称等个人信息。不要上传备份文件。敏感信息请通过[支持邮箱](mailto:shiwentao666@gmail.com)私下联系。

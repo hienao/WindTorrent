@@ -16,15 +16,6 @@ body:
       placeholder: "Example: 1.1.21"
     validations:
       required: true
-  - type: dropdown
-    id: edition
-    attributes:
-      label: Edition / 版本类型
-      options:
-        - Free
-        - Pro
-    validations:
-      required: true
   - type: input
     id: android
     attributes:

@@ -8,8 +8,7 @@
 <p align="center">Gestiona Aria2, qBittorrent y Transmission desde tu teléfono.</p>
 
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Versión gratuita en Google Play</a> ·
-  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro">Obtener Pro</a> ·
+  <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Descargar en Google Play</a> ·
   <a href="https://hienao-apps.pages.dev/windtorrent/">Sitio web</a>
 </p>
 
@@ -38,7 +37,7 @@ WindTorrent se conecta a las herramientas de descarga que ya tienes en un NAS, s
 
 ## Empieza a usarla
 
-1. Instala [WindTorrent Free](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) o [WindTorrent Pro](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro).
+1. Instala [WindTorrent](https://play.google.com/store/apps/details?id=com.hienao.windtorrent).
 2. Activa la interfaz de control remoto de tu herramienta de descarga y comprueba que el teléfono puede acceder a ella.
 3. Abre **Downloaders**, pulsa **+**, selecciona el tipo e introduce el host, el puerto y las credenciales. Ajusta HTTPS según la configuración del servidor y guarda la conexión.
 
@@ -50,16 +49,9 @@ WindTorrent se conecta a las herramientas de descarga que ya tienes en un NAS, s
 
 Usa el puerto realmente accesible, teniendo en cuenta cualquier mapeo de puertos de Docker. En el campo de dirección introduce un nombre de host o una IP; la aplicación añade la ruta de la API automáticamente. Las guías explican los requisitos de los proxies inversos.
 
-## ¿Free o Pro?
+## Anuncios y compras
 
-| | WindTorrent Free | WindTorrent Pro |
-| --- | --- | --- |
-| Funciones principales de gestión | Incluidas | Incluidas |
-| Publicidad | Tras siete días de prueba, según tus opciones de privacidad | Sin SDK publicitario |
-| Compra | Instalación gratuita | Aplicación de pago independiente |
-| Instalación | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) | [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro) |
-
-Puedes instalar ambas aplicaciones a la vez y transferir la configuración mediante JSON local. Pro se compra por separado; no es una actualización mediante compra integrada en Free. Ambas versiones usan Firebase Analytics. Consulta la [política de privacidad en inglés y chino](https://hienao-apps.pages.dev/windtorrent/privacy/) para más información.
+WindTorrent es una sola aplicación con gestión de descargas gratuita. Una compra integrada permanente o una suscripción anual ofrecen acceso sin anuncios. La aplicación incluye el SDK de anuncios y utiliza Firebase Analytics; consulta la [política de privacidad en inglés y chino](https://hienao-apps.pages.dev/windtorrent/privacy/).
 
 ## Idiomas y ayuda
 

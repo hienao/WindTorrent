@@ -60,19 +60,19 @@ Yes, when the phone has a route to your downloader. A private LAN address will n
 
 To a directory accessible to the downloader process. In Docker, this is usually the path **inside the container**, with a volume mapped to the desired host directory. An Android folder path does not refer to the server's disk. Check directory permissions and available space on the server if adding a task fails.
 
-## How do Free and Pro differ?
+## How do ads and purchases work?
 
-They offer the same core download management. Free can show advertising after its seven-day introductory period, subject to privacy choices. Pro is a separate paid Google Play app without advertising SDKs. Both use Firebase Analytics as described in the [privacy policy](https://hienao-apps.pages.dev/windtorrent/privacy/).
+WindTorrent is one app with free download management. Optional in-app purchases provide ad-free access through a lifetime purchase or an annual subscription. The app includes the advertising SDK and uses Firebase Analytics; see the [privacy policy](https://hienao-apps.pages.dev/windtorrent/privacy/).
 
-## Can I move settings between Free and Pro?
+## Can I move settings from the old app?
 
-Yes. Export a local JSON backup from the existing app's **Settings → Backup & Restore**, then import it in the other edition. Both apps can be installed together. Import replaces the destination app's downloader list, so export its settings first if you need to keep them.
+Export a local JSON backup from the old app's **Settings → Backup & Restore**, then import it into WindTorrent. Import replaces the destination downloader list, so back it up first if needed. Backups include downloader addresses and credentials; store them privately and do not upload them to issues. Moving settings does not move downloaded files or server-side tasks.
 
-Backups include downloader addresses and credentials. Store them privately; do not upload them to issues. Moving settings does not move downloaded files or server-side tasks.
+Purchases of the former standalone Pro app cannot be restored automatically in WindTorrent. Use the migration instructions and contact option in the purchase screen for help verifying an existing order.
 
 ## Where do I install it or check for updates?
 
-Use [Google Play Free](https://play.google.com/store/apps/details?id=com.hienao.windtorrent) or [Google Play Pro](https://play.google.com/store/apps/details?id=com.hienao.windtorrent.pro). This repository provides documentation and feedback rather than APK downloads. See [release notes](../CHANGELOG.md) for recent changes; availability may differ by region or rollout stage.
+Use [Google Play](https://play.google.com/store/apps/details?id=com.hienao.windtorrent). This repository provides documentation and feedback rather than APK downloads. See [release notes](../CHANGELOG.md) for recent changes; availability may differ by region or rollout stage.
 
 ## Is WindTorrent open source?
 
@@ -80,6 +80,6 @@ The application is closed source. This repository contains public documentation 
 
 ## How do I report a problem safely?
 
-Search [existing issues](https://github.com/hienao/WindTorrent/issues) first, then use the [bug report form](https://github.com/hienao/WindTorrent/issues/new?template=bug_report.yml). Include the app version and edition, Android version, downloader type and version, network setup, steps, and exact error.
+Search [existing issues](https://github.com/hienao/WindTorrent/issues) first, then use the [bug report form](https://github.com/hienao/WindTorrent/issues/new?template=bug_report.yml). Include the app version, Android version, downloader type and version, network setup, steps, and exact error.
 
 Remove passwords, tokens, server addresses, private tracker URLs, task names, and other personal data from attachments. Never attach a backup. Send sensitive details to [support](mailto:shiwentao666@gmail.com) privately.
