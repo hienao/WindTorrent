@@ -62,7 +62,7 @@ App 自动拼接以下路径：
 
 ## 广告和购买方式是什么？
 
-WindTorrent 是单一应用，下载管理功能可免费使用。可通过应用内购买永久免广告权益或年度免广告订阅。应用包含广告 SDK，并使用 Firebase Analytics，详见[隐私政策](https://hienao-apps.pages.dev/windtorrent/privacy/)。
+WindTorrent 是单一应用，下载管理功能可免费使用。可通过应用内购买永久免广告权益或年度免广告订阅。应用包含广告 SDK，并使用 Firebase Analytics，详见[隐私政策](https://apps.51cloud.de/windtorrent/privacy/)。
 
 ## 可以从旧版应用迁移配置吗？
 

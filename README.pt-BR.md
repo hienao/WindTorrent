@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Baixar no Google Play</a> ·
-  <a href="https://hienao-apps.pages.dev/windtorrent/">Site oficial</a>
+  <a href="https://apps.51cloud.de/windtorrent/">Site oficial</a>
 </p>
 
 <p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a> · <a href="README.de.md">Deutsch</a><br>
@@ -51,7 +51,7 @@ Use a porta realmente acessível, considerando o mapeamento de portas do Docker,
 
 ## Anúncios e compras
 
-O WindTorrent é um único aplicativo com gerenciamento de downloads gratuito. Uma compra permanente no app ou uma assinatura anual oferece acesso sem anúncios. O aplicativo inclui o SDK de anúncios e usa Firebase Analytics; consulte a [política de privacidade em inglês e chinês](https://hienao-apps.pages.dev/windtorrent/privacy/).
+O WindTorrent é um único aplicativo com gerenciamento de downloads gratuito. Uma compra permanente no app ou uma assinatura anual oferece acesso sem anúncios. O aplicativo inclui o SDK de anúncios e usa Firebase Analytics; consulte a [política de privacidade em inglês e chinês](https://apps.51cloud.de/windtorrent/privacy/).
 
 ## Idiomas e ajuda
 
@@ -65,4 +65,4 @@ Antes de compartilhar capturas de tela ou logs, remova senhas, segredos RPC, URL
 
 Este é o repositório público oficial de documentação e feedback do WindTorrent. O aplicativo tem código fechado; seu código-fonte não é distribuído aqui. Aria2, qBittorrent e Transmission são projetos independentes, sem vínculo com o WindTorrent.
 
-[Site oficial (inglês/chinês)](https://hienao-apps.pages.dev/windtorrent/) · [Privacidade (inglês/chinês)](https://hienao-apps.pages.dev/windtorrent/privacy/) · [Suporte](mailto:shiwentao666@gmail.com)
+[Site oficial (inglês/chinês)](https://apps.51cloud.de/windtorrent/) · [Privacidade (inglês/chinês)](https://apps.51cloud.de/windtorrent/privacy/) · [Suporte](mailto:shiwentao666@gmail.com)

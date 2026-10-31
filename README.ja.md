@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Google Play で入手</a> ·
-  <a href="https://hienao-apps.pages.dev/windtorrent/">公式サイト</a>
+  <a href="https://apps.51cloud.de/windtorrent/">公式サイト</a>
 </p>
 
 <p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · 日本語 · <a href="README.de.md">Deutsch</a><br>
@@ -51,7 +51,7 @@ Docker のポートマッピングを含め、実際に接続できるポート�
 
 ## 広告と購入
 
-WindTorrent は単一のアプリで、ダウンロード管理機能を無料で利用できます。アプリ内購入で買い切りまたは年間サブスクリプションの広告非表示を選べます。アプリには広告 SDK が含まれ、Firebase Analytics を使用します。詳しくは[プライバシーポリシー（英語・中国語）](https://hienao-apps.pages.dev/windtorrent/privacy/)をご覧ください。
+WindTorrent は単一のアプリで、ダウンロード管理機能を無料で利用できます。アプリ内購入で買い切りまたは年間サブスクリプションの広告非表示を選べます。アプリには広告 SDK が含まれ、Firebase Analytics を使用します。詳しくは[プライバシーポリシー（英語・中国語）](https://apps.51cloud.de/windtorrent/privacy/)をご覧ください。
 
 ## 言語とサポート
 
@@ -65,4 +65,4 @@ WindTorrent は単一のアプリで、ダウンロード管理機能を無料�
 
 ここは WindTorrent の公式ドキュメントとフィードバック用の公開リポジトリです。アプリはクローズドソースで、アプリのソースコードは含まれていません。Aria2、qBittorrent、Transmission は独立したプロジェクトであり、WindTorrent との提携関係はありません。
 
-[公式サイト（英語・中国語）](https://hienao-apps.pages.dev/windtorrent/) · [プライバシーポリシー（英語・中国語）](https://hienao-apps.pages.dev/windtorrent/privacy/) · [サポート](mailto:shiwentao666@gmail.com)
+[公式サイト（英語・中国語）](https://apps.51cloud.de/windtorrent/) · [プライバシーポリシー（英語・中国語）](https://apps.51cloud.de/windtorrent/privacy/) · [サポート](mailto:shiwentao666@gmail.com)

@@ -7,6 +7,6 @@ This repository contains product documentation, presentation assets, and user fe
 - Verify product claims against the current app and store listing. Link to Google Play for installs; do not imply iOS availability or that this app downloads files directly onto Android.
 - WindTorrent is one app. Optional in-app purchases provide ad-free access via a lifetime purchase or annual subscription. The app includes the advertising SDK and uses Firebase Analytics. Verify rollout availability before making version-specific claims.
 - Use only reviewed public assets or dedicated demo captures. Distinguish store preview compositions from current screenshots. Keep image provenance in `assets/readme/README.md`.
-- Privacy policy and the website are maintained centrally in MyPlayAppPages. Link to `https://hienao-apps.pages.dev/windtorrent/` and `https://hienao-apps.pages.dev/windtorrent/privacy/`; do not duplicate those pages here or introduce another hosted site.
+- Privacy policy and the website are maintained centrally in MyPlayAppPages. Link to `https://apps.51cloud.de/windtorrent/` and `https://apps.51cloud.de/windtorrent/privacy/`; do not duplicate those pages here or introduce another hosted site.
 - Add release notes only for verified changes, and do not claim a production rollout is complete without checking Google Play. Keep both languages aligned.
 - Documentation has no app build or CI requirement. Check relative links, image references, issue form YAML, narrow/wide rendering, and `git diff --check` before publishing.

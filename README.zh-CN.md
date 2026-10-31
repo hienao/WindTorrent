@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">在 Google Play 获取</a> ·
-  <a href="https://hienao-apps.pages.dev/windtorrent/">官方网站</a>
+  <a href="https://apps.51cloud.de/windtorrent/">官方网站</a>
 </p>
 
 <p align="center"><a href="README.md">English</a> · 简体中文 · <a href="README.ja.md">日本語</a> · <a href="README.de.md">Deutsch</a><br>
@@ -51,7 +51,7 @@ WindTorrent 连接你已经部署在 NAS、服务器或电脑上的下载器。�
 
 ## 广告与购买
 
-WindTorrent 是单一应用，下载管理功能可免费使用。可通过应用内购买永久免广告权益或年度免广告订阅。应用包含广告 SDK，并使用 Firebase Analytics，详见[隐私政策](https://hienao-apps.pages.dev/windtorrent/privacy/)。
+WindTorrent 是单一应用，下载管理功能可免费使用。可通过应用内购买永久免广告权益或年度免广告订阅。应用包含广告 SDK，并使用 Firebase Analytics，详见[隐私政策](https://apps.51cloud.de/windtorrent/privacy/)。
 
 ## 语言支持
 
@@ -69,4 +69,4 @@ App 界面目前支持英文、简体中文和日文。仓库介绍提供八种�
 
 这里是 WindTorrent 官方公开的文档与反馈仓库。App 目前为闭源应用，本仓库不分发应用源码。Aria2、qBittorrent 和 Transmission 是独立项目，与 WindTorrent 无隶属关系。
 
-[官方网站](https://hienao-apps.pages.dev/windtorrent/) · [隐私政策](https://hienao-apps.pages.dev/windtorrent/privacy/) · [联系支持](mailto:shiwentao666@gmail.com)
+[官方网站](https://apps.51cloud.de/windtorrent/) · [隐私政策](https://apps.51cloud.de/windtorrent/privacy/) · [联系支持](mailto:shiwentao666@gmail.com)

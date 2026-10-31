@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Get it on Google Play</a> ·
-  <a href="https://hienao-apps.pages.dev/windtorrent/">Website</a>
+  <a href="https://apps.51cloud.de/windtorrent/">Website</a>
 </p>
 
 <p align="center">English · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a> · <a href="README.de.md">Deutsch</a><br>
@@ -51,7 +51,7 @@ Use your actual externally reachable port, including any Docker port mapping. En
 
 ## Ads and purchases
 
-WindTorrent is one app with free download management. Optional in-app purchases provide ad-free access through a lifetime purchase or an annual subscription. The app includes the advertising SDK and uses Firebase Analytics; see the [privacy policy](https://hienao-apps.pages.dev/windtorrent/privacy/).
+WindTorrent is one app with free download management. Optional in-app purchases provide ad-free access through a lifetime purchase or an annual subscription. The app includes the advertising SDK and uses Firebase Analytics; see the [privacy policy](https://apps.51cloud.de/windtorrent/privacy/).
 
 ## Languages
 
@@ -69,4 +69,4 @@ See [release notes](CHANGELOG.md) for recent changes. If WindTorrent is useful t
 
 This is the official public home for WindTorrent's documentation and feedback. The application is closed source; its source code is not distributed in this repository. Aria2, qBittorrent, and Transmission are separate projects and are not affiliated with WindTorrent.
 
-[Website](https://hienao-apps.pages.dev/windtorrent/) · [Privacy policy](https://hienao-apps.pages.dev/windtorrent/privacy/) · [Support](mailto:shiwentao666@gmail.com)
+[Website](https://apps.51cloud.de/windtorrent/) · [Privacy policy](https://apps.51cloud.de/windtorrent/privacy/) · [Support](mailto:shiwentao666@gmail.com)

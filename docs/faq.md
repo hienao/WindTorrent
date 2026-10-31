@@ -62,7 +62,7 @@ To a directory accessible to the downloader process. In Docker, this is usually 
 
 ## How do ads and purchases work?
 
-WindTorrent is one app with free download management. Optional in-app purchases provide ad-free access through a lifetime purchase or an annual subscription. The app includes the advertising SDK and uses Firebase Analytics; see the [privacy policy](https://hienao-apps.pages.dev/windtorrent/privacy/).
+WindTorrent is one app with free download management. Optional in-app purchases provide ad-free access through a lifetime purchase or an annual subscription. The app includes the advertising SDK and uses Firebase Analytics; see the [privacy policy](https://apps.51cloud.de/windtorrent/privacy/).
 
 ## Can I move settings from the old app?
 

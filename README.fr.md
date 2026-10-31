@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Télécharger sur Google Play</a> ·
-  <a href="https://hienao-apps.pages.dev/windtorrent/">Site officiel</a>
+  <a href="https://apps.51cloud.de/windtorrent/">Site officiel</a>
 </p>
 
 <p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a> · <a href="README.de.md">Deutsch</a><br>
@@ -51,7 +51,7 @@ Utilisez le port réellement accessible, en tenant compte des éventuelles corre
 
 ## Publicités et achats
 
-WindTorrent est une application unique dont la gestion des téléchargements est gratuite. Un achat intégré définitif ou un abonnement annuel permet de supprimer les publicités. L’application inclut le SDK publicitaire et utilise Firebase Analytics ; consultez la [politique de confidentialité en anglais et en chinois](https://hienao-apps.pages.dev/windtorrent/privacy/).
+WindTorrent est une application unique dont la gestion des téléchargements est gratuite. Un achat intégré définitif ou un abonnement annuel permet de supprimer les publicités. L’application inclut le SDK publicitaire et utilise Firebase Analytics ; consultez la [politique de confidentialité en anglais et en chinois](https://apps.51cloud.de/windtorrent/privacy/).
 
 ## Langues et assistance
 
@@ -65,4 +65,4 @@ Avant de partager des captures ou des journaux, retirez les mots de passe, secre
 
 Ce dépôt public officiel rassemble la documentation et les retours sur WindTorrent. L’application est à code source fermé ; son code n’est pas distribué ici. Aria2, qBittorrent et Transmission sont des projets indépendants, sans affiliation avec WindTorrent.
 
-[Site officiel (anglais/chinois)](https://hienao-apps.pages.dev/windtorrent/) · [Confidentialité (anglais/chinois)](https://hienao-apps.pages.dev/windtorrent/privacy/) · [Assistance](mailto:shiwentao666@gmail.com)
+[Site officiel (anglais/chinois)](https://apps.51cloud.de/windtorrent/) · [Confidentialité (anglais/chinois)](https://apps.51cloud.de/windtorrent/privacy/) · [Assistance](mailto:shiwentao666@gmail.com)

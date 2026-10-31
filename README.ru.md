@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.hienao.windtorrent">Скачать в Google Play</a> ·
-  <a href="https://hienao-apps.pages.dev/windtorrent/">Сайт</a>
+  <a href="https://apps.51cloud.de/windtorrent/">Сайт</a>
 </p>
 
 <p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a> · <a href="README.de.md">Deutsch</a><br>
@@ -51,7 +51,7 @@ WindTorrent подключается к загрузчикам, которые �
 
 ## Реклама и покупки
 
-WindTorrent — единое приложение с бесплатным управлением загрузками. Покупка внутри приложения или годовая подписка отключает рекламу. Приложение содержит рекламный SDK и использует Firebase Analytics; см. [политику конфиденциальности на английском и китайском](https://hienao-apps.pages.dev/windtorrent/privacy/).
+WindTorrent — единое приложение с бесплатным управлением загрузками. Покупка внутри приложения или годовая подписка отключает рекламу. Приложение содержит рекламный SDK и использует Firebase Analytics; см. [политику конфиденциальности на английском и китайском](https://apps.51cloud.de/windtorrent/privacy/).
 
 ## Языки и помощь
 
@@ -65,4 +65,4 @@ WindTorrent — единое приложение с бесплатным упр
 
 Это официальный публичный репозиторий документации и обратной связи WindTorrent. Приложение имеет закрытый исходный код, который здесь не распространяется. Aria2, qBittorrent и Transmission — независимые проекты, не аффилированные с WindTorrent.
 
-[Сайт (английский/китайский)](https://hienao-apps.pages.dev/windtorrent/) · [Конфиденциальность (английский/китайский)](https://hienao-apps.pages.dev/windtorrent/privacy/) · [Поддержка](mailto:shiwentao666@gmail.com)
+[Сайт (английский/китайский)](https://apps.51cloud.de/windtorrent/) · [Конфиденциальность (английский/китайский)](https://apps.51cloud.de/windtorrent/privacy/) · [Поддержка](mailto:shiwentao666@gmail.com)
