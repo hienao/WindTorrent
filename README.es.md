@@ -24,6 +24,8 @@ WindTorrent se conecta a las herramientas de descarga que ya tienes en un NAS, s
   <a href="assets/readme/tasks.webp"><img src="assets/readme/tasks.webp" width="31%" alt="Imagen de Google Play con búsqueda, filtros de estado y progreso de tareas"></a>
 </p>
 
+<p align="center"><a href="assets/readme/tablet.webp"><img src="assets/readme/tablet.webp" width="80%" alt="WindTorrent tablet interface preview"></a></p>
+
 <p align="center"><sub>Imágenes oficiales de Google Play en inglés. Pulsa para ampliarlas; la interfaz puede variar según la versión instalada.</sub></p>
 
 ## Menos cambios de aplicación, más control

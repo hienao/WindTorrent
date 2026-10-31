@@ -24,6 +24,8 @@ O WindTorrent se conecta aos gerenciadores de download que você já executa em 
   <a href="assets/readme/tasks.webp"><img src="assets/readme/tasks.webp" width="31%" alt="Imagem do Google Play com busca, filtros de status e progresso das tarefas"></a>
 </p>
 
+<p align="center"><a href="assets/readme/tablet.webp"><img src="assets/readme/tablet.webp" width="80%" alt="WindTorrent tablet interface preview"></a></p>
+
 <p align="center"><sub>Imagens oficiais do Google Play em inglês. Toque para ampliar; a interface pode variar conforme a versão instalada.</sub></p>
 
 ## Menos trocas de aplicativo, mais controle

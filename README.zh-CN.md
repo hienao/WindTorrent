@@ -19,10 +19,12 @@
 WindTorrent 连接你已经部署在 NAS、服务器或电脑上的下载器。在手机上查看进度、添加任务、暂停和继续下载。文件由连接的下载器下载，并保存在下载器所在的设备上。
 
 <p align="center">
-  <a href="assets/readme/overview.webp"><img src="assets/readme/overview.webp" width="31%" alt="Google Play 展示图：下载器和任务总览"></a>
-  <a href="assets/readme/downloaders.webp"><img src="assets/readme/downloaders.webp" width="31%" alt="Google Play 展示图：Aria2、qBittorrent 和 Transmission 连接管理"></a>
-  <a href="assets/readme/tasks.webp"><img src="assets/readme/tasks.webp" width="31%" alt="Google Play 展示图：任务搜索、状态筛选和下载进度"></a>
+  <a href="assets/readme/overview-zh-CN.webp"><img src="assets/readme/overview-zh-CN.webp" width="31%" alt="Google Play 展示图：下载器和任务总览"></a>
+  <a href="assets/readme/downloaders-zh-CN.webp"><img src="assets/readme/downloaders-zh-CN.webp" width="31%" alt="Google Play 展示图：Aria2、qBittorrent 和 Transmission 连接管理"></a>
+  <a href="assets/readme/tasks-zh-CN.webp"><img src="assets/readme/tasks-zh-CN.webp" width="31%" alt="Google Play 展示图：任务搜索、状态筛选和下载进度"></a>
 </p>
+
+<p align="center"><a href="assets/readme/tablet-zh-CN.webp"><img src="assets/readme/tablet-zh-CN.webp" width="80%" alt="WindTorrent 平板界面展示图"></a></p>
 
 <p align="center"><sub>以上为官方 Google Play 展示图，点击可查看大图；实际界面可能随版本更新调整。</sub></p>
 

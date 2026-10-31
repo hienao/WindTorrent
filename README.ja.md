@@ -19,10 +19,12 @@
 WindTorrent は、NAS、サーバー、パソコンで稼働しているダウンローダーに接続するリモート管理アプリです。進捗の確認、タスクの追加、一時停止、再開をひとつの場所で行えます。ファイルのダウンロードと保存は、接続先のダウンローダーが動作する機器で行われます。
 
 <p align="center">
-  <a href="assets/readme/overview.webp"><img src="assets/readme/overview.webp" width="31%" alt="Google Play 掲載画像：ダウンローダーとタスクの概要"></a>
-  <a href="assets/readme/downloaders.webp"><img src="assets/readme/downloaders.webp" width="31%" alt="Google Play 掲載画像：Aria2、qBittorrent、Transmission の接続管理"></a>
-  <a href="assets/readme/tasks.webp"><img src="assets/readme/tasks.webp" width="31%" alt="Google Play 掲載画像：タスク検索、状態フィルター、ダウンロード進捗"></a>
+  <a href="assets/readme/overview-ja.webp"><img src="assets/readme/overview-ja.webp" width="31%" alt="Google Play 掲載画像：ダウンローダーとタスクの概要"></a>
+  <a href="assets/readme/downloaders-ja.webp"><img src="assets/readme/downloaders-ja.webp" width="31%" alt="Google Play 掲載画像：Aria2、qBittorrent、Transmission の接続管理"></a>
+  <a href="assets/readme/tasks-ja.webp"><img src="assets/readme/tasks-ja.webp" width="31%" alt="Google Play 掲載画像：タスク検索、状態フィルター、ダウンロード進捗"></a>
 </p>
+
+<p align="center"><a href="assets/readme/tablet-ja.webp"><img src="assets/readme/tablet-ja.webp" width="80%" alt="WindTorrent のタブレット画面プレビュー"></a></p>
 
 <p align="center"><sub>公式 Google Play の英語版掲載画像です。クリックすると拡大できます。実際の画面はバージョンにより異なる場合があります。</sub></p>
 

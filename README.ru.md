@@ -24,6 +24,8 @@ WindTorrent подключается к загрузчикам, которые �
   <a href="assets/readme/tasks.webp"><img src="assets/readme/tasks.webp" width="31%" alt="Изображение из Google Play: поиск, фильтры состояния и прогресс заданий"></a>
 </p>
 
+<p align="center"><a href="assets/readme/tablet.webp"><img src="assets/readme/tablet.webp" width="80%" alt="WindTorrent tablet interface preview"></a></p>
+
 <p align="center"><sub>Официальные изображения из Google Play на английском языке. Нажмите для увеличения; интерфейс установленной версии может отличаться.</sub></p>
 
 ## Меньше переключений, удобнее управление

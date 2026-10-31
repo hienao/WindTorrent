@@ -24,6 +24,8 @@ WindTorrent verbindet sich mit Downloadern, die bereits auf deinem NAS, Server o
   <a href="assets/readme/tasks.webp"><img src="assets/readme/tasks.webp" width="31%" alt="Google-Play-Vorschaubild mit Aufgabensuche, Statusfiltern und Fortschritt"></a>
 </p>
 
+<p align="center"><a href="assets/readme/tablet.webp"><img src="assets/readme/tablet.webp" width="80%" alt="WindTorrent tablet interface preview"></a></p>
+
 <p align="center"><sub>Offizielle englische Google-Play-Vorschaubilder. Zum Vergrößern anklicken; die installierte Version kann anders aussehen.</sub></p>
 
 ## Weniger wechseln, einfacher verwalten
